@@ -18,15 +18,6 @@
 		}while(0);\
 	}
 
-#define show_errno(ret, msg) \
-	do {\
-		if(ret){\
-			err("%s failure,errno=%d[%s]",msg,ret,strerror(ret));\
-		}else{\
-			err("%s failure,errno=%d[%s]",msg,errno,strerror(errno));\
-		}\
-	}while(0)
-
 #define FREE(x) ({ \
 	if(x){ \
 		free(x);x=NULL;\

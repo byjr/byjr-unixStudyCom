@@ -106,7 +106,8 @@ extern void raw_log(log_type_t n,char lock,char *log_ctrl_set,const char *out_pa
 #define dbg_nl(x...) 	dlog(_DBG,0,x);
 
 #define show_errno(ret, msg) ({\
-	if(!ret)ret=errno;\
-	err("%s failure,errno:%d[%s]",msg,ret,strerror(ret));\
+	int num=(ret);\
+	if(!num)num=errno;\
+	err("%s failure,errno:%d[%s]",msg,num,strerror(num));\
 })
 #endif
