@@ -1,6 +1,11 @@
 #ifndef _UN_MUTEX_H
 #define _UN_MUTEX_H 1
-#include <stdlib.h>
+#include <signal.h>
+#include <stdio.h>
+#include <errno.h>
+#include <pthread.h>
+#include "misc.h"
+#include "slog.h"
 //  ____________________________________________________________________________
 extern int pthread_mutex_consistent(pthread_mutex_t *__mutex);
 extern int pthread_mutex_destroy(pthread_mutex_t *__mutex);
@@ -24,189 +29,132 @@ extern int pthread_mutexattr_setpshared(pthread_mutexattr_t *__attr,int __pshare
 extern int pthread_mutexattr_setrobust(pthread_mutexattr_t *__attr,int __robustness);
 extern int pthread_mutexattr_settype(pthread_mutexattr_t *__attr,int __kind);
 // ____________________________________________________________________________ 
-extern int px_mutexattr_set(pthread_mutexattr_t *p_attr);
-extern int px_mutexattr_show(pthread_mutexattr_t *p_attr);
+extern int px_thread_mutexattr_set(pthread_mutexattr_t *p_attr);
+extern int px_thread_mutexattr_show(pthread_mutexattr_t *p_attr);
 #define SIG_CS_CMD SIGRTMIN
-#define px_mutexattr_init(p_attr) ({\
+#define px_thread_mutexattr_init(p_attr) ({\
 	int ret=0;\
 	ret=pthread_mutexattr_init(p_attr);\
-	if(ret){\
-		show_errno(ret,"pthread_mutexattr_init");\
-		exit(-1);\
-	}\
+	if(ret)show_errno(ret,"pthread_mutexattr_init");\
+	ret?-1:0;\
 })
-#define px_mutexattr_destroy(p_attr) ({\
+#define px_thread_mutexattr_destroy(p_attr) ({\
 	int ret=0;\
 	ret=pthread_mutexattr_destroy(p_attr);\
-	if(ret){\
-		show_errno(ret,"pthread_mutexattr_destroy");\
-		exit(-1);\
-	}\
+	if(ret)show_errno(ret,"pthread_mutexattr_destroy");\
+	ret?-1:0;\
 })
-#define px_mutexattr_getprioceiling(p_attr,p_prioceiling) ({\
+#define px_thread_mutexattr_getprioceiling(p_attr,p_prioceiling) ({\
 	int ret=0;\
 	ret=pthread_mutexattr_getprioceiling(p_attr,p_prioceiling);\
-	if(ret){\
-		show_errno(ret,"pthread_mutexattr_getprioceiling");\
-		exit(-1);\
-	}\
+	if(ret)show_errno(ret,"pthread_mutexattr_getprioceiling");\
+	ret?-1:0;\
 })
-#define px_mutexattr_getprotocol(p_attr,p_protocol) ({\
+#define px_thread_mutexattr_getprotocol(p_attr,p_protocol) ({\
 	int ret=0;\
 	ret=pthread_mutexattr_getprotocol(p_attr,p_protocol);\
-	if(ret){\
-		show_errno(ret,"pthread_mutexattr_getprotocol");\
-		exit(-1);\
-	}\
+	if(ret)show_errno(ret,"pthread_mutexattr_getprotocol");\
+	ret?-1:0;\
 })
 
-#define px_mutexattr_getpshared(p_attr,p_pshared) ({\
+#define px_thread_mutexattr_getpshared(p_attr,p_pshared) ({\
 	int ret=0;\
 	ret=pthread_mutexattr_getpshared(p_attr,p_pshared);\
-	if(ret){\
-		show_errno(ret,"pthread_mutexattr_getpshared");\
-		exit(-1);\
-	}\
+	if(ret)show_errno(ret,"pthread_mutexattr_getpshared");\
+	ret?-1:0;\
 })
-#define px_mutexattr_getrobust(p_attr,p_robustness) ({\
+#define px_thread_mutexattr_getrobust(p_attr,p_robustness) ({\
 	int ret=0;\
 	ret=pthread_mutexattr_getrobust(p_attr,p_robustness);\
-	if(ret){\
-		show_errno(ret,"pthread_mutexattr_getrobust");\
-		exit(-1);\
-	}\
+	if(ret)show_errno(ret,"pthread_mutexattr_getrobust");\
+	ret?-1:0;\
 })
-#define px_mutexattr_gettype(p_attr,p_kind) ({\
+#define px_thread_mutexattr_gettype(p_attr,p_kind) ({\
 	int ret=0;\
 	ret=pthread_mutexattr_gettype(p_attr,p_kind);\
-	if(ret){\
-		show_errno(ret,"pthread_mutexattr_gettype");\
-		exit(-1);\
-	}\
+	if(ret)show_errno(ret,"pthread_mutexattr_gettype");\
+	ret?-1:0;\
 })
-
-#define px_mutexattr_setprioceiling(p_attr,prioceiling) ({\
+#define px_thread_mutexattr_setprioceiling(p_attr,prioceiling) ({\
 	int ret=0;\
 	ret=pthread_mutexattr_setprioceiling(p_attr,prioceiling);\
-	if(ret){\
-		show_errno(ret,"pthread_mutexattr_setprioceiling");\
-		exit(-1);\
-	}\
+	if(ret)show_errno(ret,"pthread_mutexattr_setprioceiling");\
+	ret?-1:0;\
 })
-
-#define px_mutexattr_setprotocol(p_attr,protocol) ({\
+#define px_thread_mutexattr_setprotocol(p_attr,protocol) ({\
 	int ret=0;\
 	ret=pthread_mutexattr_setprotocol(p_attr,protocol);\
-	if(ret){\
-		show_errno(ret,"pthread_mutexattr_setprotocol");\
-		exit(-1);\
-	}\
+	if(ret)show_errno(ret,"pthread_mutexattr_setprotocol");\
+	ret?-1:0;\
 })
-
-#define px_mutexattr_setpshared(p_attr,pshared) ({\
+#define px_thread_mutexattr_setpshared(p_attr,pshared) ({\
 	int ret=0;\
 	ret=pthread_mutexattr_setpshared(p_attr,pshared);\
-	if(ret){\
-		show_errno(ret,"pthread_mutexattr_setpshared");\
-		exit(-1);\
-	}\
+	if(ret)show_errno(ret,"pthread_mutexattr_setpshared");\
+	ret?-1:0;\
 })
-
-#define px_mutexattr_setrobust(p_attr,robustness) ({\
+#define px_thread_mutexattr_setrobust(p_attr,robustness) ({\
 	int ret=0;\
 	ret=pthread_mutexattr_setrobust(p_attr,robustness);\
-	if(ret){\
-		show_errno(ret,"pthread_mutexattr_setrobust");\
-		exit(-1);\
-	}\
+	if(ret)show_errno(ret,"pthread_mutexattr_setrobust");\
+	ret?-1:0;\
 })
-
-#define px_mutexattr_settype(p_attr,kind) ({\
+#define px_thread_mutexattr_settype(p_attr,kind) ({\
 	int ret=0;\
 	ret=pthread_mutexattr_settype(p_attr,kind);\
-	if(ret){\
-		show_errno(ret,"pthread_mutexattr_settype");\
-		exit(-1);\
-	}\
+	if(ret)show_errno(ret,"pthread_mutexattr_settype");\
+	ret?-1:0;\
 })
-
-
-#define px_mutex_init(p_mutex,p_mutexattr) ({\
+#define px_thread_mutex_init(p_mutex,p_mutexattr) ({\
 	int ret=0;\
 	ret=pthread_mutex_init(p_mutex,p_mutexattr);\
-	if(ret){\
-		show_errno(ret,"pthread_mutex_init");\
-		exit(-1);\
-	}\
+	if(ret)show_errno(ret,"pthread_mutex_init");\
+	ret?-1:0;\
 })
-
-#define px_mutex_destroy(p_mutex) ({\
+#define px_thread_mutex_destroy(p_mutex) ({\
 	int ret=0;\
 	ret=pthread_mutex_destroy(p_mutex);\
-	if(ret){\
-		show_errno(ret,"pthread_mutex_destroy");\
-		exit(-1);\
-	}\
+	if(ret)show_errno(ret,"pthread_mutex_destroy");\
+	ret?-1:0;\
 })
-
-
-
-
-#define px_mutex_getprioceiling(p_mutex,p_prioceiling) ({\
+#define px_thread_mutex_getprioceiling(p_mutex,p_prioceiling) ({\
 	int ret=0;\
 	ret=pthread_mutex_getprioceiling(p_mutex,p_prioceiling);\
-	if(ret){\
-		show_errno(ret,"pthread_mutex_getprioceiling");\
-		exit(-1);\
-	}\
+	if(ret)show_errno(ret,"pthread_mutex_getprioceiling");\
+	ret?-1:0;\
 })
-
-#define px_mutex_setprioceiling(p_mutex,prioceiling,p_old_ceiling) ({\
+#define px_thread_mutex_setprioceiling(p_mutex,prioceiling,p_old_ceiling) ({\
 	int ret=0;\
 	ret=pthread_mutex_setprioceiling(p_mutex,prioceiling,p_old_ceiling);\
-	if(ret){\
-		show_errno(ret,"pthread_mutex_setprioceiling");\
-		exit(-1);\
-	}\
+	if(ret)show_errno(ret,"pthread_mutex_setprioceiling");\
+	ret?-1:0;\
 })
-
-#define px_mutex_consistent(p_mutex) ({\
+#define px_thread_mutex_consistent(p_mutex) ({\
 	int ret=0;\
 	ret=pthread_mutex_consistent(p_mutex);\
-	if(ret){\
-		show_errno(ret,"pthread_mutex_consistent");\
-		exit(-1);\
-	}\
+	if(ret)show_errno(ret,"pthread_mutex_consistent");\
+	ret?-1:0;\
 })
-
-
-#define px_mutex_lock(p_mutex) ({\
+#define px_thread_mutex_lock(p_mutex) ({\
 	int ret=0;\
 	ret=pthread_mutex_lock(p_mutex);\
-	if(ret){\
-		show_errno(ret,"pthread_mutex_lock");\
-		exit(-1);\
-	}\
+	if(ret)show_errno(ret,"pthread_mutex_lock");\
+	ret?-1:0;\
 })
-
-#define px_mutex_trylock(p_mutex) ({\
+#define px_thread_mutex_trylock(p_mutex) ({\
 	int ret=0;\
 	ret=pthread_mutex_trylock(p_mutex);\
 	ret=ret?-1:0;\
 })
-
-#define px_mutex_timedlock(p_abstime) ({\
+#define px_thread_mutex_timedlock(p_abstime) ({\
 	int ret=0;\
 	ret=pthread_mutex_timedlock(p_abstime);\
 	ret=ret?-1:0;\
 })
-
-#define px_mutex_unlock(p_mutex) ({\
+#define px_thread_mutex_unlock(p_mutex) ({\
 	int ret=0;\
 	ret=pthread_mutex_unlock(p_mutex);\
-	if(ret){\
-		show_errno(ret,"pthread_mutex_unlock");\
-		exit(-1);\
-	}\
+	if(ret)show_errno(ret,"pthread_mutex_unlock");\
+	ret?-1:0;\
 })
 #endif

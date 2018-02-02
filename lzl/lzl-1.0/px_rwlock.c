@@ -1,10 +1,5 @@
-#include <signal.h>
-#include <stdio.h>
-#include <errno.h>
-#include <pthread.h>
 #include "px_rwlock.h"
-#include "misc.h"
-#include "slog.h"
+
 int px_rwlockattr_set(pthread_rwlockattr_t *p_attr)
 {
 	int ret=0;

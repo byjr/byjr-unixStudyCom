@@ -1,13 +1,3 @@
-#define _GNU_SOURCE     /* To get pthread_getattr_np() declaration */
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-#include <errno.h>
-#include <limits.h>
-#include <sched.h>
-#include "misc.h"
-#include "slog.h"
 #include "px_thread.h"
 
 static void get_isset_bit(cpu_set_t cpuset){

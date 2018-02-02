@@ -1,7 +1,18 @@
 #ifndef _PX_THREAD_H
 #define _PX_THREAD_H 1
+#define _GNU_SOURCE     /* To get pthread_getattr_np() declaration */
 #include <pthread.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <errno.h>
+#include <limits.h>
+#include <sched.h>
+#include "slog.h"
 #include "misc.h"
+
+#if 0
 //_______________________________________________________________________________________________________________
 extern int pthread_attr_init(pthread_attr_t *__attr);
 extern int pthread_attr_destroy(pthread_attr_t *__attr);
@@ -57,65 +68,53 @@ extern int pthread_key_delete(pthread_key_t __key);
 extern void *pthread_getspecific(pthread_key_t __key);
 extern int pthread_setspecific(pthread_key_t __key,const void *__pointer);
 //_______________________________________________________________________________________________________________ */
+#endif
 int px_thread_get_rtaddr(pthread_t tid);
 int px_thread_set_attr(pthread_attr_t *p_attr);
 int px_thread_show_attr(pthread_attr_t *p_attr);
 #define px_thread_attr_init(p_attr) ({\
 	int ret=0;\
 	ret=pthread_attr_init(p_attr);\
-	if(ret){\
-		show_errno(ret,"pthread_attr_init");\
-		exit(-1);\
-	}\
+	if(ret)show_errno(ret,"pthread_attr_init");\
+	ret=ret?-1:0;\
 })
 #define px_thread_exit(p_ret)  pthread_exit(p_ret)
+
 #define px_thread_create(px_tid,p_attr,p_start_routine,args) ({\
 	int ret=0;\
 	ret=pthread_create(px_tid,p_attr,p_start_routine,args);\
-	if(ret){\
-		show_errno(ret,"pthread_create");\
-		exit(-1);\
-	}\
+	if(ret)show_errno(ret,"pthread_create");\
+	ret=ret?-1:0;\
 })
 #define px_thread_set_cancel_state(state) ({\
 	int ret=0;\
 	ret=pthread_setcancelstate(state,NULL);\
-	if(ret){\
-		show_errno(ret,"pthread_setcancelstate");\
-		exit(-1);\
-	}\
+	if(ret)show_errno(ret,"pthread_setcancelstate");\
+	ret=ret?-1:0;\
 })
 #define px_thread_set_cancel_type(type) ({\
 	int ret=0;\
 	ret=pthread_setcanceltype(type,NULL);\
-	if(ret){\
-		show_errno(ret,"pthread_setcanceltype");\
-		exit(-1);\
-	}\
+	if(ret)show_errno(ret,"pthread_setcanceltype");\
+	ret=ret?-1:0;\
 })
 #define px_thread_cancel(px_tid) ({\
 	int ret=0;\
 	ret=pthread_cancel(px_tid);\
-	if(ret){\
-		show_errno(ret,"px_thread_cancel");\
-		exit(-1);\
-	}\
+	if(ret)show_errno(ret,"px_thread_cancel");\
+	ret=ret?-1:0;\
 })
 #define px_thread_yield() ({\
 	int ret=0;\
 	ret=pthread_yield();\
-	if(ret){\
-		show_errno(ret,"px_thread_cancel");\
-		exit(-1);\
-	}\
+	if(ret)show_errno(ret,"px_thread_cancel");\
+	ret=ret?-1:0;\
 })
 #define px_thread_join(tid,p_ret) ({\
 	int ret=0;\
 	ret=pthread_join(tid,p_ret);\
-	if(ret){\
-		show_errno(ret,"pthread_join");\
-		exit(-1);\
-	}\
+	if(ret)show_errno(ret,"pthread_join");\
+	ret;\
 })
 #define px_thread_tryjoin(tid,p_ret) ({\
 	int ret=0;\
@@ -132,90 +131,68 @@ int px_thread_show_attr(pthread_attr_t *p_attr);
 #define px_thread_setschedparam(tid,policy,p_param) ({\
 	int ret=0;\
 	ret=pthread_setschedparam(tid,policy,p_param);\
-	if(ret){\
-		show_errno(ret,"pthread_setschedparam");\
-		exit(-1);\
-	}\
+	if(ret)show_errno(ret,"pthread_setschedparam");\
+	ret=ret?-1:0;\
 })
 #define px_thread_setaffinity_np(tid,cpusetsize,p_cpuset) ({\
 	int ret=0;\
 	ret=pthread_setaffinity_np(tid,cpusetsize,p_cpuset);\
-	if(ret){\
-		show_errno(ret,"pthread_setaffinity_np");\
-		exit(-1);\
-	}\
+	if(ret)show_errno(ret,"pthread_setaffinity_np");\
+	ret=ret?-1:0;\
 })
 #define px_thread_setschedprio(tid,prio) ({\
 	int ret=0;\
 	ret=pthread_setschedprio(tid,prio);\
-	if(ret){\
-		show_errno(ret,"pthread_setschedprio");\
-		exit(-1);\
-	}\
+	if(ret)show_errno(ret,"pthread_setschedprio");\
+	ret=ret?-1:0;\
 })
 #define px_thread_setname_np(tid,name) ({\
 	int ret=0;\
 	ret=pthread_setname_np(tid,name);\
-	if(ret){\
-		show_errno(ret,"pthread_setname_np");\
-		exit(-1);\
-	}\
+	if(ret)show_errno(ret,"pthread_setconcurrency");\
+	ret=ret?-1:0;\
 })
 #define px_thread_setconcurrency(level) ({\
 	int ret=0;\
 	ret=pthread_setconcurrency(level);\
-	if(ret){\
-		show_errno(ret,"pthread_setconcurrency");\
-		exit(-1);\
-	}\
+	if(ret)show_errno(ret,"pthread_setconcurrency");\
+	ret=ret?-1:0;\
 })
 #define px_thread_detach(tid) ({\
 	int ret=0;\
 	ret=pthread_detach(tid);\
-	if(ret){\
-		show_errno(ret,"pthread_detach");\
-		exit(-1);\
-	}\
+	if(ret)show_errno(ret,"pthread_detach");\
+	ret=ret?-1:0;\
 })
 #define px_thread_once(p_once_control,p_init_routine) ({\
 	int ret=0;\
 	ret=pthread_once(p_once_control,p_init_routine);\
-	if(ret){\
-		show_errno(ret,"pthread_once");\
-		exit(-1);\
-	}\
+	if(ret)show_errno(ret,"pthread_once");\
+	ret=ret?-1:0;\
 })
 #define px_thread_atfork(p_prepare,p_parent,p_child) ({\
 	int ret=0;\
 	ret=pthread_atfork(p_prepare,p_parent,p_child);\
-	if(ret){\
-		show_errno(ret,"pthread_atfork");\
-		exit(-1);\
-	}\
+	if(ret)show_errno(ret,"pthread_atfork");\
+	ret=ret?-1:0;\
 })
 #define px_thread_equal(tid1,tid2) ({\
 	int ret=0;\
 	ret=pthread_equal(tid1,tid2);\
-	if(ret){\
-		show_errno(ret,"pthread_equal");\
-		exit(-1);\
-	}\
+	if(ret)show_errno(ret,"pthread_equal");\
+	ret=ret?-1:0;\
 })
 #define px_thread_key_create(p_key,p_destr_function) ({\
 	int ret=0;\
 	ret=pthread_key_create(p_key,p_destr_function);\
-	if(ret){\
-		show_errno(ret,"pthread_key_create");\
-		exit(-1);\
-	}\
+	if(ret)show_errno(ret,"pthread_key_create");\
+	ret=ret?-1:0;\
 })
 #define px_thread_key_delete(key) ({\
 	int ret=0;\
 	ret=pthread_key_delete(key);\
-	if(ret){\
-		show_errno(ret,"pthread_key_delete");\
-		exit(-1);\
-	}\
+	if(ret)show_errno(ret,"pthread_key_delete");\
+	ret=ret?-1:0;\
 })
 #define px_thread_getspecific(p_val,key) ({\
 	int ret=0;\
@@ -225,17 +202,13 @@ int px_thread_show_attr(pthread_attr_t *p_attr);
 #define px_thread_setspecific(key,p_pointer) ({\
 	int ret=0;\
 	ret=pthread_setspecific(key,p_pointer);\
-	if(ret){\
-		show_errno(ret,"pthread_setspecific");\
-		exit(-1);\
-	}\
+	if(ret)show_errno(ret,"pthread_setspecific");\
+	ret=ret?-1:0;\
 })
 #define px_thread_attr_destroy(p_attr) ({\
 	int ret=0;\
 	ret=pthread_attr_destroy(p_attr);\
-	if(ret){\
-		show_errno(ret,"pthread_attr_destroy");\
-		exit(-1);\
-	}\
+	if(ret)show_errno(ret,"pthread_attr_destroy");\
+	ret=ret?-1:0;\
 })
 #endif

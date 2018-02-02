@@ -1,5 +1,11 @@
 #ifndef _UN_RWLOCK_H
 #define _UN_RWLOCK_H 1
+#include <signal.h>
+#include <stdio.h>
+#include <errno.h>
+#include <pthread.h>
+#include "misc.h"
+#include "slog.h"
 /*//  ____________________________________________________________________________
 extern int pthread_rwlockattr_init(pthread_rwlockattr_t *__attr);
 extern int pthread_rwlockattr_destroy(pthread_rwlockattr_t *__attr);
