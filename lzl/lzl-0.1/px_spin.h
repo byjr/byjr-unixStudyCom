@@ -11,26 +11,20 @@ extern int pthread_spin_unlock(pthread_spinlock_t *__lock);
 #define px_spin_destroy(p_lock) ({\
 	int ret=0;\
 	ret=pthread_spin_destroy(p_lock);\
-	if(ret){\
-		show_errno(ret,"pthread_spin_destroy");\
-		exit(-1);\
-	}\
+	if(ret)show_errno(ret,"pthread_spin_destroy");\
+	ret?-1:0;\
 })
 #define px_spin_init(p_lock,pshared) ({\
 	int ret=0;\
 	ret=pthread_spin_init(p_lock,pshared);\
-	if(ret){\
-		show_errno(ret,"pthread_spin_init");\
-		exit(-1);\
-	}\
+	if(ret)show_errno(ret,"pthread_spin_init");\
+	ret?-1:0;\
 })
 #define px_spin_lock(p_lock) ({\
 	int ret=0;\
 	ret=pthread_spin_lock(p_lock);\
-	if(ret){\
-		show_errno(ret,"pthread_spin_lock");\
-		exit(-1);\
-	}\
+	if(ret)show_errno(ret,"pthread_spin_lock");\
+	ret?-1:0;\
 })
 #define px_spin_trylock(p_lock) ({\
 	int ret=0;\
@@ -40,9 +34,7 @@ extern int pthread_spin_unlock(pthread_spinlock_t *__lock);
 #define px_spin_unlock(p_lock) ({\
 	int ret=0;\
 	ret=pthread_spin_unlock(p_lock);\
-	if(ret){\
-		show_errno(ret,"pthread_spin_unlock");\
-		exit(-1);\
-	}\
+	if(ret)show_errno(ret,"pthread_spin_unlock");\
+	ret?-1:0;\
 })
 #endif

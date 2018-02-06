@@ -99,17 +99,13 @@ extern int timerfd_create (clockid_t __clock_id, int __flags);
 #define px_thread_getcpuclockid(tid,p_cid)({\
 	int ret=0;\
 	ret=pthread_getcpuclockid(tid,p_cid);\
-	if(ret){\
-		show_errno(ret,__func__);\
-		exit(-1);\
-	}\
+	if(ret)show_errno(ret,__func__);\
+	ret?-1:0;\
 })
 #define process_getcpuclockid(pid,p_cid)({\
 	int ret=0;\
 	ret=clock_getcpuclockid(pid,p_cid);\
-	if(ret){\
-		show_errno(ret,__func__);\
-		exit(-1);\
-	}\
+	if(ret)show_errno(ret,__func__);\
+	ret?-1:0;\
 })
 #endif

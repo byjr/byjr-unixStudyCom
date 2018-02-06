@@ -48,10 +48,8 @@ extern int px_barrierattr_show(pthread_barrierattr_t *p_attr);
 #define px_barrier_init(p_barrier,p_attr,count) {\
 	int ret=0;\
 	ret=pthread_barrier_init(p_barrier,p_attr,count);\
-	if(ret){\
-		show_errno(ret,"px_barrier_init");\
-		exit(-1);\
-	}\
+	if(ret)show_errno(ret,"px_barrier_init");\
+	ret?-1:0;\
 }
 #define px_barrier_destroy(p_barrier) {\
 	int ret=0;\

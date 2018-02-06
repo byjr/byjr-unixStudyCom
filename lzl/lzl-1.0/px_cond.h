@@ -28,34 +28,26 @@ extern int px_thread_condattr_show(pthread_condattr_t *p_attr);
 #define px_thread_cond_broadcast(p_cond) ({\
 	int ret=0;\
 	ret=pthread_cond_broadcast(p_cond);\
-	if(ret){\
-		show_errno(ret,"pthread_cond_broadcast");\
-		exit(-1);\
-	}\
+	if(ret)show_errno(ret,"pthread_cond_broadcast");\
+	ret?-1:0;\
 })
 #define px_thread_cond_destroy(p_cond) ({\
 	int ret=0;\
 	ret=pthread_cond_destroy(p_cond);\
-	if(ret){\
-		show_errno(ret,"pthread_cond_destroy");\
-		exit(-1);\
-	}\
+	if(ret)show_errno(ret,"pthread_cond_destroy");\
+	ret?-1:0;\
 })
 #define px_thread_cond_init(p_cond,p_cond_attr) ({\
 	int ret=0;\
 	ret=pthread_cond_init(p_cond,p_cond_attr);\
-	if(ret){\
-		show_errno(ret,"pthread_cond_init");\
-		exit(-1);\
-	}\
+	if(ret)show_errno(ret,"pthread_cond_init");\
+	ret?-1:0;\
 })
 #define px_thread_cond_signal(p_cond) ({\
 	int ret=0;\
 	ret=pthread_cond_signal(p_cond);\
-	if(ret){\
-		show_errno(ret,"pthread_cond_signal");\
-		exit(-1);\
-	}\
+	if(ret)show_errno(ret,"pthread_cond_signal");\
+	ret?-1:0;\
 })
 #define px_thread_cond_tdwait(p_cond,p_mutex,p_ntv) ({\
 	int ret=0;\
@@ -65,57 +57,43 @@ extern int px_thread_condattr_show(pthread_condattr_t *p_attr);
 #define px_thread_cond_wait(p_cond,p_mutex) ({\
 	int ret=0;\
 	ret=pthread_cond_wait(p_cond,p_mutex);\
-	if(ret){\
-		show_errno(ret,"pthread_cond_wait");\
-		exit(-1);\
-	}\
+	if(ret)show_errno(ret,"pthread_cond_wait");\
+	ret?-1:0;\
 })
 #define px_thread_condattr_destroy(p_attr) ({\
 	int ret=0;\
 	ret=pthread_condattr_destroy(p_attr);\
-	if(ret){\
-		show_errno(ret,"pthread_condattr_destroy");\
-		exit(-1);\
-	}\
+	if(ret)show_errno(ret,"pthread_condattr_destroy");\
+	ret?-1:0;\
 })
 #define px_thread_condattr_getclock(p_attr,cid) ({\
 	int ret=0;\
 	ret=pthread_condattr_getclock(p_attr,cid);\
-	if(ret){\
-		show_errno(ret,"pthread_condattr_getclock");\
-		exit(-1);\
-	}\
+	if(ret)show_errno(ret,"pthread_condattr_getclock");\
+	ret?-1:0;\
 })
 #define px_thread_condattr_getpshared(p_attr,pshared) ({\
 	int ret=0;\
 	ret=pthread_condattr_getpshared(p_attr,pshared);\
-	if(ret){\
-		show_errno(ret,"pthread_condattr_getpshared");\
-		exit(-1);\
-	}\
+	if(ret)show_errno(ret,"pthread_condattr_getpshared");\
+	ret?-1:0;\
 })
 #define px_thread_condattr_init(p_attr) ({\
 	int ret=0;\
 	ret=pthread_condattr_init(p_attr);\
-	if(ret){\
-		show_errno(ret,"pthread_condattr_init");\
-		exit(-1);\
-	}\
+	if(ret)show_errno(ret,"pthread_condattr_init");\
+	ret?-1:0;\
 })
 #define px_thread_condattr_setclock(p_attr,cid) ({\
 	int ret=0;\
 	ret=pthread_condattr_setclock(p_attr,cid);\
-	if(ret){\
-		show_errno(ret,"pthread_condattr_setclock");\
-		exit(-1);\
-	}\
+	if(ret)show_errno(ret,"pthread_condattr_setclock");\
+	ret?-1:0;\
 })
 #define px_thread_condattr_setpshared(p_attr,pshared) ({\
 	int ret=0;\
 	ret=pthread_condattr_setpshared(p_attr,pshared);\
-	if(ret){\
-		show_errno(ret,"pthread_condattr_setpshared");\
-		exit(-1);\
-	}\
+	if(ret)show_errno(ret,"pthread_condattr_setpshared");\
+	ret?-1:0;\
 })
 #endif
