@@ -1,0 +1,5 @@
+srcN="cond"
+dstN="spinlock"
+find -name *.[ch] | xargs perl -p -i -e "s/mutex/cond/g"
+find -name *.[ch] | xargs  rename "s/mutex/cond/g"
+find -type d | xargs  rename "s/mutex/cond/g"
