@@ -1,4 +1,0 @@
-extern\sint\spthread_mutex(\w+?)(\(.+?\));
-
-#define px_thread_mutex\1\2 \(\{\\\n	int ret=0;\\\n	ret=pthread_mutex\1\2;\\\n	if\(ret\)\{\\\n		handle_errno\(ret,"pthread_mutex\1"\);\\\n		exit\(-1\);\\\n	\}\\\n\}\)
-
