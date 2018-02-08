@@ -1,0 +1,35 @@
+//测试命令
+
+
+
+					 设置  写  参照 起点  长度
+45007
+make p0=cli p1=fctnl p2=1 p3=0 p4=0 p5=0 p6=10
+make p0=cli p1=fctnl p2=1 p3=1 p4=0 p5=0 p6=10
+make p0=cli p1=fctnl p2=1 p3=2 p4=0 p5=0 p6=10
+
+make p0=cli p1=fctnl p2=0 p3=0 p4=0 p5=0 p6=10
+make p0=cli p1=fctnl p2=0 p3=1 p4=0 p5=0 p6=10
+
+make p0=cli p1=fctnl p2=1 p3=0 p4=0 p5=10 p6=10
+make p0=cli p1=fctnl p2=1 p3=1 p4=0 p5=10 p6=10
+make p0=cli p1=fctnl p2=1 p3=2 p4=0 p5=10 p6=10
+
+make p0=cli p1=fctnl p2=1 p3=0 p4=0 p5=20 p6=10
+make p0=cli p1=fctnl p2=1 p3=1 p4=0 p5=20 p6=10
+make p0=cli p1=fctnl p2=1 p3=2 p4=0 p5=20 p6=10
+
+45051
+make p0=ctl p1=usr0 && kill -34 45051
+make p0=ctl p1=fctnl p2=0 p3=0 p4=0 p5=0 p6=10 && kill -34 45051
+make p0=ctl p1=fctnl p2=0 p3=1 p4=0 p5=0 p6=10 && kill -34 45051
+
+make p0=ctl p1=fctnl p2=0 p3=0 p4=0 p5=10 p6=10 && kill -34 45051
+make p0=ctl p1=fctnl p2=0 p3=1 p4=0 p5=10 p6=10 && kill -34 45051
+make p0=ctl p1=fctnl p2=1 p3=2 p4=0 p5=10 p6=10 && kill -34 45051//解不了（不报错）
+
+make p0=ctl p1=fctnl p2=0 p3=0 p4=0 p5=20 p6=10 && kill -34 45051
+make p0=ctl p1=fctnl p2=0 p3=1 p4=0 p5=20 p6=10 && kill -34 45051
+
+make p0=ctl p1=fctnl p2=0 p3=0 p4=0 p5=5 p6=10 && kill -34 45051
+
