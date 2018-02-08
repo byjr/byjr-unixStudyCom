@@ -1,0 +1,825 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!-- saved from url=(0070)http://www.wowotech.net/timer_subsystem/timer_subsystem_userspace.html -->
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<style id="znBdcsStyle" type="text/css">.bdcs-container .bdcs-main,.bdcs-container .bdcs-main *{box-sizing:content-box;margin:0;padding:0;float:none;clear:none;overflow:hidden;white-space:nowrap;word-wrap:normal;border:0;background:0 0;width:auto;height:auto;max-width:none;min-width:none;max-height:none;min-height:none;border-radius:0;box-shadow:none;transition:none;text-align:left}.bdcs-container .bdcs-clearfix:after{content:'';display:block;clear:both;height:0}.bdcs-container .bdcs-clearfix{zoom:1}.bdcs-container .bdcs-main{overflow:visible}.bdcs-container .bdcs-search{display:block;overflow:visible;position:relative;border-style:solid}.bdcs-container .bdcs-search-form-input-wrap{display:inline-block}.bdcs-container .bdcs-search-form-input{border-width:1px;border-style:solid;display:inline-block;vertical-align:top;text-indent:5px;background-color:#fff;float:left}.bdcs-container .bdcs-search-form-input:focus{border-width:1px;border-style:solid;outline:0}.bdcs-container .bdcs-search-form-submit-wrap{display:inline-block}.bdcs-container .bdcs-search-form-submit{display:inline-block;cursor:pointer;border-width:1px;border-style:solid;vertical-align:top;text-align:center;width:50px;//_overflow:hidden}.bdcs-container .bdcs-search-form-submit-magnifier{width:45px;padding:0;text-indent:-999em;overflow:hidden;background:url(http://znsv.baidu.com/static/customer-search/component/search/magnifier-icon.png) no-repeat center center;_background:url(http://znsv.baidu.com/static/customer-search/component/search/magnifier-icon_ie6.png) no-repeat center center}div#default-searchbox .default-channel-meun{position:relative;width:75px;display:inline-block;vertical-align:middle;cursor:pointer;background:#fff;float:left;overflow:visible}div#default-searchbox .default-channel-current{border:1px solid;position:relative;width:100%;border-right:0}div#default-searchbox .default-channel-current span{margin-left:8px}div#default-searchbox .default-channel-current i{overflow:hidden;width:0;height:0;border-width:6px 6px 0;border-color:#9E9E9E #fff;border-style:solid;display:block;position:absolute;right:10px;top:11px}div.cse-default-channel-container{display:block;position:absolute;z-index:30061000000}div.cse-default-channel-container .default-channel-list{display:none;width:99%;list-style:none;background:#fff;border:1px solid #DDD;border-top:0;margin:0;padding:0}div.cse-default-channel-container .default-channel-list li{background:0 0;line-height:24px;list-style:none;display:block;padding-left:7px;cursor:pointer}div.cse-default-channel-container .default-channel-list li:hover{background:#DDD}.bdcs-container .bdcs-search-form-input-wrap{}.bdcs-container .bdcs-search-form-input-notspan{margin-left:0px;font-family:Arial,SimSun,sans-serif;color:#000000;font-size:12px;}.bdcs-container .bdcs-search-form-input .icon-nofocus{left:;right:;top:;height:;width:;}.bdcs-container .bdcs-search{width:212px;height:24px;overflow:visible;border-color:#ffffff;border-radius:0px;border-width:0px;box-shadow:none;background-color:none;}.bdcs-container .bdcs-search-form-input{border-color:#a6a6a6;margin-right:10px;width:148px;height:22px;line-height:22px;font-family:Arial,SimSun,sans-serif;color:#000000;font-size:12px;border-radius:0px;background-color:#FFFFFF;}.bdcs-container .bdcs-search-form-input:focus{border-color:#f79646;}.bdcs-container .bdcs-search-form-submit-wrap{}.bdcs-container .bdcs-search-form-submit{border-color:#a6a6a6;height:22px;width:50px;background-color:#f5f5f5;color:#000000;font-family:Arial,SimSun,sans-serif;font-size:12px;border-radius:0px;}.bdcs-container .bdcs-search-form-submit{*height:24px;*margin-top:1px;}.bdcs-container .bdcs-search-form-submit{line-height:22px;}#bdcs-rec{display:none;}</style>
+<title>Linux时间子系统之（三）：用户空间接口函数</title>
+<meta name="keywords" content="Linux 嵌入式 ARM RTOS Technology 享受 C语言,Linux时间子系统用户空间接口函数">
+<meta name="description" content="一、前言 从应用程序的角度看，内核需要提供的和时间相关的服务有三种： 1、和系统时间相关的服务。例如，在向数据库写入一条记录的时候，需要记录操作时间（何年何月何日何时）。">
+<meta name="generator" content="emlog">
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="http://www.wowotech.net/xmlrpc.php?rsd">
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="http://www.wowotech.net/wlwmanifest.xml">
+<link rel="alternate" type="application/rss+xml" title="RSS" href="http://www.wowotech.net/rss.php">
+<link href="./Linux时间子系统之（三）：用户空间接口函数_files/main.css" rel="stylesheet" type="text/css">
+<link href="./Linux时间子系统之（三）：用户空间接口函数_files/prettify.css" rel="stylesheet" type="text/css">
+<script charset="utf-8" src="./Linux时间子系统之（三）：用户空间接口函数_files/s.js"></script><script src="./Linux时间子系统之（三）：用户空间接口函数_files/hm.js"></script><script type="text/javascript" async="" src="./Linux时间子系统之（三）：用户空间接口函数_files/js"></script><script src="./Linux时间子系统之（三）：用户空间接口函数_files/prettify.js" type="text/javascript"></script>
+<script src="./Linux时间子系统之（三）：用户空间接口函数_files/common_tpl.js" type="text/javascript"></script>
+<!--[if IE 6]>
+<script src="http://www.wowotech.net/content/templates/default/iefix.js" type="text/javascript"></script>
+<![endif]-->
+<style>html #hm_t_undefined .hm-t-go-top {position:fixed;right:2px;bottom:2px;z-index:99998;cursor:pointer;width:40px;height:37px!important;text-align:center;white-space:normal;font-size:14px;line-height:17px;padding-top:3px;color:#fff;background:#404040;background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEkAAAAXCAYAAABH92JbAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA2hpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMy1jMDExIDY2LjE0NTY2MSwgMjAxMi8wMi8wNi0xNDo1NjoyNyAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDowMjgwMTE3NDA3MjA2ODExODA4M0UyNDA4ODdDRTZBQiIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDpBQjc5RkRFNkI5ODMxMUUzQkZGNDhENEJFQjM2OTcyRiIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDpBQjc5RkRFNUI5ODMxMUUzQkZGNDhENEJFQjM2OTcyRiIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ1M2IChNYWNpbnRvc2gpIj4gPHhtcE1NOkRlcml2ZWRGcm9tIHN0UmVmOmluc3RhbmNlSUQ9InhtcC5paWQ6MDI4MDExNzQwNzIwNjgxMTgwODNFMjQwODg3Q0U2QUIiIHN0UmVmOmRvY3VtZW50SUQ9InhtcC5kaWQ6MDI4MDExNzQwNzIwNjgxMTgwODNFMjQwODg3Q0U2QUIiLz4gPC9yZGY6RGVzY3JpcHRpb24+IDwvcmRmOlJERj4gPC94OnhtcG1ldGE+IDw/eHBhY2tldCBlbmQ9InIiPz5HPYM5AAACC0lEQVR42uyZTSgEYRjH90NoqaVcpDblvKW2XOSkNh8H5Yac9sBBDqQokiJKSMpNTi5OPo6Ktsgu67JcUHIXWfK1u3b8Xx6Zxuzu+64dM83uv34zNfu8b8/8Z+d5P8YqSZLFJNLsRmyWvIRMKgVD4AhEwA3YAV0pzGwEqyAEwmAddIICHe7FqhnsdQM14FxKLj+ooFiGE2ykiD8GVbJ4I1ELAnTmasMODnAhpVcIFIMicMgRH6Z4IxnUAh4pP3Zu5TVpUOLXDJgWiB8wkEF9IK7IL07X05oUFLjpZ4JXQQOYYwfzafJcoDjVPqw43KE4lWtUTF+AQ8eBqQSsgTaO2E0apJ7URrdCDZOM62hQJfBzGmShOD+1+2XSiYaJ7utkkBsEgEewnYfauZUmzWmU6DuY0sEgLzgArgzbu6i992cu/1WclqXsa1iHIt0DYlnKP0b9fRZu5pWdZs7dWXqa7B80+s//oF5aMSjflGqBPq5BQnFtVv4UmGHjIPEH96PAZ6C5kVMwf6daPzbFKnqCqvx9Bk/yFjSBFTMvcL+1DerAmUA/p9Rm1+y7AHJdgnqwx9EHm1s0gKtc2CpR6gE00/ZHMm3RKxbJlf0kNb2BDrCk8hsbDdvBay5tuiUTGxL7waTs2iLw0YTR9BLZQRwDUVqwjuTS9q3VRB8C1OQUnM6UqdXX/IcADn0IMADs2AqDOPSutQAAAABJRU5ErkJggg==) no-repeat -42px center #666;*background-image:url(http://ecma.bdimg.com/holmes/t-popup-icons-png8.png);_position:absolute;_top:expression(eval(document.documentElement.scrollTop+(document.documentElement.clientHeight||document.body.clientHeight)-this.offsetHeight-2));}</style></head>
+<body>
+<div id="wrap">
+  <div id="header">
+    <h1><a href="http://www.wowotech.net/">蜗窝科技</a></h1>
+    <h3>慢下来，享受技术。</h3>
+  </div>
+    <div id="banner"><a href="http://www.wowotech.net/"><img src="./Linux时间子系统之（三）：用户空间接口函数_files/top-1389777175.jpg" height="134" width="960"></a></div>
+    <div id="nav">	<ul class="bar">
+			<li class="item common">
+			<a href="http://www.wowotech.net/">博客</a>
+					</li>
+			<li class="item common">
+			<a href="http://www.wowotech.net/sort/project">项目</a>
+			            <ul class="sub-nav">
+                <li><a href="http://www.wowotech.net/sort/x_project">X Project</a></li>			</ul>
+            		</li>
+			<li class="item common">
+			<a href="http://www.wowotech.net/forum" target="_blank">讨论区</a>
+					</li>
+			<li class="item common">
+			<a href="http://www.wowotech.net/about.html">关于蜗窝</a>
+					</li>
+			<li class="item common">
+			<a href="http://www.wowotech.net/contact_us.html">联系我们</a>
+					</li>
+			<li class="item common">
+			<a href="http://www.wowotech.net/support_us.html">支持与合作</a>
+					</li>
+			<li class="item common">
+			<a href="http://www.wowotech.net/admin">登录</a>
+					</li>
+		</ul>
+</div>﻿<div id="content">
+<div id="contentleft">
+	<h2>Linux时间子系统之（三）：用户空间接口函数</h2>
+	<p class="date">作者：<a href="http://www.wowotech.net/author/3" title="linuxer ">linuxer</a> 发布于：2014-12-24 15:48 
+			分类：<a href="http://www.wowotech.net/sort/timer_subsystem">时间子系统</a>
+	 	</p>
+	<p>
+	一、前言
+</p>
+<p>
+	从应用程序的角度看，内核需要提供的和时间相关的服务有三种：
+</p>
+<p>
+	1、和系统时间相关的服务。例如，在向数据库写入一条记录的时候，需要记录操作时间（何年何月何日何时）。
+</p>
+<p>
+	2、让进程睡眠一段时间
+</p>
+<p>
+	3、和timer相关的服务。在一段指定的时间过去后，kernel要alert用户进程
+</p>
+<p>
+	本文主要描述和时间子系统相关的用户空间接口函数知识。
+</p>
+<p>
+	&nbsp;
+</p>
+<p>
+	二、和系统时间相关的服务
+</p>
+<p>
+	1、秒级别的时间函数：time和stime
+</p>
+<p>
+	time和stime函数的定义如下：
+</p>
+<blockquote>
+	<p>
+		#include &lt;time.h&gt;<time.h></time.h>
+	</p>
+	<p>
+		time_t time(time_t *t);
+	</p>
+	<p>
+		int stime(time_t *t);
+	</p>
+</blockquote>
+<p>
+	time函数返回了当前时间点到linux epoch的秒数（内核中timekeeper模块保存了这个值，timekeeper-&gt;xtime_sec）。stime是设定当前时间点到linux epoch的秒数。对于linux kernel，设定时间的进程必须拥有CAP_SYS_TIME的权利，否则会失败。
+</p>
+<p>
+	linux kernel用系统调用sys_time和sys_stime来支持这两个函数。实际上，在引入更高精度的时间相关的系统调用之后（例如：sys_gettimeofday），上面这两个系统调用可以用新的系统调在用户空间实现time和stime函数。在kernel中，只有定义了__ARCH_WANT_SYS_TIME这个宏，系统才会提供上面这两个系统调用。当然，提供这样的系统调用多半是为了兼容旧的应用软件。
+</p>
+<p>
+	配合上面的接口函数还有一系列将当前时间点到linux epoch的秒数转换成适合人类阅读的接口函数，例如asctime, ctime, gmtime, localtime, mktime, asctime_r, ctime_r, gmtime_r, localtime_r ，这些函数主要用来将time_t类型的时间转换成break-down time或者字符形式。
+</p>
+<p>
+	2、微秒级别的时间函数：gettimeofday和settimeofday
+</p>
+<blockquote>
+	<p>
+		#include &lt;sys/time.h&gt;<sys time.h=""></sys>
+	</p>
+	<p>
+		int gettimeofday(struct timeval *tv, struct timezone *tz);
+	</p>
+	<p>
+		int settimeofday(const struct timeval *tv, const struct timezone *tz);
+	</p>
+</blockquote>
+<p>
+	这两个函数和上一小节秒数的函数类似，只不过时间精度可以达到微秒级别。gettimeofday函数可以获取从linux epoch到当前时间点的秒数以及微秒数（在内核态，这个时间值仍然是通过timekeeper模块获得的，具体接口是getnstimeofday64，该接口的时间精度是纳秒级别的，不过没有关系，除以1000就获得微秒级别的精度了），settimeofday则是设定从linux epoch到当前时间点的秒数以及微秒数。同样的，设定时间的进程必须拥有CAP_SYS_TIME的权利，否则会失败。tz参数是由于历史原因而存在，实际上内核并没有对timezone进行支持。
+</p>
+<p>
+	显然，sys_gettimeofday和sys_settimeofday这两个系统调用是用来支持上面两个函数功能的，值得一提的是：这些系统调用在新的POSIX标准中 gettimeofday和settimeofday接口函数被标注为obsolescent，取而代之的是clock_gettime和clock_settime接口函数
+</p>
+<p>
+	3、纳秒级别的时间函数：clock_gettime和clock_settime
+</p>
+<blockquote>
+	<p>
+		#include &lt;time.h&gt;<time.h></time.h>
+	</p>
+	<p>
+		int clock_getres(clockid_t clk_id, struct timespec *res);
+	</p>
+	<p>
+		int clock_gettime(clockid_t clk_id, struct timespec *tp);
+	</p>
+	<p>
+		int clock_settime(clockid_t clk_id, const struct timespec *tp);
+	</p>
+</blockquote>
+<p>
+	如果不是clk_id这个参数，clock_gettime和clock_settime基本上是不用解释的，其概念和gettimeofday和settimeofday接口函数是完全类似的，除了精度是纳秒。clock就是时钟的意思，它记录了时间的流逝。clock ID当然就是识别system clock（系统时钟）的ID了，定义如下：
+</p>
+<blockquote>
+	<p>
+		CLOCK_REALTIME <br>
+CLOCK_MONOTONIC <br>
+CLOCK_MONOTONIC_RAW <br>
+CLOCK_PROCESS_CPUTIME_ID <br>
+CLOCK_THREAD_CPUTIME_ID
+	</p>
+</blockquote>
+<p>
+	根据应用的需求，内核维护了几个不同系统时钟。大家最熟悉的当然就是CLOCK_REALTIME这个系统时钟，因为它表示了真实世界的墙上时钟（前面两节的接口函数没有指定CLOCK ID，实际上获取的就是CLOCK_REALTIME的时间值）。CLOCK_REALTIME这个系统时钟允许用户对其进行设定（当然要有CAP_SYS_TIME权限），这也就表示在用户空间可以对该系统时钟进行修改，产生不连续的时间间断点。除此之外，也可以通过NTP对该时钟进行调整（不会有间断点，NTP调整的是local oscillator和上游服务器频率误差而已）。
+</p>
+<p>
+	仅仅从名字上就可以看出CLOCK_MONOTONIC的系统时钟应该是单调递增的，此外，该时钟也是真实世界的墙上时钟，只不过其基准点不一定是linux epoch（当然也可以是），一般会把系统启动的时间点设定为其基准点。随后该时钟会不断的递增。除了可以通过NTP对该时钟进行调整之外，其他任何程序不允许设定该时钟，这样也就保证了该时钟的单调性。
+</p>
+<p>
+	CLOCK_MONOTONIC_RAW具备CLOCK_MONOTONIC的特性，除了NTP调整。也就是说，clock id是CLOCK_MONOTONIC_RAW的系统时钟是一个完全基于本地晶振的时钟。不能设定，也不能对对晶振频率进行调整。
+</p>
+<p>
+	在调用clock_gettime和clock_settime接口函数时，如果传递clock id参数是CLOCK_REALTIME的话，那么这两个函数的行为和前两个小节描述的一致，除了是ns精度。读到这里，我详细广大人民群众不免要问：为何要有其他类型的系统时钟呢？MONOTONIC类型的时钟相对比较简单，如果你设定事件A之后5秒进行动作B，那么用MONOTONIC类型的时钟是一个比较好的选择，如果使用REALTIME的时钟，当用户在事件A和动作B之间插入时间设定的操作，那么你设定事件A之后5秒进行动作B将不能触发。此外，用户需要了解系统启动时间，这个需求需要使用MONOTONIC类型的时钟的时钟。需要指出的是MONOTONIC类型的时钟不是绝对时间的概念，多半是计算两个采样点之间的时间，并且保证采样点之间时间的单调性。MONOTONIC_RAW是一个底层工具，一般而言程序员不会操作它，使用MONOTONIC类型的时钟就够用了，当然，一些高级的应用场合，例如你想使用另外的方法（不是NTP）来调整时间，那么就可以使用MONOTONIC_RAW了。
+</p>
+<p>
+	有些应用场景使用real time的时钟（墙上时钟）是不合适的，例如当我们进行系统中各个应用程序的性能分析和统计的时候。正因为如此，kernel提供了基于进程或者线程的系统时钟，也就是CLOCK_PROCESS_CPUTIME_ID和CLOCK_THREAD_CPUTIME_ID了。当我们打算使用基于进程或者线程的系统时钟的时候，需要首先获取clock id：
+</p>
+<blockquote>
+	<p>
+		#include &lt;time.h&gt;<time.h></time.h>
+	</p>
+	<p>
+		int clock_getcpuclockid(pid_t pid, clockid_t *clock_id);
+	</p>
+</blockquote>
+<p>
+	如果是线程的话，需要调用pthread_getcpuclockid接口函数：
+</p>
+<blockquote>
+	<p>
+		#include &lt;pthread.h&gt;<pthread.h> <br>
+#include &lt;time.h&gt;<time.h></time.h></pthread.h>
+	</p>
+	<p>
+		int pthread_getcpuclockid(pthread_t thread, clockid_t *clock_id);
+	</p>
+</blockquote>
+<p>
+	虽然这组函数接口的精度可以达到ns级别，但是实际的系统可以达到什么样的精度是实现相关的，因此，clock_getres用来获取系统时钟的精度。
+</p>
+<p>
+	4、系统时钟的调整
+</p>
+<p>
+	设定系统时间是一个比较粗暴的做法，一旦修改了系统时间，系统中的很多依赖绝对时间的进程会有各种奇奇怪怪的行为。正因为如此，系统提供了时间同步的接口函数，可以让外部的精准的计时服务器来不断的修正系统时钟。
+</p>
+<p>
+	（1）adjtime接口函数
+</p>
+<blockquote>
+	<p>
+		int adjtime(const struct timeval *delta, struct timeval *olddelta);
+	</p>
+</blockquote>
+<p>
+	该函数可以根据delta参数缓慢的修正系统时钟（CLOCK_REALTIME那个）。olddelta返回上一次调整中尚未完整的delta。
+</p>
+<p>
+	（2）adjtimex
+</p>
+<blockquote>
+	<p>
+		#include &lt;sys/timex.h&gt;<sys timex.h=""></sys>
+	</p>
+	<p>
+		int adjtimex(struct timex *buf);
+	</p>
+</blockquote>
+<p>
+	RFC 1305定义了更复杂，更强大的时间调整算法，因此linux kernel通过sys_adjtimex支持这个算法，其用户空间的接口函数就是adjtimex。由于这个算法过去强大，这里就不再赘述，等有时间、有兴趣之后再填补这里的空白吧。
+</p>
+<p>
+	Linux内核提供了sys_adjtimex系统调用来支持上面两个接口函数。此外，还提供了sys_clock_adjtime的系统调用来支持POSIX clock tunning。
+</p>
+<p>
+	&nbsp;
+</p>
+<p>
+	三、进程睡眠
+</p>
+<p>
+	1、秒级别的sleep函数：sleep
+</p>
+<blockquote>
+	<p>
+		#include &lt;unistd.h&gt;<unistd.h></unistd.h>
+	</p>
+	<p>
+		unsigned int sleep(unsigned int seconds);
+	</p>
+</blockquote>
+<p>
+	调用该函数会导致当前进程sleep，seconds之后（基于CLOCK_REALTIME）会返回继续执行程序。该函数的返回值说明了进程没有进入睡眠的时间。例如如果我们想要睡眠8秒，但是由于siganl中断了睡眠，只是sleep了5秒，那么返回值就是3，表示有3秒还没有睡。
+</p>
+<p>
+	2、微秒级别的sleep函数：usleep
+</p>
+<blockquote>
+	<p>
+		#include &lt;unistd.h&gt;<unistd.h></unistd.h>
+	</p>
+	<p>
+		int usleep(useconds_t usec);
+	</p>
+</blockquote>
+<p>
+	概念上和sleep一样，不过返回值的定义不同。usleep返回0表示执行成功，返回-1说明执行失败，错误码在errno中获取。
+</p>
+<p>
+	3、纳秒级别的sleep函数：nanosleep
+</p>
+<blockquote>
+	<p>
+		#include &lt;time.h&gt;<time.h></time.h>
+	</p>
+	<p>
+		int nanosleep(const struct timespec *req, struct timespec *rem);
+	</p>
+</blockquote>
+<p>
+	usleep函数已经是过去式，不建议使用，取而代之的是nanosleep函数。req中设定你要sleep的秒以及纳秒值，然后调用该函数让当前进程sleep。返回0表示执行成功，返回-1说明执行失败，错误码在errno中获取。EINTR表示该函数被signal打断。rem参数是remaining time的意思，也就是说还有多少时间没有睡完。
+</p>
+<p>
+	linux kernel并没有提供sleep和usleep对应的系统调用，sleep和usleep的实现位于c lib。在有些系统中，这些实现是依赖信号的，也有的系统使用timer来实现的，对于GNU系统，sleep和usleep和nanosleep函数一样，都是通过kernel的sys_nanosleep的系统调用实现的（底层是基于hrtimer）。
+</p>
+<p>
+	4、更高级的sleep函数：clock_nanosleep
+</p>
+<blockquote>
+	<p>
+		#include &lt;time.h&gt;<time.h></time.h>
+	</p>
+	<p>
+		int clock_nanosleep(clockid_t clock_id, int flags, <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; const struct timespec *request, <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; struct timespec *remain);
+	</p>
+</blockquote>
+<p>
+	clock_nanosleep接口函数需要传递更多的参数，当然也就是意味着它功能更强大。clock_id说明该接口函数不仅能基于real time clock睡眠，还可以基于其他的系统时钟睡眠。flag等于0或者1，分别指明request参数设定的时间值是相对时间还是绝对时间。
+</p>
+<p>
+	&nbsp;
+</p>
+<p>
+	四、和timer相关的服务
+</p>
+<p>
+	1、alarm函数
+</p>
+<blockquote>
+	<p>
+		#include &lt;unistd.h&gt;<unistd.h></unistd.h>
+	</p>
+	<p>
+		unsigned int alarm(unsigned int seconds);
+	</p>
+</blockquote>
+<p>
+	alarm函数是使用timer最简单的接口。在指定秒数（基于CLOCK_REALTIME）的时间过去后，向该进程发送SIGALRM信号。当然，调用该接口的程序需要设定signal handler。
+</p>
+<p>
+	2、Interval timer函数
+</p>
+<blockquote>
+	<p>
+		#include &lt;sys/time.h&gt;<sys time.h=""></sys>
+	</p>
+	<p>
+		int getitimer(int which, struct itimerval *curr_value); <br>
+int setitimer(int which, const struct itimerval *new_value, <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; struct itimerval *old_value);
+	</p>
+</blockquote>
+<p>
+	Interval timer函数的行为和alarm函数类似，不过功能更强大。每个进程支持3种timer，不同的timer定义了如何计时以及发送什么样的信号给进程，which参数指明使用哪个timer：
+</p>
+<p>
+	（1）ITIMER_REAL。基于CLOCK_REALTIME计时，超时后发送SIGALRM信号，和alarm函数一样。
+</p>
+<p>
+	（2）ITIMER_VIRTUAL。只有当该进程的用户空间代码执行的时候才计时，超时后发送SIGVTALRM信号。
+</p>
+<p>
+	（3）ITIMER_PROF。只有该进程执行的时候才计时，不论是执行用户空间代码还是陷入内核执行（例如系统调用），超时后发送SIGPROF信号。
+</p>
+<p>
+	struct itimerval定义如下：
+</p>
+<blockquote>
+	<p>
+		struct itimerval { <br>
+&nbsp;&nbsp;&nbsp; struct timeval it_interval; /* next value */ <br>
+&nbsp;&nbsp;&nbsp; struct timeval it_value;&nbsp;&nbsp;&nbsp; /* current value */ <br>
+};
+	</p>
+</blockquote>
+<p>
+	两个成员分别指明了本次和下次（超期后如何设定）的时间值。通过这样的定义，interval timer可以实现one shot类型的timer和periodic的timer。例如current value设定为5秒，next value设定为3秒，设定这样的timer后，it_value值会不断递减，直到5秒后触发，而随后it_value的值会被重新加载（使用it_interval的值），也就是等于3秒，之后会按照3为周期不断的触发。
+</p>
+<p>
+	old_value返回上次setitimer函数的设定值。getitimer函数获取当前的Interval timer的状态，其中的it_value成员可以得到当前时刻到下一次触发点的世时间信息，it_interval成员保持不变，除非你重新调用setitimer重新设定。
+</p>
+<p>
+	虽然interval timer函数也是POSIX标准的一部分，不过在新的POSIX标准中，interval timer接口函数被标注为obsolescent，取而代之的是POSIX timer接口函数。
+</p>
+<p>
+	3、更高级，更灵活的timer函数
+</p>
+<p>
+	上一节介绍的Interval timer函数还是有功能不足之处：例如一个进程只能有ITIMER_REAL、ITIMER_VIRTUAL和ITIMER_PROF三个timer，如果连续设定其中一种timer（例如ITIMER_REAL），这会导致第一个设定被第二次设定覆盖。此外，超时处理永远是用信号的方式，而且发送的signal不能修改。当mask信号处理的时候，虽然timer多次超期，但是signal handler只会调用一次，无法获取更详细的信息。最后一点，Interval timer函数精度是微秒级别，精度有进一步提升的空间。正因为传统的Interval timer函数的不足之处，POSIX标准定义了更高级，更灵活的timer函数，我们称之POSIX （interval）Timer。
+</p>
+<p>
+	（1）创建timer
+</p>
+<blockquote>
+	<p>
+		#include <signal.h> &lt;signal.h&gt;<br>
+#include &lt;time.h&gt;<time.h></time.h></signal.h>
+	</p>
+	<p>
+		int timer_create(clockid_t clockid, struct sigevent *sevp,&nbsp;&nbsp; timer_t *timerid);
+	</p>
+</blockquote>
+<p>
+	在这个接口函数中，clock id相信大家都很熟悉了， timerid一看就是返回的timer ID的句柄，就像open函数返回的文件描述符一样。因此，要理解这个接口函数重点是了解struct sigevent这个数据结构：
+</p>
+<blockquote>
+	<p>
+		union sigval {&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /* Data passed with notification */ <br>
+&nbsp;&nbsp;&nbsp; int&nbsp;&nbsp;&nbsp;&nbsp; sival_int;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /* Integer value */ <br>
+&nbsp;&nbsp;&nbsp; void&nbsp;&nbsp; *sival_ptr;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /* Pointer value */ <br>
+};
+	</p>
+	<p>
+		typedef struct sigevent { <br>
+&nbsp;&nbsp;&nbsp; sigval_t sigev_value; <br>
+&nbsp;&nbsp;&nbsp; int sigev_signo; <br>
+&nbsp;&nbsp;&nbsp; int sigev_notify; <br>
+&nbsp;&nbsp;&nbsp; union { <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; int _pad[SIGEV_PAD_SIZE]; <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; int _tid;
+	</p>
+	<p>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; struct { <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; void (*_function)(sigval_t); <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; void *_attribute;&nbsp;&nbsp;&nbsp; /* really pthread_attr_t */ <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; } _sigev_thread; <br>
+&nbsp;&nbsp;&nbsp; } _sigev_un; <br>
+} sigevent_t;
+	</p>
+</blockquote>
+<p>
+	sigev_notify定义了当timer超期后如何通知该进程，可以设定：
+</p>
+<p>
+	（a）SIGEV_NONE。不需要异步通知，程序自己调用timer_gettime来轮询timer的当前状态
+</p>
+<p>
+	（b）SIGEV_SIGNAL。使用sinal这样的异步通知方式。发送的信号由sigev_signo定义。如果发送的是realtime signal，该信号的附加数据由sigev_value定义。
+</p>
+<p>
+	（c）SIGEV_THREAD。创建一个线程执行timer超期callback函数，_attribute定义了该线程的属性。
+</p>
+<p>
+	（d）SIGEV_THREAD_ID。行为和SIGEV_SIGNAL类似，不过发送的信号被送达进程内的一个指定的thread，这个thread由_tid标识。
+</p>
+<p>
+	（2）设定timer
+</p>
+<blockquote>
+	<p>
+		#include &lt;time.h&gt;<time.h></time.h>
+	</p>
+	<p>
+		int timer_settime(timer_t timerid, int flags,&nbsp;&nbsp; const struct itimerspec *new_value, <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; struct itimerspec * old_value); <br>
+int timer_gettime(timer_t timerid, struct itimerspec *curr_value);
+	</p>
+</blockquote>
+<p>
+	timerid就是上一节中通过timer_create创建的timer。new_value和old_value这两个参数类似setitimer函数，这里就不再细述了。flag等于0或者1，分别指明new_value参数设定的时间值是相对时间还是绝对时间。如果new_value.it_value是一个非0值，那么调用timer_settime可以启动该timer。如果new_value.it_value是一个0值，那么调用timer_settime可以stop该timer。
+</p>
+<p>
+	timer_gettime函数和getitimer类似，可以参考上面的描述。
+</p>
+<p>
+	（3）删除timer
+</p>
+<blockquote>
+	<p>
+		#include &lt;time.h&gt;<time.h></time.h>
+	</p>
+	<p>
+		int timer_delete(timer_t timerid);
+	</p>
+</blockquote>
+<p>
+	有创建就有删除，timer_delete用来删除指定的timer，释放资源。
+</p>
+<p>
+	<br>
+</p>
+<p>
+	<em>原创文章，转发请注明出处。蜗窝科技</em> 
+</p>
+<p>
+	<a target="_blank" href="http://www.wowotech.net/timer_subsystem/timer_subsystem_userspace.html">http://www.wowotech.net/timer_subsystem/timer_subsystem_userspace.html</a> 
+</p>	<p class="tag">标签:	<a href="http://www.wowotech.net/tag/Linux%E6%97%B6%E9%97%B4%E5%AD%90%E7%B3%BB%E7%BB%9F%E7%94%A8%E6%88%B7%E7%A9%BA%E9%97%B4%E6%8E%A5%E5%8F%A3%E5%87%BD%E6%95%B0">Linux时间子系统用户空间接口函数</a></p>
+		<a href="http://www.wowotech.net/support_us.html" style="display:block;text-align:center;">
+		<img src="./Linux时间子系统之（三）：用户空间接口函数_files/ef3e1463542768.png" align="middle" width="86" height="40">
+	</a>
+	<div class="nextlog">		« <a href="http://www.wowotech.net/pm_subsystem/driver_pm.html">Linux电源管理(13)_Driver的电源管理</a>
+				|
+				 <a href="http://www.wowotech.net/timer_subsystem/time_concept.html">Linux时间子系统之（一）：时间的基本概念</a>»
+	</div>
+		<a name="comments"></a>
+	<p class="comment-header"><b>评论：</b></p>
+			<div class="comment" id="comment-5562">
+		<a name="5562"></a>
+				<div class="comment-info">
+			<b><a href="http://no/" target="_blank">江南书生</a> </b><br><span class="comment-time">2017-05-17 13:36</span>
+			<div class="comment-content">老板，你好！
+<br>CLOCK_REALTIME这个是代表的硬件RTC么?如果我的硬件不提供RTC，怎么办啊？
+<br>1.硬件RTC必须要提供么？
+<br>2.如果不提供，是不是很多函数没法使用了？
+<br>3.还是我理解错了CLOCK_REALTIME呢？</div>
+			<div class="comment-reply"><a href="http://www.wowotech.net/timer_subsystem/timer_subsystem_userspace.html#comment-5562" onclick="commentReply(5562,this)">回复</a></div>
+		</div>
+			<div class="comment comment-children" id="comment-5566">
+		<a name="5566"></a>
+				<div class="comment-info">
+			<b><a href="http://www.wowotech.net/" target="_blank">linuxer</a> </b><br><span class="comment-time">2017-05-17 15:08</span>
+			<div class="comment-content">@江南书生：Q：CLOCK_REALTIME这个是代表的硬件RTC么?
+<br>A：不是
+<br>
+<br>Q：硬件RTC必须要提供么？
+<br>A：最好提供，但也不是必须。但是如果你的系统不提供RTC，那么在关机或者suspend的时候，系统时间无法计算，从而导致时间连续性的问题。
+<br>
+<br>Q：如果不提供，是不是很多函数没法使用了？ 
+<br>A：不会，如果不关机，不suspend，系统一切都正常。如果有关机或者suspend的动作，也没有什么太大关系，只不过时间不准确了而已，看看你的场景是否容忍这个issue。</div>
+			<div class="comment-reply"><a href="http://www.wowotech.net/timer_subsystem/timer_subsystem_userspace.html#comment-5566" onclick="commentReply(5566,this)">回复</a></div>		</div>
+			</div>
+		</div>
+		<div class="comment" id="comment-5273">
+		<a name="5273"></a>
+				<div class="comment-info">
+			<b><a href="http://www.wowotech.net/" target="_blank">chen_chuang</a> </b><br><span class="comment-time">2017-03-01 09:29</span>
+			<div class="comment-content">Hi,郭大神
+<br>我在https://www.ibm.com/developerworks/cn/linux/l-cn-timers/ 网站上学习POSIX timer的时候发现有一句话不理解：需要注意的是，POSIX timer ［ 2 ］接口只在进程环境下才有意义 (fork(2) 和 exec(2) 也需要特殊对待 )，并不适合多线程环境。什么叫只在进程环境下有意义，不适合多线程？POSIX不就是线程库吗？蜗窝的网站对于POSIX timer的应用将的也不是特别的详细(应该是俺水平太low了),能否在应用方面指点一二。</div>
+			<div class="comment-reply"><a href="http://www.wowotech.net/timer_subsystem/timer_subsystem_userspace.html#comment-5273" onclick="commentReply(5273,this)">回复</a></div>
+		</div>
+			<div class="comment comment-children" id="comment-5275">
+		<a name="5275"></a>
+				<div class="comment-info">
+			<b><a href="http://www.wowotech.net/" target="_blank">linuxer</a> </b><br><span class="comment-time">2017-03-01 11:37</span>
+			<div class="comment-content">@chen_chuang：首先要明确的是：POSIX不是线程库，是一个标准，我们常使用的线程库pthread其实就是符合posix标准的线程库。
+<br>另外，作者说：“POSIX timer ［ 2 ］接口只在进程环境下才有意义”，我的理解是说POSIX timer是一个进程级别的资源，为进程内的所有线程所共享，posix timer是per-process的，正是因为没有per-thread POSIX timer的概念，因此才说在进程环境下有意义。
+<br>
+<br>当然，我反对posix timer不适合多线程环境的说法，在multi-thread编程中，使用POSIX timer 接口也不会有问题，要不怎么会有SIGEV_THREAD这个flag呢？</div>
+			<div class="comment-reply"><a href="http://www.wowotech.net/timer_subsystem/timer_subsystem_userspace.html#comment-5275" onclick="commentReply(5275,this)">回复</a></div>		</div>
+			</div>
+		</div>
+		<div class="comment" id="comment-4429">
+		<a name="4429"></a>
+				<div class="comment-info">
+			<b>Asker </b><br><span class="comment-time">2016-08-20 16:40</span>
+			<div class="comment-content">Hi Linuxer,
+<br>请教下, 您上边讲的"sleep系统调用是基于CLOCK_REALTIME",那么一个Process在调用sleep期间(sleep时间还没有到), 如果此时用户有人为设定时间(墙上时间), 那么会影响sleep的返回对吗?</div>
+			<div class="comment-reply"><a href="http://www.wowotech.net/timer_subsystem/timer_subsystem_userspace.html#comment-4429" onclick="commentReply(4429,this)">回复</a></div>
+		</div>
+			<div class="comment comment-children" id="comment-4434">
+		<a name="4434"></a>
+				<div class="comment-info">
+			<b><a href="http://www.wowotech.net/" target="_blank">linuxer</a> </b><br><span class="comment-time">2016-08-22 18:47</span>
+			<div class="comment-content">@Asker：从POSIX标准的角度来看，sleep以及nanosleep都是基于realtime的（不是实时系统的那个realtime，指的就是墙上时钟wall clock），因此，我在文章才说它们是基于CLOCK_REALTIME，不过POSIX标准也规定，当用户修改wall clock的时候，不能影响sleep以及nanosleep的行为，也就是说，如果一个Process在调用sleep期间(sleep时间还没有到), 如果此时用户有人为设定时间(墙上时间), 那么不会影响sleep的返回的。
+<br>
+<br>POSIX是标准，具体还是看实现。对于GNU/linux而言，sleep和nanosleep在具体实现的时候都是基于CLOCK_MONOTONIC的，但是，不管如何，sleep或者nanosleep的行为是一样的，那就是：修改墙上时间不能影响sleep（nanosleep）的行为。</div>
+			<div class="comment-reply"><a href="http://www.wowotech.net/timer_subsystem/timer_subsystem_userspace.html#comment-4434" onclick="commentReply(4434,this)">回复</a></div>		</div>
+			</div>
+		</div>
+		<div class="comment" id="comment-3873">
+		<a name="3873"></a>
+				<div class="comment-info">
+			<b>hyh </b><br><span class="comment-time">2016-04-28 17:25</span>
+			<div class="comment-content">关于 timezone ,我决定这个在上章的讲解里面有误,我做手机平台,
+<br>我们由需要是这样的:
+<br>保持dmesg 和 adb logcat 抓出的log时间要统一,这样可以快速定位问题.
+<br>
+<br>
+<br>所以在printk中我加入了&nbsp;&nbsp; __gettimeofday64() 和 system_tz 来保持dmesg 的时间和上层一致.</div>
+			<div class="comment-reply"><a href="http://www.wowotech.net/timer_subsystem/timer_subsystem_userspace.html#comment-3873" onclick="commentReply(3873,this)">回复</a></div>
+		</div>
+			<div class="comment comment-children" id="comment-3874">
+		<a name="3874"></a>
+				<div class="comment-info">
+			<b><a href="http://www.wowotech.net/" target="_blank">linuxer</a> </b><br><span class="comment-time">2016-04-29 09:39</span>
+			<div class="comment-content">@hyh：关于这个问题，我是这么思考的：
+<br>1、你说了一个应用场景，在这个场景下，内核和应用都使用了地理概念上的时间，因此涉及到GMT时间，时区，夏时制等问题。
+<br>2、内核真的需要知道自己在哪一个时区吗？是否使用夏时制吗？不能有一个绝对的时间起点吗？对于一个系统而言，需要定义一个epoch，所有的时间表示都是基于这个基准点的（无论是内核还是AP），对于linux而言，采用了和unix epoch一样的时间点：1970年1月1日0点0分0秒（UTC）。注意UTC时间标准和地理位置无关。
+<br>3、当然，计算机系统始终是为人服务的，而人类习惯了地理概念上的时间。怎么办？上层AP可以自己将内核提供的的UTC时间转换成用户喜欢的任何时间，但是对于内核，使用UTC时间就OK了。
+<br>
+<br>回到你的问题场景中，我不太了解adb logcat，应该是安卓相关的东西，但是，能否让adb logcat的time也使用UTC标准呢？这样内核和AP不就保持一致了吗？</div>
+			<div class="comment-reply"><a href="http://www.wowotech.net/timer_subsystem/timer_subsystem_userspace.html#comment-3874" onclick="commentReply(3874,this)">回复</a></div>		</div>
+			</div>
+		</div>
+		<div class="comment" id="comment-2504">
+		<a name="2504"></a>
+				<div class="comment-info">
+			<b>cym </b><br><span class="comment-time">2015-08-29 00:14</span>
+			<div class="comment-content">你好，我想问下有没有rtc时钟的定时器呢？？</div>
+			<div class="comment-reply"><a href="http://www.wowotech.net/timer_subsystem/timer_subsystem_userspace.html#comment-2504" onclick="commentReply(2504,this)">回复</a></div>
+		</div>
+			<div class="comment comment-children" id="comment-2506">
+		<a name="2506"></a>
+				<div class="comment-info">
+			<b>wowo </b><br><span class="comment-time">2015-08-30 07:04</span>
+			<div class="comment-content">@cym：rtc时钟的定时器？什么意思呢？</div>
+			<div class="comment-reply"><a href="http://www.wowotech.net/timer_subsystem/timer_subsystem_userspace.html#comment-2506" onclick="commentReply(2506,this)">回复</a></div>		</div>
+			</div>
+		</div>
+		<div class="comment" id="comment-1545">
+		<a name="1545"></a>
+				<div class="comment-info">
+			<b><a href="http://www.wowotech.net/" target="_blank">printk</a> </b><br><span class="comment-time">2015-04-22 11:50</span>
+			<div class="comment-content">kernel中现在大多用do_gettimeofday来打时间戳。
+<br>
+<br>写kernel这部分原代码的人好懒阿，微妙接口直接调纳秒/1000。。。</div>
+			<div class="comment-reply"><a href="http://www.wowotech.net/timer_subsystem/timer_subsystem_userspace.html#comment-1545" onclick="commentReply(1545,this)">回复</a></div>
+		</div>
+			<div class="comment comment-children" id="comment-1550">
+		<a name="1550"></a>
+				<div class="comment-info">
+			<b><a href="http://www.wowotech.net/" target="_blank">linuxer</a> </b><br><span class="comment-time">2015-04-22 12:50</span>
+			<div class="comment-content">@printk：我觉得也可以叫做模块复用，反正ns版本的已经实现了，复用不就OK了吗？^_^</div>
+			<div class="comment-reply"><a href="http://www.wowotech.net/timer_subsystem/timer_subsystem_userspace.html#comment-1550" onclick="commentReply(1550,this)">回复</a></div>		</div>
+			</div>
+		</div>
+	    <div id="pagenavi">
+	        </div>
+		<div id="comment-place">
+	<div class="comment-post" id="comment-post">
+		<div class="cancel-reply" id="cancel-reply" style="display:none"><a href="javascript:void(0);" onclick="cancelReply()">取消回复</a></div>
+		<p class="comment-header"><b>发表评论：</b><a name="respond"></a></p>
+		<form method="post" name="commentform" action="http://www.wowotech.net/index.php?action=addcom" id="commentform">
+			<input type="hidden" name="gid" value="130">
+						<p>
+				<input type="text" name="comname" maxlength="49" value="" size="22" tabindex="1">
+				<label for="author"><small>昵称</small></label>
+			</p>
+			<p>
+				<input type="text" name="commail" maxlength="128" value="" size="22" tabindex="2">
+				<label for="email"><small>邮件地址 (选填)</small></label>
+			</p>
+			<p>
+				<input type="text" name="comurl" maxlength="128" value="" size="22" tabindex="3">
+				<label for="url"><small>个人主页 (选填)</small></label>
+			</p>
+						<p><textarea name="comment" id="comment" rows="10" tabindex="4"></textarea></p>
+			<p><img src="./Linux时间子系统之（三）：用户空间接口函数_files/checkcode.php" align="absmiddle"><input name="imgcode" type="text" class="input" size="5" tabindex="5"> <input type="submit" id="comment_submit" value="发表评论" tabindex="6"></p>
+			<input type="hidden" name="pid" id="comment-pid" value="0" size="22" tabindex="1">
+		</form>
+	</div>
+	</div>
+		<div style="clear:both;"></div>
+</div><!--end #contentleft-->
+<ul id="sidebar">
+	<li>
+	<h3><span>站内搜索</span></h3>
+	<ul>
+	<script type="text/javascript">(function(){document.write(unescape('%3Cdiv id="bdcs"%3E%3C/div%3E'));var bdcs = document.createElement('script');bdcs.type = 'text/javascript';bdcs.async = true;bdcs.src = 'http://znsv.baidu.com/customer_search/api/js?sid=16798210514584749375' + '&plate_url=' + encodeURIComponent(window.location.href) + '&t=' + Math.ceil(new Date()/3600000);var s = document.getElementsByTagName('script')[0];s.parentNode.insertBefore(bdcs, s);})();</script><div id="bdcs"><div class="bdcs-container"><meta http-equiv="x-ua-compatible" content="IE=9">   <!-- 嵌入式 -->  <div class="bdcs-main bdcs-clearfix" id="default-searchbox">      <div class="bdcs-search bdcs-clearfix" id="bdcs-search-inline">          <form action="http://zhannei.baidu.com/cse/search" method="get" target="_blank" class="bdcs-search-form" autocomplete="off" id="bdcs-search-form">              <input type="hidden" name="s" value="16798210514584749375">              <input type="hidden" name="entry" value="1">                                                                        <input type="text" name="q" class="bdcs-search-form-input" id="bdcs-search-form-input" placeholder="请输入关键词" style="height: 22px; line-height: 22px;">              <input type="submit" class="bdcs-search-form-submit " id="bdcs-search-form-submit" value="搜索">                       </form>      </div>                  </div>                           </div></div>	</ul>
+	</li>
+	<li>
+	<h3><span>功能</span></h3>
+	<ul>
+	<a href="http://www.wowotech.net/message_board.html">留言板<br></a>
+<a href="http://www.wowotech.net/?plugin=commentlist">评论列表<br></a>	</ul>
+	</li>
+	<li>
+	<h3><span>最新评论</span></h3>
+	<ul id="newcomment">
+		<li id="comment">DESW	<br><a href="http://www.wowotech.net/pm_subsystem/ccf-arch.html#6046">@wowo：我的意思是clk_get的实现：
+比如使用dt...</a></li>
+		<li id="comment">misaka	<br><a href="http://www.wowotech.net/timer_subsystem/armgeneraltimer.html#6045">@cookii：只是交流一下而已&nbsp;&nbsp;软件说到底还是为硬件服务...</a></li>
+		<li id="comment">cookii	<br><a href="http://www.wowotech.net/timer_subsystem/armgeneraltimer.html#6043">@misaka：这种和硬件有关的具体问题，就不要在这里问了吧...</a></li>
+		<li id="comment">misaka	<br><a href="http://www.wowotech.net/timer_subsystem/armgeneraltimer.html#6042">@linuxer：ok thanks.&nbsp;&nbsp;那么请问如果是采用...</a></li>
+		<li id="comment">linuxer	<br><a href="http://www.wowotech.net/timer_subsystem/armgeneraltimer.html#6041">@misaka：在__arch_timer_setup的代码...</a></li>
+		<li id="comment">misaka	<br><a href="http://www.wowotech.net/timer_subsystem/armgeneraltimer.html#6040">@misakamm20001：仔细看了一下似乎arm-tim...</a></li>
+		</ul>
+	</li>
+	<li>
+	<h3><span>文章分类</span></h3>
+	<ul id="blogsort">
+		<li>
+	<a href="http://www.wowotech.net/sort/linux_kenrel">Linux内核分析(9)</a>
+	<a href="http://www.wowotech.net/rss.php?sort=4"><img src="./Linux时间子系统之（三）：用户空间接口函数_files/rss.png" alt="订阅该分类"></a>
+			<ul>
+				<li>
+			<a href="http://www.wowotech.net/sort/device_model">统一设备模型(12)</a>
+			<a href="http://www.wowotech.net/rss.php?sort=12"><img src="./Linux时间子系统之（三）：用户空间接口函数_files/rss.png" alt="订阅该分类"></a>
+		</li>
+				<li>
+			<a href="http://www.wowotech.net/sort/pm_subsystem">电源管理子系统(42)</a>
+			<a href="http://www.wowotech.net/rss.php?sort=13"><img src="./Linux时间子系统之（三）：用户空间接口函数_files/rss.png" alt="订阅该分类"></a>
+		</li>
+				<li>
+			<a href="http://www.wowotech.net/sort/irq_subsystem">中断子系统(14)</a>
+			<a href="http://www.wowotech.net/rss.php?sort=14"><img src="./Linux时间子系统之（三）：用户空间接口函数_files/rss.png" alt="订阅该分类"></a>
+		</li>
+				<li>
+			<a href="http://www.wowotech.net/sort/process_management">进程管理(13)</a>
+			<a href="http://www.wowotech.net/rss.php?sort=15"><img src="./Linux时间子系统之（三）：用户空间接口函数_files/rss.png" alt="订阅该分类"></a>
+		</li>
+				<li>
+			<a href="http://www.wowotech.net/sort/kernel_synchronization">内核同步机制(17)</a>
+			<a href="http://www.wowotech.net/rss.php?sort=16"><img src="./Linux时间子系统之（三）：用户空间接口函数_files/rss.png" alt="订阅该分类"></a>
+		</li>
+				<li>
+			<a href="http://www.wowotech.net/sort/gpio_subsystem">GPIO子系统(5)</a>
+			<a href="http://www.wowotech.net/rss.php?sort=17"><img src="./Linux时间子系统之（三）：用户空间接口函数_files/rss.png" alt="订阅该分类"></a>
+		</li>
+				<li>
+			<a href="http://www.wowotech.net/sort/timer_subsystem">时间子系统(14)</a>
+			<a href="http://www.wowotech.net/rss.php?sort=18"><img src="./Linux时间子系统之（三）：用户空间接口函数_files/rss.png" alt="订阅该分类"></a>
+		</li>
+				<li>
+			<a href="http://www.wowotech.net/sort/comm">通信类协议(7)</a>
+			<a href="http://www.wowotech.net/rss.php?sort=20"><img src="./Linux时间子系统之（三）：用户空间接口函数_files/rss.png" alt="订阅该分类"></a>
+		</li>
+				<li>
+			<a href="http://www.wowotech.net/sort/memory_management">内存管理(18)</a>
+			<a href="http://www.wowotech.net/rss.php?sort=21"><img src="./Linux时间子系统之（三）：用户空间接口函数_files/rss.png" alt="订阅该分类"></a>
+		</li>
+				<li>
+			<a href="http://www.wowotech.net/sort/graphic_subsystem">图形子系统(1)</a>
+			<a href="http://www.wowotech.net/rss.php?sort=23"><img src="./Linux时间子系统之（三）：用户空间接口函数_files/rss.png" alt="订阅该分类"></a>
+		</li>
+				<li>
+			<a href="http://www.wowotech.net/sort/filesystem">文件系统(3)</a>
+			<a href="http://www.wowotech.net/rss.php?sort=26"><img src="./Linux时间子系统之（三）：用户空间接口函数_files/rss.png" alt="订阅该分类"></a>
+		</li>
+				<li>
+			<a href="http://www.wowotech.net/sort/tty_framework">TTY子系统(5)</a>
+			<a href="http://www.wowotech.net/rss.php?sort=27"><img src="./Linux时间子系统之（三）：用户空间接口函数_files/rss.png" alt="订阅该分类"></a>
+		</li>
+				</ul>
+			</li><li>
+	<a href="http://www.wowotech.net/sort/u-boot">u-boot分析(3)</a>
+	<a href="http://www.wowotech.net/rss.php?sort=25"><img src="./Linux时间子系统之（三）：用户空间接口函数_files/rss.png" alt="订阅该分类"></a>
+			</li><li>
+	<a href="http://www.wowotech.net/sort/linux_application">Linux应用技巧(13)</a>
+	<a href="http://www.wowotech.net/rss.php?sort=3"><img src="./Linux时间子系统之（三）：用户空间接口函数_files/rss.png" alt="订阅该分类"></a>
+			</li><li>
+	<a href="http://www.wowotech.net/sort/soft">软件开发(6)</a>
+	<a href="http://www.wowotech.net/rss.php?sort=1"><img src="./Linux时间子系统之（三）：用户空间接口函数_files/rss.png" alt="订阅该分类"></a>
+			</li><li>
+	<a href="http://www.wowotech.net/sort/basic_tech">基础技术(13)</a>
+	<a href="http://www.wowotech.net/rss.php?sort=6"><img src="./Linux时间子系统之（三）：用户空间接口函数_files/rss.png" alt="订阅该分类"></a>
+			<ul>
+				<li>
+			<a href="http://www.wowotech.net/sort/bluetooth">蓝牙(16)</a>
+			<a href="http://www.wowotech.net/rss.php?sort=10"><img src="./Linux时间子系统之（三）：用户空间接口函数_files/rss.png" alt="订阅该分类"></a>
+		</li>
+				<li>
+			<a href="http://www.wowotech.net/sort/armv8a_arch">ARMv8A Arch(13)</a>
+			<a href="http://www.wowotech.net/rss.php?sort=19"><img src="./Linux时间子系统之（三）：用户空间接口函数_files/rss.png" alt="订阅该分类"></a>
+		</li>
+				<li>
+			<a href="http://www.wowotech.net/sort/display">显示(3)</a>
+			<a href="http://www.wowotech.net/rss.php?sort=22"><img src="./Linux时间子系统之（三）：用户空间接口函数_files/rss.png" alt="订阅该分类"></a>
+		</li>
+				</ul>
+			</li><li>
+	<a href="http://www.wowotech.net/sort/basic_subject">基础学科(9)</a>
+	<a href="http://www.wowotech.net/rss.php?sort=7"><img src="./Linux时间子系统之（三）：用户空间接口函数_files/rss.png" alt="订阅该分类"></a>
+			</li><li>
+	<a href="http://www.wowotech.net/sort/tech_discuss">技术漫谈(12)</a>
+	<a href="http://www.wowotech.net/rss.php?sort=8"><img src="./Linux时间子系统之（三）：用户空间接口函数_files/rss.png" alt="订阅该分类"></a>
+			</li><li>
+	<a href="http://www.wowotech.net/sort/project">项目专区(0)</a>
+	<a href="http://www.wowotech.net/rss.php?sort=9"><img src="./Linux时间子系统之（三）：用户空间接口函数_files/rss.png" alt="订阅该分类"></a>
+			<ul>
+				<li>
+			<a href="http://www.wowotech.net/sort/x_project">X Project(27)</a>
+			<a href="http://www.wowotech.net/rss.php?sort=24"><img src="./Linux时间子系统之（三）：用户空间接口函数_files/rss.png" alt="订阅该分类"></a>
+		</li>
+				</ul>
+			</li></ul>
+	</li>
+	<li>
+	<h3><span>随机文章</span></h3>
+	<ul id="randlog">
+		<li><a href="http://www.wowotech.net/x_project/hikey_usb_boot.html">基于Hikey的"Boot from USB"调试</a></li>
+		<li><a href="http://www.wowotech.net/linux_application/linux_cmd_note.html">Linux操作命令记录</a></li>
+		<li><a href="http://www.wowotech.net/bluetooth/bluetooth_5_0_overview.html">快讯：蓝牙5.0发布（新特性速览）</a></li>
+		<li><a href="http://www.wowotech.net/linux_application/debian8-upgrade-kernel.html">Debian8 内核升级实验</a></li>
+		<li><a href="http://www.wowotech.net/pm_subsystem/clk_overview.html">Linux common clock framework(1)_概述</a></li>
+		</ul>
+	</li>
+	<li>
+	<h3><span>文章存档</span></h3>
+	<ul id="record">
+		<li><a href="http://www.wowotech.net/record/201709">2017年9月(3)</a></li>
+		<li><a href="http://www.wowotech.net/record/201708">2017年8月(4)</a></li>
+		<li><a href="http://www.wowotech.net/record/201707">2017年7月(4)</a></li>
+		<li><a href="http://www.wowotech.net/record/201706">2017年6月(3)</a></li>
+		<li><a href="http://www.wowotech.net/record/201705">2017年5月(3)</a></li>
+		<li><a href="http://www.wowotech.net/record/201704">2017年4月(1)</a></li>
+		<li><a href="http://www.wowotech.net/record/201703">2017年3月(8)</a></li>
+		<li><a href="http://www.wowotech.net/record/201702">2017年2月(6)</a></li>
+		<li><a href="http://www.wowotech.net/record/201701">2017年1月(5)</a></li>
+		<li><a href="http://www.wowotech.net/record/201612">2016年12月(6)</a></li>
+		<li><a href="http://www.wowotech.net/record/201611">2016年11月(11)</a></li>
+		<li><a href="http://www.wowotech.net/record/201610">2016年10月(9)</a></li>
+		<li><a href="http://www.wowotech.net/record/201609">2016年9月(6)</a></li>
+		<li><a href="http://www.wowotech.net/record/201608">2016年8月(9)</a></li>
+		<li><a href="http://www.wowotech.net/record/201607">2016年7月(5)</a></li>
+		<li><a href="http://www.wowotech.net/record/201606">2016年6月(8)</a></li>
+		<li><a href="http://www.wowotech.net/record/201605">2016年5月(8)</a></li>
+		<li><a href="http://www.wowotech.net/record/201604">2016年4月(7)</a></li>
+		<li><a href="http://www.wowotech.net/record/201603">2016年3月(5)</a></li>
+		<li><a href="http://www.wowotech.net/record/201602">2016年2月(5)</a></li>
+		<li><a href="http://www.wowotech.net/record/201601">2016年1月(6)</a></li>
+		<li><a href="http://www.wowotech.net/record/201512">2015年12月(6)</a></li>
+		<li><a href="http://www.wowotech.net/record/201511">2015年11月(9)</a></li>
+		<li><a href="http://www.wowotech.net/record/201510">2015年10月(9)</a></li>
+		<li><a href="http://www.wowotech.net/record/201509">2015年9月(4)</a></li>
+		<li><a href="http://www.wowotech.net/record/201508">2015年8月(3)</a></li>
+		<li><a href="http://www.wowotech.net/record/201507">2015年7月(7)</a></li>
+		<li><a href="http://www.wowotech.net/record/201506">2015年6月(3)</a></li>
+		<li><a href="http://www.wowotech.net/record/201505">2015年5月(6)</a></li>
+		<li><a href="http://www.wowotech.net/record/201504">2015年4月(9)</a></li>
+		<li><a href="http://www.wowotech.net/record/201503">2015年3月(9)</a></li>
+		<li><a href="http://www.wowotech.net/record/201502">2015年2月(6)</a></li>
+		<li><a href="http://www.wowotech.net/record/201501">2015年1月(6)</a></li>
+		<li><a href="http://www.wowotech.net/record/201412">2014年12月(17)</a></li>
+		<li><a href="http://www.wowotech.net/record/201411">2014年11月(8)</a></li>
+		<li><a href="http://www.wowotech.net/record/201410">2014年10月(9)</a></li>
+		<li><a href="http://www.wowotech.net/record/201409">2014年9月(7)</a></li>
+		<li><a href="http://www.wowotech.net/record/201408">2014年8月(12)</a></li>
+		<li><a href="http://www.wowotech.net/record/201407">2014年7月(6)</a></li>
+		<li><a href="http://www.wowotech.net/record/201406">2014年6月(6)</a></li>
+		<li><a href="http://www.wowotech.net/record/201405">2014年5月(9)</a></li>
+		<li><a href="http://www.wowotech.net/record/201404">2014年4月(9)</a></li>
+		<li><a href="http://www.wowotech.net/record/201403">2014年3月(7)</a></li>
+		<li><a href="http://www.wowotech.net/record/201402">2014年2月(3)</a></li>
+		<li><a href="http://www.wowotech.net/record/201401">2014年1月(4)</a></li>
+		</ul>
+	</li>
+<div class="rss">
+<a href="http://www.wowotech.net/rss.php" title="RSS订阅"><img src="./Linux时间子系统之（三）：用户空间接口函数_files/rss.gif" alt="订阅Rss"></a>
+</div>
+</ul><!--end #siderbar-->
+</div><!--end #content-->
+<div style="clear:both;"></div>
+<div id="footerbar">
+	Copyright @ 2013-2015 <a href="http://www.wowotech.net/" title="wowotech">蜗窝科技</a> All rights reserved.
+	Powered by <a href="http://www.emlog.net/" title="采用emlog系统">emlog</a>
+	<a href="http://www.miibeian.gov.cn/" target="_blank"></a> <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?9d3da49d9cb9a5eaca161fc2905551df";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>	</div><!--end #footerbar-->
+</div><!--end #wrap-->
+<script>prettyPrint();</script>
+
+<div style="position: static; width: 0px; height: 0px; border: none; padding: 0px; margin: 0px;"><div id="trans-tooltip"><div id="tip-left-top" style="background: url(&quot;chrome-extension://ikkepelhgbcgmhhmcmpfkjmchccjblkd/imgs/map/tip-left-top.png&quot;);"></div><div id="tip-top" style="background: url(&quot;chrome-extension://ikkepelhgbcgmhhmcmpfkjmchccjblkd/imgs/map/tip-top.png&quot;) repeat-x;"></div><div id="tip-right-top" style="background: url(&quot;chrome-extension://ikkepelhgbcgmhhmcmpfkjmchccjblkd/imgs/map/tip-right-top.png&quot;);"></div><div id="tip-right" style="background: url(&quot;chrome-extension://ikkepelhgbcgmhhmcmpfkjmchccjblkd/imgs/map/tip-right.png&quot;) repeat-y;"></div><div id="tip-right-bottom" style="background: url(&quot;chrome-extension://ikkepelhgbcgmhhmcmpfkjmchccjblkd/imgs/map/tip-right-bottom.png&quot;);"></div><div id="tip-bottom" style="background: url(&quot;chrome-extension://ikkepelhgbcgmhhmcmpfkjmchccjblkd/imgs/map/tip-bottom.png&quot;) repeat-x;"></div><div id="tip-left-bottom" style="background: url(&quot;chrome-extension://ikkepelhgbcgmhhmcmpfkjmchccjblkd/imgs/map/tip-left-bottom.png&quot;);"></div><div id="tip-left" style="background: url(&quot;chrome-extension://ikkepelhgbcgmhhmcmpfkjmchccjblkd/imgs/map/tip-left.png&quot;);"></div><div id="trans-content"></div></div><div id="tip-arrow-bottom" style="background: url(&quot;chrome-extension://ikkepelhgbcgmhhmcmpfkjmchccjblkd/imgs/map/tip-arrow-bottom.png&quot;);"></div><div id="tip-arrow-top" style="background: url(&quot;chrome-extension://ikkepelhgbcgmhhmcmpfkjmchccjblkd/imgs/map/tip-arrow-top.png&quot;);"></div></div><div id="hm_t_undefined" class="hm-t-container"><div class="hm-t-go-top" style="display: block;"></div></div></body></html>

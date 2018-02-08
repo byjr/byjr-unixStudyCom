@@ -1,0 +1,128 @@
+/* local.css produced by Mif2Go DCL filter dwhtm, Ver 3.3 m183 h262 */
+p.Body  { font: 80% "Verdana"; margin: .5em 0 1em }
+p.localtocstart { font: bold italic 80% "Verdana"; color:#223A71; margin: 2pt 0 12pt }
+p.localtoclink { font: bold 80% "Verdana"; margin: 2pt 0 2pt }
+p.navbar { font: italic  80% "Verdana"; margin: 2pt 0 2pt }
+p { font-size: 80%; font-family: "Verdana" }
+
+p.BodyIndent{ font: 80% "Verdana"; margin: .2em 0 .2em  2em}
+p.BodyInList { font: 80% "Verdana"; margin: .2em 0 .2em  2em}
+
+/*p.Bulleted  { font: 80% "Verdana"; text-indent: -12pt; margin: .5em 0 .5em 27pt } */
+p.Bulleted  { font: 80% "Verdana"; text-indent: -1.2em; margin: .5em 0 .7em 2em }
+
+p.BulletedIndent  { font: 80% "Verdana"; text-indent: -12pt; margin: .5em 0 .5em 27pt  }
+
+p.Callout { font: 8pt/8pt "Verdana"; margin: 0 0 2pt 0 }
+
+p.CellBody { font: 80% "Verdana" }
+
+p.CellCode { font: 80% "Courier New" }
+
+p.CellHeading { font: bold 80% "Verdana" }
+
+p.ChapterTitle { font-size: 160%; "Verdana"; color:#223A71; margin: 0 0 18pt 74pt; text-indent: -74pt }
+
+p.Code { font: 80% "Courier New"; margin: 4pt 0 0 0 }
+
+p.CodeWide { font: 80% "Courier New"; margin: 4pt 0 0 0 }
+
+p.DlgGroup  { font: bold 90% Verdana; color:#223A71; margin: 2em 0 0 }
+
+p.DlgItem  { color: #800040; font: italic bold 80% Verdana; margin: 1.5em 0 0 }
+
+p.Equation { font: 100%  "Verdana"; margin: 10pt 0 6pt 0; text-align: center }
+
+p.Extract { font: 80% "Verdana"; margin: 7pt 18pt 0 18pt }
+
+p.Figure { font: 80% "Verdana"; margin: 2pt 0 13pt 65pt; text-indent: -54pt }
+p.FigurePrintAndHelp { font: 80% "Verdana"; margin: 0pt 0 13pt 8pt; text-indent: 0pt }
+
+p.Footnote { font: 10pt/12pt "Verdana"; margin: 0 18pt 0 30pt; text-indent: -12pt }
+
+p.Heading1   { font-size: 130%; font: bold "Verdana"; color:#223A71; margin: 0pt 0 16pt }
+
+p.Heading2  { font-size: 110%; font: bold "Verdana"; color:#223A71; margin: 0pt 0 14pt }
+
+p.Heading3  { font-size: 100%; font: bold "Verdana"; color:#223A71; margin: 0pt 0 13pt }
+
+p.Heading4  { font-size: 90%; font: bold "Verdana"; color:#223A71; margin: 2em 0 0 }
+
+p.HeadingCmd { font: bold 130% "Verdana"; color:#223A71; margin: 0pt 0 14pt }
+
+p.HeadingFunction { font: bold 120% "Verdana"; color:#223A71; margin: 0pt 0 14pt }
+
+p.HeadingRunIn { font: bold 80% "Verdana"; margin: 2pt 0 0 0 }
+
+p.Note { font: 80% "Verdana"; margin: 1.2em 0 1.2em 3.3em; text-indent: -3.3em }
+
+p.Numbered {font: 80%  "Verdana"; margin: .5em 0 .5em 2em  ; text-indent: -1.4em }
+
+p.Pic { font: 1pt; margin: 0 0 0 0 }
+p.PicPrintAndHelp { line-height: 0%; margin: 0 0 0 0}
+p.graphic { font: 1pt/1pt; text-align:left; left; margin: 0 0 4pt 0}
+
+p.Rex { font: 80% "Courier New"; margin: 0 0 6pt 0 }
+
+p.SideWords { font: italic bold 9pt/11pt "Verdana"; margin: 4pt 0 0 0 }
+
+p.Source { font: 80% "Courier New"; color:#008000; margin: 0 0 0 1.5em }
+
+p.SourceWide { font: 80% "Courier New"; color:#008000; margin: 0 0 0 0pt; text-indent: 0pt }
+
+pre.Source { font: 80% "Courier New"; color:#008000; margin: 0 0 0 17pt; }
+
+pre.Code { font: 80% "Courier New"; margin: 0 0 0 0pt; }
+
+pre.SourceWide { font: 80% "Courier New"; color:#008000; margin: 0 0 0 0pt; text-indent: 0pt }
+
+pre.SourceMonoBlock { font: 80% "Courier New"; color:#008000; margin: 0 0 0 17pt; }
+
+p.Step { font: 80% "Verdana"; margin: 12pt 0 6pt 0; text-decoration: underline }
+
+p.Steps { font: 80% "Verdana"; color:#223A71; margin: 14pt 0 5pt 0 }
+
+p.TableFootnote { font: 10pt/12pt "Verdana"; margin: 0 18pt 0 30pt; text-indent: -12pt }
+
+p.TableTitle { font: 80% "Verdana"; text-align: center; color: #666666 }
+
+p.Tip { font: 80% "Verdana"; margin: 1.2em 0 1.2em 3.2em; text-indent: -2.5em }
+
+p.Title { font: bold 18pt/24pt "Verdana"; margin: 24pt 0 12pt 0; text-align: center }
+
+p.Warning { font: 9pt/11pt "Verdana"; margin: 9pt 0 9pt 0 }
+
+p.zzFooterLeft { font: bold 9pt/11pt "Verdana" }
+
+p.zzFooterRight { font: bold 9pt/11pt "Verdana" }
+
+p.zzHeaderLeft { font: bold 9pt/11pt "Verdana" }
+
+p.zzHeaderRight { font: bold 9pt/11pt "Verdana" }
+
+p.CellFooting { font: bold 9pt/10pt "Verdana" }
+
+p.MappingTableTitle { font: 12pt/14pt "Verdana" }
+
+p.MappingTableCell { font: 12pt/14pt "Verdana" }
+
+p.ActiveTOC { font: 12pt/14pt "Verdana" }
+
+p.ChapterTitleTOC { font: 80%-caps bold 100% "Verdana";color:#223A71;  margin: 16pt 0 6pt 89pt; text-indent: -89pt }
+
+p.Heading1TOC { font: 80% "Verdana"; margin: 3pt 0 0 40pt }
+
+p.Heading2TOC { font: italic 9pt/11pt "Verdana"; margin: 1pt 0 0 129pt }
+
+p.Level2IX { font: 9pt/10pt "Verdana"; margin: 0 0 0 27pt; text-indent: -18pt }
+
+p.Level1IX { font: 9pt/10pt "Verdana"; margin: 0 0 0 36pt; text-indent: -36pt }
+
+p.SeparatorsIX { font: 9pt/11pt "Verdana" }
+
+p.SortOrderIX { font: 9pt/11pt "Verdana" }
+
+p.GroupTitlesIX { font: bold 9pt/11pt "Arial"; margin: 10pt 0 0 0 }
+
+p.IndexIX { font: 9pt/11pt "Verdana" }
+

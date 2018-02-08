@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+<!-- saved from url=(0051)http://www.cnblogs.com/LubinLew/p/cpu_affinity.html -->
+<html lang="zh-cn"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Linux中CPU亲和性(affinity) - LubinLew - 博客园</title>
+<link type="text/css" rel="stylesheet" href="./Linux中CPU亲和性(affinity) - LubinLew - 博客园_files/blog-common.css">
+<link id="MainCss" type="text/css" rel="stylesheet" href="./Linux中CPU亲和性(affinity) - LubinLew - 博客园_files/bundle-iMetro_HD.css">
+<link id="mobile-style" media="only screen and (max-width: 768px)" type="text/css" rel="stylesheet" href="./Linux中CPU亲和性(affinity) - LubinLew - 博客园_files/bundle-iMetro_HD-mobile.css">
+<link title="RSS" type="application/rss+xml" rel="alternate" href="http://www.cnblogs.com/LubinLew/rss">
+<link title="RSD" type="application/rsd+xml" rel="EditURI" href="http://www.cnblogs.com/LubinLew/rsd.xml">
+<link type="application/wlwmanifest+xml" rel="wlwmanifest" href="http://www.cnblogs.com/LubinLew/wlwmanifest.xml">
+<script type="text/javascript" src="./Linux中CPU亲和性(affinity) - LubinLew - 博客园_files/encoder.js"></script><script src="./Linux中CPU亲和性(affinity) - LubinLew - 博客园_files/jquery.js" type="text/javascript"></script>  
+<script type="text/javascript">var currentBlogApp = 'LubinLew', cb_enable_mathjax=true;var isLogined=false;</script>
+<script src="./Linux中CPU亲和性(affinity) - LubinLew - 博客园_files/blog-common.js" type="text/javascript"></script>
+<script type="text/x-mathjax-config;executed=true">MathJax.Hub.Config({
+  tex2jax: { inlineMath: [['$','$'], ['\\(','\\)']] },
+  TeX: { equationNumbers: { autoNumber: ['AMS'], useLabelIds: true }, extensions: ['extpfeil.js'] },
+  'HTML-CSS': { linebreaks: { automatic: true } },
+  SVG: { linebreaks: { automatic: true } }});</script><script type="text/javascript" src="./Linux中CPU亲和性(affinity) - LubinLew - 博客园_files/MathJax.js"></script><style type="text/css">.MathJax_Hover_Frame {border-radius: .25em; -webkit-border-radius: .25em; -moz-border-radius: .25em; -khtml-border-radius: .25em; box-shadow: 0px 0px 15px #83A; -webkit-box-shadow: 0px 0px 15px #83A; -moz-box-shadow: 0px 0px 15px #83A; -khtml-box-shadow: 0px 0px 15px #83A; border: 1px solid #A6D ! important; display: inline-block; position: absolute}
+.MathJax_Menu_Button .MathJax_Hover_Arrow {position: absolute; cursor: pointer; display: inline-block; border: 2px solid #AAA; border-radius: 4px; -webkit-border-radius: 4px; -moz-border-radius: 4px; -khtml-border-radius: 4px; font-family: 'Courier New',Courier; font-size: 9px; color: #F0F0F0}
+.MathJax_Menu_Button .MathJax_Hover_Arrow span {display: block; background-color: #AAA; border: 1px solid; border-radius: 3px; line-height: 0; padding: 4px}
+.MathJax_Hover_Arrow:hover {color: white!important; border: 2px solid #CCC!important}
+.MathJax_Hover_Arrow:hover span {background-color: #CCC!important}
+</style><style type="text/css">#MathJax_About {position: fixed; left: 50%; width: auto; text-align: center; border: 3px outset; padding: 1em 2em; background-color: #DDDDDD; color: black; cursor: default; font-family: message-box; font-size: 120%; font-style: normal; text-indent: 0; text-transform: none; line-height: normal; letter-spacing: normal; word-spacing: normal; word-wrap: normal; white-space: nowrap; float: none; z-index: 201; border-radius: 15px; -webkit-border-radius: 15px; -moz-border-radius: 15px; -khtml-border-radius: 15px; box-shadow: 0px 10px 20px #808080; -webkit-box-shadow: 0px 10px 20px #808080; -moz-box-shadow: 0px 10px 20px #808080; -khtml-box-shadow: 0px 10px 20px #808080; filter: progid:DXImageTransform.Microsoft.dropshadow(OffX=2, OffY=2, Color='gray', Positive='true')}
+#MathJax_About.MathJax_MousePost {outline: none}
+.MathJax_Menu {position: absolute; background-color: white; color: black; width: auto; padding: 2px; border: 1px solid #CCCCCC; margin: 0; cursor: default; font: menu; text-align: left; text-indent: 0; text-transform: none; line-height: normal; letter-spacing: normal; word-spacing: normal; word-wrap: normal; white-space: nowrap; float: none; z-index: 201; box-shadow: 0px 10px 20px #808080; -webkit-box-shadow: 0px 10px 20px #808080; -moz-box-shadow: 0px 10px 20px #808080; -khtml-box-shadow: 0px 10px 20px #808080; filter: progid:DXImageTransform.Microsoft.dropshadow(OffX=2, OffY=2, Color='gray', Positive='true')}
+.MathJax_MenuItem {padding: 2px 2em; background: transparent}
+.MathJax_MenuArrow {position: absolute; right: .5em; padding-top: .25em; color: #666666; font-size: .75em}
+.MathJax_MenuActive .MathJax_MenuArrow {color: white}
+.MathJax_MenuArrow.RTL {left: .5em; right: auto}
+.MathJax_MenuCheck {position: absolute; left: .7em}
+.MathJax_MenuCheck.RTL {right: .7em; left: auto}
+.MathJax_MenuRadioCheck {position: absolute; left: 1em}
+.MathJax_MenuRadioCheck.RTL {right: 1em; left: auto}
+.MathJax_MenuLabel {padding: 2px 2em 4px 1.33em; font-style: italic}
+.MathJax_MenuRule {border-top: 1px solid #CCCCCC; margin: 4px 1px 0px}
+.MathJax_MenuDisabled {color: GrayText}
+.MathJax_MenuActive {background-color: Highlight; color: HighlightText}
+.MathJax_MenuDisabled:focus, .MathJax_MenuLabel:focus {background-color: #E8E8E8}
+.MathJax_ContextMenu:focus {outline: none}
+.MathJax_ContextMenu .MathJax_MenuItem:focus {outline: none}
+#MathJax_AboutClose {top: .2em; right: .2em}
+.MathJax_Menu .MathJax_MenuClose {top: -10px; left: -10px}
+.MathJax_MenuClose {position: absolute; cursor: pointer; display: inline-block; border: 2px solid #AAA; border-radius: 18px; -webkit-border-radius: 18px; -moz-border-radius: 18px; -khtml-border-radius: 18px; font-family: 'Courier New',Courier; font-size: 24px; color: #F0F0F0}
+.MathJax_MenuClose span {display: block; background-color: #AAA; border: 1.5px solid; border-radius: 18px; -webkit-border-radius: 18px; -moz-border-radius: 18px; -khtml-border-radius: 18px; line-height: 0; padding: 8px 0 6px}
+.MathJax_MenuClose:hover {color: white!important; border: 2px solid #CCC!important}
+.MathJax_MenuClose:hover span {background-color: #CCC!important}
+.MathJax_MenuClose:hover:focus {outline: none}
+</style><style type="text/css">.MathJax_Preview .MJXf-math {color: inherit!important}
+</style><style type="text/css">.MJX_Assistive_MathML {position: absolute!important; top: 0; left: 0; clip: rect(1px, 1px, 1px, 1px); padding: 1px 0 0 0!important; border: 0!important; height: 1px!important; width: 1px!important; overflow: hidden!important; display: block!important; -webkit-touch-callout: none; -webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none}
+.MJX_Assistive_MathML.MJX_Assistive_MathML_Block {width: 100%!important}
+</style><style type="text/css">#MathJax_Zoom {position: absolute; background-color: #F0F0F0; overflow: auto; display: block; z-index: 301; padding: .5em; border: 1px solid black; margin: 0; font-weight: normal; font-style: normal; text-align: left; text-indent: 0; text-transform: none; line-height: normal; letter-spacing: normal; word-spacing: normal; word-wrap: normal; white-space: nowrap; float: none; -webkit-box-sizing: content-box; -moz-box-sizing: content-box; box-sizing: content-box; box-shadow: 5px 5px 15px #AAAAAA; -webkit-box-shadow: 5px 5px 15px #AAAAAA; -moz-box-shadow: 5px 5px 15px #AAAAAA; -khtml-box-shadow: 5px 5px 15px #AAAAAA; filter: progid:DXImageTransform.Microsoft.dropshadow(OffX=2, OffY=2, Color='gray', Positive='true')}
+#MathJax_ZoomOverlay {position: absolute; left: 0; top: 0; z-index: 300; display: inline-block; width: 100%; height: 100%; border: 0; padding: 0; margin: 0; background-color: white; opacity: 0; filter: alpha(opacity=0)}
+#MathJax_ZoomFrame {position: relative; display: inline-block; height: 0; width: 0}
+#MathJax_ZoomEventTrap {position: absolute; left: 0; top: 0; z-index: 302; display: inline-block; border: 0; padding: 0; margin: 0; background-color: white; opacity: 0; filter: alpha(opacity=0)}
+</style><style type="text/css">.MathJax_Preview {color: #888}
+#MathJax_Message {position: fixed; left: 1em; bottom: 1.5em; background-color: #E6E6E6; border: 1px solid #959595; margin: 0px; padding: 2px 8px; z-index: 102; color: black; font-size: 80%; width: auto; white-space: nowrap}
+#MathJax_MSIE_Frame {position: absolute; top: 0; left: 0; width: 0px; z-index: 101; border: 0px; margin: 0px; padding: 0px}
+.MathJax_Error {color: #CC0000; font-style: italic}
+</style><style type="text/css">.MJXp-script {font-size: .8em}
+.MJXp-right {-webkit-transform-origin: right; -moz-transform-origin: right; -ms-transform-origin: right; -o-transform-origin: right; transform-origin: right}
+.MJXp-bold {font-weight: bold}
+.MJXp-italic {font-style: italic}
+.MJXp-scr {font-family: MathJax_Script,'Times New Roman',Times,STIXGeneral,serif}
+.MJXp-frak {font-family: MathJax_Fraktur,'Times New Roman',Times,STIXGeneral,serif}
+.MJXp-sf {font-family: MathJax_SansSerif,'Times New Roman',Times,STIXGeneral,serif}
+.MJXp-cal {font-family: MathJax_Caligraphic,'Times New Roman',Times,STIXGeneral,serif}
+.MJXp-mono {font-family: MathJax_Typewriter,'Times New Roman',Times,STIXGeneral,serif}
+.MJXp-largeop {font-size: 150%}
+.MJXp-largeop.MJXp-int {vertical-align: -.2em}
+.MJXp-math {display: inline-block; line-height: 1.2; text-indent: 0; font-family: 'Times New Roman',Times,STIXGeneral,serif; white-space: nowrap; border-collapse: collapse}
+.MJXp-display {display: block; text-align: center; margin: 1em 0}
+.MJXp-math span {display: inline-block}
+.MJXp-box {display: block!important; text-align: center}
+.MJXp-box:after {content: " "}
+.MJXp-rule {display: block!important; margin-top: .1em}
+.MJXp-char {display: block!important}
+.MJXp-mo {margin: 0 .15em}
+.MJXp-mfrac {margin: 0 .125em; vertical-align: .25em}
+.MJXp-denom {display: inline-table!important; width: 100%}
+.MJXp-denom > * {display: table-row!important}
+.MJXp-surd {vertical-align: top}
+.MJXp-surd > * {display: block!important}
+.MJXp-script-box > *  {display: table!important; height: 50%}
+.MJXp-script-box > * > * {display: table-cell!important; vertical-align: top}
+.MJXp-script-box > *:last-child > * {vertical-align: bottom}
+.MJXp-script-box > * > * > * {display: block!important}
+.MJXp-mphantom {visibility: hidden}
+.MJXp-munderover {display: inline-table!important}
+.MJXp-over {display: inline-block!important; text-align: center}
+.MJXp-over > * {display: block!important}
+.MJXp-munderover > * {display: table-row!important}
+.MJXp-mtable {vertical-align: .25em; margin: 0 .125em}
+.MJXp-mtable > * {display: inline-table!important; vertical-align: middle}
+.MJXp-mtr {display: table-row!important}
+.MJXp-mtd {display: table-cell!important; text-align: center; padding: .5em 0 0 .5em}
+.MJXp-mtr > .MJXp-mtd:first-child {padding-left: 0}
+.MJXp-mtr:first-child > .MJXp-mtd {padding-top: 0}
+.MJXp-mlabeledtr {display: table-row!important}
+.MJXp-mlabeledtr > .MJXp-mtd:first-child {padding-left: 0}
+.MJXp-mlabeledtr:first-child > .MJXp-mtd {padding-top: 0}
+.MJXp-merror {background-color: #FFFF88; color: #CC0000; border: 1px solid #CC0000; padding: 1px 3px; font-style: normal; font-size: 90%}
+.MJXp-scale0 {-webkit-transform: scaleX(.0); -moz-transform: scaleX(.0); -ms-transform: scaleX(.0); -o-transform: scaleX(.0); transform: scaleX(.0)}
+.MJXp-scale1 {-webkit-transform: scaleX(.1); -moz-transform: scaleX(.1); -ms-transform: scaleX(.1); -o-transform: scaleX(.1); transform: scaleX(.1)}
+.MJXp-scale2 {-webkit-transform: scaleX(.2); -moz-transform: scaleX(.2); -ms-transform: scaleX(.2); -o-transform: scaleX(.2); transform: scaleX(.2)}
+.MJXp-scale3 {-webkit-transform: scaleX(.3); -moz-transform: scaleX(.3); -ms-transform: scaleX(.3); -o-transform: scaleX(.3); transform: scaleX(.3)}
+.MJXp-scale4 {-webkit-transform: scaleX(.4); -moz-transform: scaleX(.4); -ms-transform: scaleX(.4); -o-transform: scaleX(.4); transform: scaleX(.4)}
+.MJXp-scale5 {-webkit-transform: scaleX(.5); -moz-transform: scaleX(.5); -ms-transform: scaleX(.5); -o-transform: scaleX(.5); transform: scaleX(.5)}
+.MJXp-scale6 {-webkit-transform: scaleX(.6); -moz-transform: scaleX(.6); -ms-transform: scaleX(.6); -o-transform: scaleX(.6); transform: scaleX(.6)}
+.MJXp-scale7 {-webkit-transform: scaleX(.7); -moz-transform: scaleX(.7); -ms-transform: scaleX(.7); -o-transform: scaleX(.7); transform: scaleX(.7)}
+.MJXp-scale8 {-webkit-transform: scaleX(.8); -moz-transform: scaleX(.8); -ms-transform: scaleX(.8); -o-transform: scaleX(.8); transform: scaleX(.8)}
+.MJXp-scale9 {-webkit-transform: scaleX(.9); -moz-transform: scaleX(.9); -ms-transform: scaleX(.9); -o-transform: scaleX(.9); transform: scaleX(.9)}
+.MathJax_PHTML .noError {vertical-align: ; font-size: 90%; text-align: left; color: black; padding: 1px 3px; border: 1px solid}
+</style></head><style type="text/css" id="1723186669333"></style>
+<body><div id="MathJax_Message" style="display: none;"></div>
+<a name="top"></a>
+<!--PageBeginHtml Block Begin-->
+<script type="text/javascript" src="./Linux中CPU亲和性(affinity) - LubinLew - 博客园_files/shCore.js"></script>
+<script type="text/javascript" src="./Linux中CPU亲和性(affinity) - LubinLew - 博客园_files/shBrushCpp.js"></script>
+<script type="text/javascript" src="./Linux中CPU亲和性(affinity) - LubinLew - 博客园_files/shBrushVb.js"></script>
+<link type="text/css" rel="stylesheet" href="./Linux中CPU亲和性(affinity) - LubinLew - 博客园_files/shCoreDefault.css">
+<link rel="stylesheet" href="./Linux中CPU亲和性(affinity) - LubinLew - 博客园_files/SourceInSightHelpChmCss.css" type="text/css">
+<script type="text/javascript">SyntaxHighlighter.all();</script>
+<!--PageBeginHtml Block End-->
+
+<!--done-->
+<div id="home">
+<div id="header">
+	<div id="blogTitle">
+	<a id="lnkBlogLogo" href="http://www.cnblogs.com/LubinLew/"><img id="blogLogo" src="./Linux中CPU亲和性(affinity) - LubinLew - 博客园_files/logo.gif" alt="返回主页"></a>			
+		
+<!--done-->
+<h1><a id="Header1_HeaderTitle" class="headermaintitle" href="http://www.cnblogs.com/LubinLew/"></a></h1>
+<h2></h2>
+
+
+
+		
+	</div><!--end: blogTitle 博客的标题和副标题 -->
+	<div id="navigator">
+		
+<ul id="navList">
+<li><a id="blog_nav_sitehome" class="menu" href="http://www.cnblogs.com/">博客园</a></li>
+<li><a id="blog_nav_myhome" class="menu" href="http://www.cnblogs.com/LubinLew/">首页</a></li>
+<li><a id="blog_nav_newpost" class="menu" rel="nofollow" href="https://i.cnblogs.com/EditPosts.aspx?opt=1">新随笔</a></li>
+<li><a id="blog_nav_contact" class="menu" rel="nofollow" href="https://msg.cnblogs.com/send/LubinLew">联系</a></li>
+<li><a id="blog_nav_rss" class="menu" href="http://www.cnblogs.com/LubinLew/rss">订阅</a>
+<!--<a id="blog_nav_rss_image" class="aHeaderXML" href="http://www.cnblogs.com/LubinLew/rss"><img src="//www.cnblogs.com/images/xml.gif" alt="订阅" /></a>--></li>
+<li><a id="blog_nav_admin" class="menu" rel="nofollow" href="https://i.cnblogs.com/">管理</a></li>
+</ul>
+		<div class="blogStats">
+			
+			<div id="blog_stats">
+<span id="stats_post_count">随笔 - 76&nbsp; </span>
+<span id="stats_article_count">文章 - 3&nbsp; </span>
+<span id="stats-comment_count">评论 - 5</span>
+</div>
+			
+		</div><!--end: blogStats -->
+	</div><!--end: navigator 博客导航栏 -->
+</div><!--end: header 头部 -->
+
+<div id="main">
+	<div id="mainContent">
+	<div class="forFlow">
+		
+<div id="post_detail">
+<!--done-->
+<div id="topics">
+	<div class="post">
+		<h1 class="postTitle">
+			<a id="cb_post_title_url" class="postTitle2" href="http://www.cnblogs.com/LubinLew/p/cpu_affinity.html">Linux中CPU亲和性(affinity)</a>
+		</h1>
+		<div class="clear"></div>
+		<div class="postBody">
+			<div id="cnblogs_post_body"><h1><span style="color: #008000; background-color: #ffffff;">&nbsp;0、准备知识</span></h1>
+<p><strong>超线程技术(Hyper-Threading)</strong>：就是利用特殊的硬件指令，把两个逻辑内核(CPU core)模拟成两个物理芯片，</p>
+<p>　　　　让单个处理器都能使用线程级并行计算，进而兼容多线程操作系统和软件，减少了CPU的闲置时间，提高的CPU的运行效率。</p>
+<p>　　　　我们常听到的双核四线程/四核八线程指的就是支持超线程技术的CPU.</p>
+<p><strong>物理CPU</strong>:机器上安装的实际CPU, 比如说你的主板上安装了一个8核CPU,那么物理CPU个数就是1个,所以物理CPU个数就是主板上安装的CPU个数。</p>
+<p><strong>逻辑CPU</strong>:一般情况，我们认为一颗CPU可以有多核，加上intel的超线程技术(HT), 可以在逻辑上再分一倍数量的CPU core出来；</p>
+<div class="cnblogs_code">
+<pre><span style="color: #ff0000;">逻辑CPU数量 = 物理CPU数量 x CPU cores x 2(如果支持并开启HT)</span> <span style="color: #008000;">//前提是CPU的型号一致，如果不一致只能一个一个的加起来，不用直接乘以物理CPU数量</span>
+<span style="color: #008000;">//比如你的电脑安装了一块4核CPU，并且支持且开启了超线程（HT）技术，那么逻辑CPU数量 = 1 × 4 × 2 = 8</span></pre>
+</div>
+<p>&nbsp;<strong>Linux下查看CPU相关信息</strong>, CPU的信息主要都在/proc/cupinfo中,</p>
+<div class="cnblogs_code"><div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="./Linux中CPU亲和性(affinity) - LubinLew - 博客园_files/copycode.gif" alt="复制代码"></a></span></div>
+<pre><span style="color: #008000;"># 查看物理CPU个数
+</span><span style="color: #0000ff;">cat</span> /proc/cpuinfo|<span style="color: #0000ff;">grep</span> <span style="color: #800000;">"</span><span style="color: #800000;">physical id</span><span style="color: #800000;">"</span>|<span style="color: #0000ff;">sort</span>|<span style="color: #0000ff;">uniq</span>|<span style="color: #0000ff;">wc</span> -<span style="color: #000000;">l
+
+<span style="color: #008000;"># 查看每个物理CPU中core的个数(即核数)
+</span></span><span style="color: #0000ff;">cat</span> /proc/cpuinfo|<span style="color: #0000ff;">grep</span> <span style="color: #800000;">"</span><span style="color: #800000;">cpu cores</span><span style="color: #800000;">"</span>|<span style="color: #0000ff;">uniq</span><span style="color: #008000;">
+
+# 查看逻辑CPU的个数
+</span><span style="color: #0000ff;">cat</span> /proc/cpuinfo|<span style="color: #0000ff;">grep</span> <span style="color: #800000;">"</span><span style="color: #800000;">processor</span><span style="color: #800000;">"</span>|<span style="color: #0000ff;">wc</span> -<span style="color: #000000;">l
+
+<span style="color: #008000;"># 查看CPU的名称型号
+</span></span><span style="color: #0000ff;">cat</span> /proc/cpuinfo|<span style="color: #0000ff;">grep</span><span style="color: #993366;"> "name"</span>|<span style="color: #0000ff;">cut</span> -f2 -d:|<span style="color: #0000ff;">uniq</span></pre>
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="./Linux中CPU亲和性(affinity) - LubinLew - 博客园_files/copycode.gif" alt="复制代码"></a></span></div></div>
+<p>&nbsp;<strong>Linux查看某个进程运行在哪个逻辑CPU上</strong></p>
+<div class="cnblogs_code"><div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="./Linux中CPU亲和性(affinity) - LubinLew - 博客园_files/copycode.gif" alt="复制代码"></a></span></div>
+<pre><span style="color: #0000ff;">ps</span> -eo pid,args,psr<br><span style="color: #008000;">#参数的含义：
+pid  - 进程ID
+args - 该进程执行时传入的命令行参数
+psr  - 分配给进程的逻辑CPU</span><br><br><span style="color: #008000;">例子:</span><br><span style="color: #993366;">[~]#</span> <span style="color: #0000ff;">ps</span> -eo pid,args,psr | <span style="color: #0000ff;">grep</span> nginx<br>9073 nginx: master process /usr/&nbsp;&nbsp; 1<br>9074 nginx: worker process&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0<br>9075 nginx: worker process&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1<br>9076 nginx: worker process&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2<br>9077 nginx: worker process&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 3<br><span style="color: #808080;">13857 grep nginx&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 3</span></pre>
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="./Linux中CPU亲和性(affinity) - LubinLew - 博客园_files/copycode.gif" alt="复制代码"></a></span></div></div>
+<p><strong>&nbsp;Linux查看线程的TID</strong></p>
+<p>TID就是Thread ID,他和POSIX中pthread_t表示的线程ID完全不是同一个东西.</p>
+<p>Linux中的POSIX线程库实现的线程其实也是一个轻量级进程(LWP),这个TID就是这个线程的真实PID.</p>
+<p>但是又不能通过getpid()函数获取，Linux中定义了gettid()这个接口，但是通常都是未实现的，所以需要使用下面的方式获取TID。</p>
+<div class="cnblogs_code"><div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="./Linux中CPU亲和性(affinity) - LubinLew - 博客园_files/copycode.gif" alt="复制代码"></a></span></div>
+<pre><span style="color: #008000;">//</span><span style="color: #008000;">program</span>
+#include &lt;sys/syscall.h&gt;<span style="color: #000000;">  
+pid_t tid;
+tid </span>= syscall(__NR_gettid);<span style="color: #008000;">//</span><span style="color: #008000;"> or syscall(SYS_gettid)  
+
+</span><span style="color: #008000;">//</span><span style="color: #008000;">command-line</span>
+（1）ps -efL |<span style="color: #000000;"> grep prog_name
+（2）ls </span>/proc/pid/task            <span style="color: #008000;">//文件夹名即TID</span></pre>
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="./Linux中CPU亲和性(affinity) - LubinLew - 博客园_files/copycode.gif" alt="复制代码"></a></span></div></div>
+<p>&nbsp;</p>
+<h1>&nbsp;</h1>
+<h1><span style="color: #008000;">1、CPU亲和性(亲和力)</span></h1>
+<h2><span style="color: #008000;">1.1 基本概念</span></h2>
+<p>CPU affinity 是一种调度属性(scheduler property), 它可以将一个进程"绑定" 到一个或一组CPU上.</p>
+<p>在SMP(Symmetric Multi-Processing对称多处理)架构下，Linux调度器(scheduler)会根据CPU affinity的设置让指定的进程运行在"绑定"的CPU上,而不会在别的CPU上运行.&nbsp;</p>
+<p>Linux调度器同样支持自然CPU亲和性(natural CPU affinity): 调度器会试图保持进程在相同的CPU上运行,&nbsp;这意味着进程通常不会在处理器之间频繁迁移,进程迁移的频率小就意味着产生的负载小。</p>
+<p>因为程序的作者比调度器更了解程序,所以我们可以手动地为其分配CPU核，而不会过多地占用CPU0，或是让我们关键进程和一堆别的进程挤在一起,所有设置CPU亲和性可以使某些程序提高性能。</p>
+<h2><span style="color: #008000;">1.2 表示方法</span></h2>
+<p>CPU affinity 使用位掩码(bitmask)表示, 每一位都表示一个CPU, 置1表示"绑定".</p>
+<p>最低位表示第一个逻辑CPU, 最高位表示最后一个逻辑CPU.</p>
+<p>CPU affinity典型的表示方法是使用16进制,具体如下.</p>
+<div class="cnblogs_code"><div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="./Linux中CPU亲和性(affinity) - LubinLew - 博客园_files/copycode.gif" alt="复制代码"></a></span></div>
+<pre>0x00000001
+<span style="color: #008000;">    is processor #0</span>
+
+0x00000003
+ <span style="color: #008000;">   is processors #0 and #1</span>
+
+0xFFFFFFFF
+  <span style="color: #008000;">  is all processors (#0 through #31)</span></pre>
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="./Linux中CPU亲和性(affinity) - LubinLew - 博客园_files/copycode.gif" alt="复制代码"></a></span></div></div>
+<h1><span style="color: #008000;">2、taskset命令</span></h1>
+<p>&nbsp;taskset命名用于获取或者设定CPU亲和性.</p>
+<div class="cnblogs_code"><div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="./Linux中CPU亲和性(affinity) - LubinLew - 博客园_files/copycode.gif" alt="复制代码"></a></span></div>
+<pre># 命令行形式
+<span style="font-size: 14px;"><span style="color: #0000ff;">taskset</span> [options] mask command [arg]...</span><br><span style="font-size: 14px;"><span style="color: #0000ff;">taskset</span> [options] <span style="color: #0000ff;">-p</span> [mask] pid</span><br><br><strong>PARAMETER<br>　</strong>　　　mask : cpu亲和性,当没有-c选项时, 其值前无论有没有0x标记都是16进制的,<br>　　　　　　　　当有-c选项时,其值是十进制的.<br>　　　　command : 命令或者可执行程序<strong><br></strong>　　　　arg : command的参数<br>　　　　pid : 进程ID,可以通过ps/top/pidof等命令获取<br>
+
+<strong>OPTIONS<br>　　　　</strong>-a, --all-tasks (旧版本中没有这个选项)<br>　　　　　　　　这个选项涉及到了linux中TID的概念,他会将一个进程中所有的TID都执行一次CPU亲和性设置.<br>　　　　　　　　TID就是Thread ID,他和POSIX中pthread_t表示的线程ID完全不是同一个东西.<br>　　　　　　　　Linux中的POSIX线程库实现的线程其实也是一个进程(LWP),这个TID就是这个线程的真实PID.
+       -p, --pid
+              操作已存在的PID,而不是加载一个新的程序
+       -c, --cpu-list
+              声明CPU的亲和力使用数字表示而不是用位掩码表示. 例如 0,5,7,9-11.
+       -h, --help
+              display usage information and exit
+       -V, --version
+              output version information and exit</pre>
+<p>&nbsp; <strong>USAGE</strong></p>
+<p>　　　　<span style="background-color: #00ffff;">1) 使用指定的CPU亲和性运行一个新程序</span></p>
+<p>　　　　　　<strong>taskset [-c] mask command [arg]...</strong></p>
+<p>　　　　　　　　举例:使用CPU0运行ls命令显示/etc/init.d下的所有内容&nbsp;</p>
+<p>　　　　　　　　　　<em>taskset -c 0 ls -al /etc/init.d/</em></p>
+<p>　　　　<span style="background-color: #00ffff;">2) 显示已经运行的进程的CPU亲和性</span></p>
+<p>　　　　　　<strong>taskset -p pid</strong></p>
+<p>　　　　　　　　举例:查看init进程(PID=1)的CPU亲和性</p>
+<p>　　　　　　　　　　<em>taskset -p 1</em></p>
+<p>　　　　<span style="background-color: #00ffff;">3) 改变已经运行进程的CPU亲和力</span></p>
+<p>　　　　 &nbsp; &nbsp;<strong>taskset -p[c] mask pid</strong></p>
+<p>　　　　　　　　举例:打开2个终端,在第一个终端运行top命令,第二个终端中</p>
+<p>　　　　　　　　　　首先运行:[~]#&nbsp;<em>ps -eo pid,args,psr | grep top</em>&nbsp;<span style="color: #008000;">#获取top命令的pid和其所运行的CPU号</span></p>
+<p>　　　　　　　　　　其次运行:[~]#&nbsp;<em>taskset -cp</em> 新的CPU号 pid &nbsp; &nbsp; &nbsp; <span style="color: #008000;">#更改top命令运行的CPU号</span></p>
+<p>　　　　　　　　　　最后运行:[~]#&nbsp;<em>ps -eo pid,args,psr | grep top</em>&nbsp;<span style="color: #008000;">#查看是否更改成功</span></p>
+<p><strong>&nbsp;&nbsp;PERMISSIONS</strong><br>&nbsp; &nbsp; &nbsp; &nbsp; 一个用户要设定一个进程的CPU亲和性,如果目标进程是该用户的,则可以设置,如果是其他用户的,则会设置失败,提示&nbsp;Operation not permitted.当然root用户没有任何限制.</p>
+<p>&nbsp; &nbsp; &nbsp; &nbsp; 任何用户都可以获取任意一个进程的CPU亲和性.</p>
+
+
+
+
+
+
+
+
+
+
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="./Linux中CPU亲和性(affinity) - LubinLew - 博客园_files/copycode.gif" alt="复制代码"></a></span></div></div>
+<p>&nbsp;taskset命令其实就是使用sched_getaffinity()和sched_setaffinity()接口实现的,相信看完了第3节你也能自己实现一个taskset命令.</p>
+<p>有兴趣的可以看一下其源代码:ftp://ftp.kernel.org/pub/linux/utils/util-linux/v<span style="color: #808080;">X.YZ</span>/util-linux-<span style="color: #808080;">X.YZ-xxx</span>.tar.gz &nbsp; /schedutils/taskset.c</p>
+<p>&nbsp;</p>
+<h1><span style="color: #008000;">3、编程API</span></h1>
+<p><span style="color: #000000;">下面是用用于设置和获取CPU亲和性相关的API.</span></p>
+<p>&nbsp;</p>
+<div class="cnblogs_code"><div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="./Linux中CPU亲和性(affinity) - LubinLew - 博客园_files/copycode.gif" alt="复制代码"></a></span></div>
+<pre><span style="color: #0000ff;">#define</span> _GNU_SOURCE<span style="color: #000000;">
+#include </span>&lt;sched.h&gt;<span style="color: #000000;">
+#include </span>&lt;pthread.h&gt; <span style="color: #008000;">//</span><span style="color: #008000;">for pthread functions(last 4) <span style="color: #ff00ff;">注意&lt;pthread.h&gt;包含&lt;sched.h&gt;</span></span>
+
+<span style="color: #008000;">/*</span><span style="color: #008000;"> MACRO </span><span style="color: #008000;">*/</span>
+    <span style="color: #008000;">/*</span><span style="color: #008000;"> The following macros are provided to operate on the CPU set set </span><span style="color: #008000;">*/</span>
+        <span style="color: #008000;">/*</span><span style="color: #008000;"> Clears set, so that it contains no CPUs </span><span style="color: #008000;">*/</span>
+        <span style="color: #0000ff;">void</span> CPU_ZERO(cpu_set_t *<span style="color: #0000ff;">set</span><span style="color: #000000;">);
+        </span><span style="color: #0000ff;">void</span> CPU_ZERO_S(size_t setsize, cpu_set_t *<span style="color: #0000ff;">set</span><span style="color: #000000;">);
+        
+        </span><span style="color: #008000;">/*</span><span style="color: #008000;"> Add CPU cpu to set </span><span style="color: #008000;">*/</span>
+        <span style="color: #0000ff;">void</span> CPU_SET(<span style="color: #0000ff;">int</span> cpu, cpu_set_t *<span style="color: #0000ff;">set</span><span style="color: #000000;">);
+        </span><span style="color: #0000ff;">void</span> CPU_SET_S(<span style="color: #0000ff;">int</span> cpu, size_t setsize, cpu_set_t *<span style="color: #0000ff;">set</span><span style="color: #000000;">);
+        
+        </span><span style="color: #008000;">/*</span><span style="color: #008000;"> Remove CPU cpu from set </span><span style="color: #008000;">*/</span>
+        <span style="color: #0000ff;">void</span> CPU_CLR(<span style="color: #0000ff;">int</span> cpu, cpu_set_t *<span style="color: #0000ff;">set</span><span style="color: #000000;">);
+        </span><span style="color: #0000ff;">void</span> CPU_CLR_S(<span style="color: #0000ff;">int</span> cpu, size_t setsize, cpu_set_t *<span style="color: #0000ff;">set</span><span style="color: #000000;">);
+        
+        </span><span style="color: #008000;">/*</span><span style="color: #008000;"> Test to see if CPU cpu is a member of set </span><span style="color: #008000;">*/</span>
+        <span style="color: #0000ff;">int</span> CPU_ISSET(<span style="color: #0000ff;">int</span> cpu, cpu_set_t *<span style="color: #0000ff;">set</span><span style="color: #000000;">);
+        </span><span style="color: #0000ff;">int</span> CPU_ISSET_S(<span style="color: #0000ff;">int</span> cpu, size_t setsize, cpu_set_t *<span style="color: #0000ff;">set</span><span style="color: #000000;">);
+        
+        </span><span style="color: #008000;">/*</span><span style="color: #008000;"> Return the number of CPUs in set </span><span style="color: #008000;">*/</span>
+        <span style="color: #0000ff;">void</span> CPU_COUNT(cpu_set_t *<span style="color: #0000ff;">set</span><span style="color: #000000;">);
+        </span><span style="color: #0000ff;">void</span> CPU_COUNT_S(size_t setsize, cpu_set_t *<span style="color: #0000ff;">set</span><span style="color: #000000;">);
+    
+    </span><span style="color: #008000;">/*</span><span style="color: #008000;"> The following macros perform logical operations on CPU sets </span><span style="color: #008000;">*/</span>
+        <span style="color: #008000;">/*</span><span style="color: #008000;"> Store the logical AND of the sets srcset1 and srcset2 in destset (which may be one of the source sets). </span><span style="color: #008000;">*/</span>
+        <span style="color: #0000ff;">void</span> CPU_AND(cpu_set_t *destset, cpu_set_t *srcset1, cpu_set_t *<span style="color: #000000;">srcset2);
+        </span><span style="color: #0000ff;">void</span> CPU_AND_S(size_t setsize, cpu_set_t *destset, cpu_set_t *srcset1, cpu_set_t *<span style="color: #000000;">srcset2);
+        
+        </span><span style="color: #008000;">/*</span><span style="color: #008000;"> Store the logical OR of the sets srcset1 and srcset2 in destset (which may be one of the source sets). </span><span style="color: #008000;">*/</span>
+        <span style="color: #0000ff;">void</span> CPU_OR(cpu_set_t *destset, cpu_set_t *srcset1, cpu_set_t *<span style="color: #000000;">srcset2);
+        </span><span style="color: #0000ff;">void</span> CPU_OR_S(size_t setsize, cpu_set_t *destset, cpu_set_t *srcset1, cpu_set_t *<span style="color: #000000;">srcset2);
+        
+        </span><span style="color: #008000;">/*</span><span style="color: #008000;"> Store  the logical XOR of the sets srcset1 and srcset2 in destset (which may be one of the source sets). </span><span style="color: #008000;">*/</span>
+        <span style="color: #0000ff;">void</span> CPU_XOR(cpu_set_t *destset, cpu_set_t *srcset1, cpu_set_t *<span style="color: #000000;">srcset2);
+        </span><span style="color: #0000ff;">void</span> CPU_XOR_S(size_t setsize, cpu_set_t *destset, cpu_set_t *srcset1, cpu_set_t *<span style="color: #000000;">srcset2);
+        
+        </span><span style="color: #008000;">/*</span><span style="color: #008000;"> Test whether two CPU set contain exactly the same CPUs. </span><span style="color: #008000;">*/</span>
+        <span style="color: #0000ff;">int</span> CPU_EQUAL(cpu_set_t *set1, cpu_set_t *<span style="color: #000000;">set2);
+        </span><span style="color: #0000ff;">int</span> CPU_EQUAL_S(size_t setsize, cpu_set_t *set1, cpu_set_t *<span style="color: #000000;">set2);
+    
+    </span><span style="color: #008000;">/*</span><span style="color: #008000;"> The following macros are used to allocate and deallocate CPU sets: </span><span style="color: #008000;">*/</span>
+        <span style="color: #008000;">/*</span><span style="color: #008000;"> Allocate a CPU set large enough to hold CPUs in the range 0 to num_cpus-1 </span><span style="color: #008000;">*/</span><span style="color: #000000;">
+        cpu_set_t </span>*CPU_ALLOC(<span style="color: #0000ff;">int</span><span style="color: #000000;"> num_cpus);
+    
+        </span><span style="color: #008000;">/*</span><span style="color: #008000;"> Return the size in bytes of the CPU set that would be needed to  hold  CPUs  in the  range 0 to num_cpus-1. 
+           <span style="color: #ff00ff;">This macro provides the value that can be used for the setsize argument in the CPU_*_S() macros </span></span><span style="color: #008000;">*/</span><span style="color: #000000;">
+        size_t CPU_ALLOC_SIZE(</span><span style="color: #0000ff;">int</span><span style="color: #000000;"> num_cpus);
+        
+        </span><span style="color: #008000;">/*</span><span style="color: #008000;"> Free a CPU set previously allocated by CPU_ALLOC(). </span><span style="color: #008000;">*/</span>
+        <span style="color: #0000ff;">void</span> CPU_FREE(cpu_set_t *<span style="color: #0000ff;">set</span><span style="color: #000000;">);
+
+</span><span style="color: #008000;">/*</span><span style="color: #008000;"> API </span><span style="color: #008000;">*/</span>
+    <span style="color: #008000;">/*</span><span style="color: #008000;"> Set the CPU affinity for a task </span><span style="color: #008000;">*/</span>
+    <span style="color: #0000ff;">int</span> sched_setaffinity(pid_t pid, size_t cpusetsize, cpu_set_t *<span style="color: #000000;">mask);
+    </span><span style="color: #008000;">/*</span><span style="color: #008000;"> Get the CPU affinity for a task </span><span style="color: #008000;">*/</span>
+    <span style="color: #0000ff;">int</span> sched_getaffinity(pid_t pid, size_t cpusetsize, cpu_set_t *<span style="color: #000000;">mask);
+    
+    </span><span style="color: #008000;">/*</span><span style="color: #008000;"> set CPU affinity attribute in thread attributes object </span><span style="color: #008000;">*/</span>
+    <span style="color: #0000ff;">int</span> pthread_attr_setaffinity_np(pthread_attr_t *attr, size_t cpusetsize, <span style="color: #0000ff;">const</span> cpu_set_t *<span style="color: #000000;">cpuset);
+    </span><span style="color: #008000;">/*</span><span style="color: #008000;"> get CPU affinity attribute in thread attributes object </span><span style="color: #008000;">*/</span>
+    <span style="color: #0000ff;">int</span> pthread_attr_getaffinity_np(<span style="color: #0000ff;">const</span> pthread_attr_t *attr, size_t cpusetsize, cpu_set_t *<span style="color: #000000;">cpuset);
+    
+    </span><span style="color: #008000;">/*</span><span style="color: #008000;"> set CPU affinity of a thread </span><span style="color: #008000;">*/</span>
+    <span style="color: #0000ff;">int</span> pthread_setaffinity_np(pthread_t thread, size_t cpusetsize, <span style="color: #0000ff;">const</span> cpu_set_t *<span style="color: #000000;">cpuset);
+    </span><span style="color: #008000;">/*</span><span style="color: #008000;"> get CPU affinity of a thread </span><span style="color: #008000;">*/</span>
+    <span style="color: #0000ff;">int</span> pthread_getaffinity_np(pthread_t thread, size_t cpusetsize, cpu_set_t *cpuset);</pre>
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="./Linux中CPU亲和性(affinity) - LubinLew - 博客园_files/copycode.gif" alt="复制代码"></a></span></div></div>
+<p>相关的宏通常都分为2种,一种是带_S后缀的,一种不是不带_S后缀的, 从声明上看带_S后缀的宏都多出一个参数&nbsp;<em>setsize.</em></p>
+<p>从功能上看他们的区别是带_S后缀的宏是用于操作动态申请的CPU set(s),所谓的动态申请其实就是使用宏&nbsp;<strong>CPU_ALLOC </strong>申请,</p>
+<p>参数setsize 可以是通过宏&nbsp;<strong>CPU_ALLOC_SIZE </strong>获得,两者的用法详见下面的例子.</p>
+<p>相关的API只有6个, 前2个是用来设置进程的CPU亲和性，需要注意的一点是,当这2个API的第一个参数pid为0时,表示使用调用进程的进程ID；</p>
+<p>后4个是用来设置线程的CPU亲和性。其实sched_setaffinity()也可以用来设置线程的CPU的亲和性，也就是taskset “-a”选项中提到的TID概念。</p>
+<h2><span style="color: #008000;">3.1 例子一:使用2种方式(带和不带_S后缀的宏)获取当前进程的CPU亲和性</span></h2>
+<div class="cnblogs_code"><div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="./Linux中CPU亲和性(affinity) - LubinLew - 博客园_files/copycode.gif" alt="复制代码"></a></span></div>
+<pre><span style="color: #0000ff;">#define</span> _GNU_SOURCE<span style="color: #000000;">
+#include </span>&lt;sched.h&gt;<span style="color: #000000;">
+#include </span>&lt;unistd.h&gt; <span style="color: #008000;">/*</span><span style="color: #008000;"> sysconf </span><span style="color: #008000;">*/</span><span style="color: #000000;">
+#include </span>&lt;stdlib.h&gt; <span style="color: #008000;">/*</span><span style="color: #008000;"> exit </span><span style="color: #008000;">*/</span><span style="color: #000000;">
+#include </span>&lt;stdio.h&gt;
+
+<span style="color: #0000ff;">int</span> main(<span style="color: #0000ff;">void</span><span style="color: #000000;">)
+{
+    </span><span style="color: #0000ff;">int</span><span style="color: #000000;"> i, nrcpus;
+    <span style="background-color: #ffff99;">cpu_set_t mask</span>;
+    unsigned </span><span style="color: #0000ff;">long</span> bitmask = <span style="color: #800080;">0</span><span style="color: #000000;">;
+    
+    <span style="background-color: #ffff99;">CPU_ZERO(</span></span><span style="background-color: #ffff99;">&amp;</span><span style="color: #000000;"><span style="background-color: #ffff99;">mask)</span>;
+    
+     </span><span style="color: #008000;">/*</span><span style="color: #008000;"> Get the CPU affinity for a pid </span><span style="color: #008000;">*/</span>
+    <span style="color: #0000ff;">if</span> (sched_getaffinity(<span style="color: #800080;">0</span>, <span style="color: #0000ff;">sizeof</span>(cpu_set_t), &amp;mask) == -<span style="color: #800080;">1</span><span style="color: #000000;">) 
+    {   
+        perror(</span><span style="color: #800000;">"</span><span style="color: #800000;">sched_getaffinity</span><span style="color: #800000;">"</span><span style="color: #000000;">);
+        exit(EXIT_FAILURE);
+    }
+    
+       </span><span style="color: #008000;">/*</span><span style="color: #008000;"> get logical cpu number </span><span style="color: #008000;">*/</span><span style="color: #000000;">
+    nrcpus </span>=<span style="color: #000000;"> sysconf(_SC_NPROCESSORS_CONF);
+    
+    </span><span style="color: #0000ff;">for</span> (i = <span style="color: #800080;">0</span>; i &lt; nrcpus; i++<span style="color: #000000;">)
+    {
+        </span><span style="color: #0000ff;">if</span> (<span style="background-color: #ffff99;">CPU_ISSET(i, &amp;</span><span style="color: #000000;"><span style="background-color: #ffff99;">mask)</span>)
+        {
+            bitmask </span>|= (unsigned <span style="color: #0000ff;">long</span>)<span style="color: #800080;">0x01</span> &lt;&lt;<span style="color: #000000;"> i;
+            printf(</span><span style="color: #800000;">"</span><span style="color: #800000;">processor #%d is set\n</span><span style="color: #800000;">"</span><span style="color: #000000;">, i); 
+        }
+    }
+    printf(</span><span style="color: #800000;">"</span><span style="color: #800000;">bitmask = %#lx\n</span><span style="color: #800000;">"</span><span style="color: #000000;">, bitmask);
+
+    exit(EXIT_SUCCESS);
+}
+</span><span style="color: #008000;">/*</span><span style="color: #008000;">----------------------------------------------------------------</span><span style="color: #008000;">*/</span>
+<span style="color: #0000ff;">#define</span> _GNU_SOURCE<span style="color: #000000;">
+#include </span>&lt;sched.h&gt;<span style="color: #000000;">
+#include </span>&lt;unistd.h&gt; <span style="color: #008000;">/*</span><span style="color: #008000;"> sysconf </span><span style="color: #008000;">*/</span><span style="color: #000000;">
+#include </span>&lt;stdlib.h&gt; <span style="color: #008000;">/*</span><span style="color: #008000;"> exit </span><span style="color: #008000;">*/</span><span style="color: #000000;">
+#include </span>&lt;stdio.h&gt;
+
+<span style="color: #0000ff;">int</span> main(<span style="color: #0000ff;">void</span><span style="color: #000000;">)
+{
+    </span><span style="color: #0000ff;">int</span><span style="color: #000000;"> i, nrcpus;
+    <span style="background-color: #ffff99;">cpu_set_t </span></span><span style="background-color: #ffff99;">*</span><span style="color: #000000;"><span style="background-color: #ffff99;">pmask</span>;
+    size_t cpusize;
+    unsigned </span><span style="color: #0000ff;">long</span> bitmask = <span style="color: #800080;">0</span><span style="color: #000000;">;
+
+    </span><span style="color: #008000;">/*</span><span style="color: #008000;"> get logical cpu number </span><span style="color: #008000;">*/</span><span style="color: #000000;">
+    nrcpus </span>=<span style="color: #000000;"> sysconf(_SC_NPROCESSORS_CONF);
+    
+    pmask </span>=<span style="color: #000000;"><span style="background-color: #ffff99;"> CPU_ALLOC(nrcpus)</span>;
+    cpusize </span>=<span style="color: #000000;"><span style="background-color: #ffff99;"> CPU_ALLOC_SIZE(nrcpus)</span>;
+    <span style="background-color: #ffff99;">CPU_ZERO_S(cpusize, pmask)</span>;
+    
+    </span><span style="color: #008000;">/*</span><span style="color: #008000;"> Get the CPU affinity for a pid </span><span style="color: #008000;">*/</span>
+    <span style="color: #0000ff;">if</span> (sched_getaffinity(<span style="color: #800080;">0</span>, cpusize, pmask) == -<span style="color: #800080;">1</span><span style="color: #000000;">) 
+    {
+        perror(</span><span style="color: #800000;">"</span><span style="color: #800000;">sched_getaffinity</span><span style="color: #800000;">"</span><span style="color: #000000;">);
+        <span style="background-color: #ffff99;">CPU_FREE(pmask)</span>;
+        exit(EXIT_FAILURE);
+    }
+    </span><span style="color: #0000ff;">for</span> (i = <span style="color: #800080;">0</span>; i &lt; nrcpus; i++<span style="color: #000000;">)
+    {
+        </span><span style="color: #0000ff;">if</span><span style="color: #000000;"> (<span style="background-color: #ffff99;">CPU_ISSET_S</span>(i, cpusize, pmask))
+        {
+             bitmask </span>|= (unsigned <span style="color: #0000ff;">long</span>)<span style="color: #800080;">0x01</span> &lt;&lt;<span style="color: #000000;"> i;
+            printf(</span><span style="color: #800000;">"</span><span style="color: #800000;">processor #%d is set\n</span><span style="color: #800000;">"</span><span style="color: #000000;">, i); 
+        }
+    }
+      printf(</span><span style="color: #800000;">"</span><span style="color: #800000;">bitmask = %#lx\n</span><span style="color: #800000;">"</span><span style="color: #000000;">, bitmask);
+      
+    <span style="background-color: #ffff99;">CPU_FREE(pmask)</span>;
+    exit(EXIT_SUCCESS);
+}</span></pre>
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="./Linux中CPU亲和性(affinity) - LubinLew - 博客园_files/copycode.gif" alt="复制代码"></a></span></div></div>
+<p>&nbsp;&nbsp;执行结果如下(4核CPU):</p>
+<div class="cnblogs_code" onclick="cnblogs_code_show(&#39;7a1202dd-73c7-4e7a-815a-d1f7702e432c&#39;)"><img id="code_img_closed_7a1202dd-73c7-4e7a-815a-d1f7702e432c" class="code_img_closed" src="./Linux中CPU亲和性(affinity) - LubinLew - 博客园_files/ContractedBlock.gif" alt=""><img id="code_img_opened_7a1202dd-73c7-4e7a-815a-d1f7702e432c" class="code_img_opened" style="display: none;" onclick="cnblogs_code_hide(&#39;7a1202dd-73c7-4e7a-815a-d1f7702e432c&#39;,event)" src="./Linux中CPU亲和性(affinity) - LubinLew - 博客园_files/ExpandedBlockStart.gif" alt="">
+<div id="cnblogs_code_open_7a1202dd-73c7-4e7a-815a-d1f7702e432c" class="cnblogs_code_hide">
+<pre>[cpu_affinity #1]$ gcc -g -Wall cpu_affinity.c
+[cpu_affinity #2]$ taskset 1 ./a.out 
+processor #0 is set
+bitmask = 0x1
+[cpu_affinity #3]$ taskset 1 ./a.out 
+processor #0 is set
+bitmask = 0x1
+[cpu_affinity #4]$ taskset 2 ./a.out 
+processor #1 is set
+bitmask = 0x2
+[cpu_affinity #5]$ taskset 3 ./a.out 
+processor #0 is set
+processor #1 is set
+bitmask = 0x3
+[cpu_affinity #6]$ taskset 4 ./a.out 
+processor #2 is set
+bitmask = 0x4
+[cpu_affinity #7]$ taskset 5 ./a.out 
+processor #0 is set
+processor #2 is set
+bitmask = 0x5
+[cpu_affinity #8]$ taskset 6 ./a.out 
+processor #1 is set
+processor #2 is set
+bitmask = 0x6
+[cpu_affinity #9]$ taskset 7 ./a.out 
+processor #0 is set
+processor #1 is set
+processor #2 is set
+bitmask = 0x7
+[cpu_affinity #10]$ taskset 8 ./a.out 
+processor #3 is set
+bitmask = 0x8
+[cpu_affinity #11]$ taskset 9 ./a.out 
+processor #0 is set
+processor #3 is set
+bitmask = 0x9
+[cpu_affinity #12]$ taskset A ./a.out 
+processor #1 is set
+processor #3 is set
+bitmask = 0xa
+[cpu_affinity #13]$ taskset B ./a.out 
+processor #0 is set
+processor #1 is set
+processor #3 is set
+bitmask = 0xb
+[cpu_affinity #14]$ taskset C ./a.out 
+processor #2 is set
+processor #3 is set
+bitmask = 0xc
+[cpu_affinity #15]$ taskset D ./a.out 
+processor #0 is set
+processor #2 is set
+processor #3 is set
+bitmask = 0xd
+[cpu_affinity #16]$ taskset E ./a.out 
+processor #1 is set
+processor #2 is set
+processor #3 is set
+bitmask = 0xe
+[cpu_affinity #17]$ taskset F ./a.out 
+processor #0 is set
+processor #1 is set
+processor #2 is set
+processor #3 is set
+bitmask = 0xf
+[cpu_affinity #18]$ taskset 0 ./a.out 
+sched_setaffinity: Invalid argument
+failed to set pid 0's affinity.</pre>
+</div>
+<span class="cnblogs_code_collapse">执行结果</span></div>
+<p>&nbsp;</p>
+<h2><span style="color: #008000;">&nbsp;3.2 例子二:设置进程的CPU亲和性后再获取显示CPU亲和性</span></h2>
+<div class="cnblogs_code"><div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="./Linux中CPU亲和性(affinity) - LubinLew - 博客园_files/copycode.gif" alt="复制代码"></a></span></div>
+<pre><span style="color: #0000ff;">#define</span> _GNU_SOURCE<span style="color: #000000;">
+#include </span>&lt;sched.h&gt;<span style="color: #000000;">
+#include </span>&lt;unistd.h&gt; <span style="color: #008000;">/*</span><span style="color: #008000;"> sysconf </span><span style="color: #008000;">*/</span><span style="color: #000000;">
+#include </span>&lt;stdlib.h&gt; <span style="color: #008000;">/*</span><span style="color: #008000;"> exit </span><span style="color: #008000;">*/</span><span style="color: #000000;">
+#include </span>&lt;stdio.h&gt;
+
+<span style="color: #0000ff;">int</span> main(<span style="color: #0000ff;">void</span><span style="color: #000000;">)
+{
+    </span><span style="color: #0000ff;">int</span><span style="color: #000000;"> i, nrcpus;
+    cpu_set_t mask;
+    unsigned </span><span style="color: #0000ff;">long</span> bitmask = <span style="color: #800080;">0</span><span style="color: #000000;">;
+    
+    CPU_ZERO(</span>&amp;<span style="color: #000000;">mask);
+    
+    CPU_SET(</span><span style="color: #800080;">0</span>, &amp;mask); <span style="color: #008000;">/*</span><span style="color: #008000;"> add CPU0 to cpu set </span><span style="color: #008000;">*/</span><span style="color: #000000;">
+    CPU_SET(</span><span style="color: #800080;">2</span>, &amp;mask); <span style="color: #008000;">/*</span><span style="color: #008000;"> add CPU2 to cpu set </span><span style="color: #008000;">*/</span>
+
+      <span style="color: #008000;">/*</span><span style="color: #008000;"> Set the CPU affinity for a pid </span><span style="color: #008000;">*/</span>
+    <span style="color: #0000ff;">if</span> (sched_setaffinity(<span style="color: #800080;">0</span>, <span style="color: #0000ff;">sizeof</span>(cpu_set_t), &amp;mask) == -<span style="color: #800080;">1</span><span style="color: #000000;">) 
+    {   
+        perror(</span><span style="color: #800000;">"</span><span style="color: #800000;">sched_setaffinity</span><span style="color: #800000;">"</span><span style="color: #000000;">);
+        exit(EXIT_FAILURE);
+    }
+    
+    CPU_ZERO(</span>&amp;<span style="color: #000000;">mask);
+    
+     </span><span style="color: #008000;">/*</span><span style="color: #008000;"> Get the CPU affinity for a pid </span><span style="color: #008000;">*/</span>
+    <span style="color: #0000ff;">if</span> (sched_getaffinity(<span style="color: #800080;">0</span>, <span style="color: #0000ff;">sizeof</span>(cpu_set_t), &amp;mask) == -<span style="color: #800080;">1</span><span style="color: #000000;">) 
+    {   
+        perror(</span><span style="color: #800000;">"</span><span style="color: #800000;">sched_getaffinity</span><span style="color: #800000;">"</span><span style="color: #000000;">);
+        exit(EXIT_FAILURE);
+    }
+
+       </span><span style="color: #008000;">/*</span><span style="color: #008000;"> get logical cpu number </span><span style="color: #008000;">*/</span><span style="color: #000000;">
+    nrcpus </span>=<span style="color: #000000;"> sysconf(_SC_NPROCESSORS_CONF);
+    
+    </span><span style="color: #0000ff;">for</span> (i = <span style="color: #800080;">0</span>; i &lt; nrcpus; i++<span style="color: #000000;">)
+    {
+        </span><span style="color: #0000ff;">if</span> (CPU_ISSET(i, &amp;<span style="color: #000000;">mask))
+        {
+            bitmask </span>|= (unsigned <span style="color: #0000ff;">long</span>)<span style="color: #800080;">0x01</span> &lt;&lt;<span style="color: #000000;"> i;
+            printf(</span><span style="color: #800000;">"</span><span style="color: #800000;">processor #%d is set\n</span><span style="color: #800000;">"</span><span style="color: #000000;">, i); 
+        }
+    }
+    printf(</span><span style="color: #800000;">"</span><span style="color: #800000;">bitmask = %#lx\n</span><span style="color: #800000;">"</span><span style="color: #000000;">, bitmask);
+
+    exit(EXIT_SUCCESS);
+}</span></pre>
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="./Linux中CPU亲和性(affinity) - LubinLew - 博客园_files/copycode.gif" alt="复制代码"></a></span></div></div>
+<p>&nbsp;</p>
+<h2><span style="color: #008000;">&nbsp;3.3 例子三：设置线程的CPU属性后再获取显示CPU亲和性</span></h2>
+<p>这个例子来源于Linux的man page.</p>
+<div class="cnblogs_code"><div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="./Linux中CPU亲和性(affinity) - LubinLew - 博客园_files/copycode.gif" alt="复制代码"></a></span></div>
+<pre><span style="color: #0000ff;">#define</span> _GNU_SOURCE<span style="color: #000000;">
+#include </span>&lt;pthread.h&gt; <span style="color: #008000;">//</span><span style="color: #008000;">不用再包含&lt;sched.h&gt;</span>
+#include &lt;stdio.h&gt;<span style="color: #000000;">
+#include </span>&lt;stdlib.h&gt;<span style="color: #000000;">
+#include </span>&lt;errno.h&gt;
+
+<span style="color: #0000ff;">#define</span> handle_error_en(en, msg) \
+        <span style="color: #0000ff;">do</span> { errno = en; perror(msg); exit(EXIT_FAILURE); } <span style="color: #0000ff;">while</span> (<span style="color: #800080;">0</span><span style="color: #000000;">)
+
+</span><span style="color: #0000ff;">int</span><span style="color: #000000;">
+main(</span><span style="color: #0000ff;">int</span> argc, <span style="color: #0000ff;">char</span> *<span style="color: #000000;">argv[])
+{
+    </span><span style="color: #0000ff;">int</span><span style="color: #000000;"> s, j;
+    cpu_set_t cpuset;
+    pthread_t thread;
+    
+    thread </span>=<span style="color: #000000;"> pthread_self();
+    
+    </span><span style="color: #008000;">/*</span><span style="color: #008000;"> Set affinity mask to include CPUs 0 to 7 </span><span style="color: #008000;">*/</span><span style="color: #000000;">
+    CPU_ZERO(</span>&amp;<span style="color: #000000;">cpuset);
+    </span><span style="color: #0000ff;">for</span> (j = <span style="color: #800080;">0</span>; j &lt; <span style="color: #800080;">8</span>; j++<span style="color: #000000;">)
+        CPU_SET(j, </span>&amp;<span style="color: #000000;">cpuset);
+    
+    s </span>= pthread_setaffinity_np(thread, <span style="color: #0000ff;">sizeof</span>(cpu_set_t), &amp;<span style="color: #000000;">cpuset);
+    </span><span style="color: #0000ff;">if</span> (s != <span style="color: #800080;">0</span><span style="color: #000000;">)
+    {
+        handle_error_en(s, </span><span style="color: #800000;">"</span><span style="color: #800000;">pthread_setaffinity_np</span><span style="color: #800000;">"</span><span style="color: #000000;">);
+    }
+    
+    </span><span style="color: #008000;">/*</span><span style="color: #008000;"> Check the actual affinity mask assigned to the thread </span><span style="color: #008000;">*/</span><span style="color: #000000;">
+    s </span>= pthread_getaffinity_np(thread, <span style="color: #0000ff;">sizeof</span>(cpu_set_t), &amp;<span style="color: #000000;">cpuset);
+    </span><span style="color: #0000ff;">if</span> (s != <span style="color: #800080;">0</span><span style="color: #000000;">)
+    {
+        handle_error_en(s, </span><span style="color: #800000;">"</span><span style="color: #800000;">pthread_getaffinity_np</span><span style="color: #800000;">"</span><span style="color: #000000;">);
+    }
+    
+    printf(</span><span style="color: #800000;">"</span><span style="color: #800000;">Set returned by pthread_getaffinity_np() contained:\n</span><span style="color: #800000;">"</span><span style="color: #000000;">);
+    </span><span style="color: #0000ff;">for</span> (j = <span style="color: #800080;">0</span>; j &lt; CPU_SETSIZE; j++) <span style="color: #008000;">//</span><span style="color: #008000;">CPU_SETSIZE 是定义在&lt;sched.h&gt;中的宏，通常是1024</span>
+<span style="color: #000000;">    {
+        </span><span style="color: #0000ff;">if</span> (CPU_ISSET(j, &amp;<span style="color: #000000;">cpuset))
+        {
+            printf(</span><span style="color: #800000;">"</span><span style="color: #800000;">    CPU %d\n</span><span style="color: #800000;">"</span><span style="color: #000000;">, j);
+        }
+    }
+    exit(EXIT_SUCCESS);
+}</span></pre>
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="./Linux中CPU亲和性(affinity) - LubinLew - 博客园_files/copycode.gif" alt="复制代码"></a></span></div></div>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<h2><span style="color: #008000;">3.4 例子四：使用seched_setaffinity设置线程的CPU亲和性</span></h2>
+<div class="cnblogs_code"><div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="./Linux中CPU亲和性(affinity) - LubinLew - 博客园_files/copycode.gif" alt="复制代码"></a></span></div>
+<pre><span style="color: #0000ff;">#define</span> _GNU_SOURCE<span style="color: #000000;">
+#include </span>&lt;sched.h&gt;<span style="color: #000000;">
+#include </span>&lt;stdlib.h&gt;<span style="color: #000000;">
+#include </span>&lt;sys/syscall.h&gt; <span style="color: #008000;">//</span><span style="color: #008000;"> syscall</span>
+
+<span style="color: #0000ff;">int</span> main(<span style="color: #0000ff;">void</span><span style="color: #000000;">)
+{
+    <span style="background-color: #ffff99;">pid_t tid</span>;
+    </span><span style="color: #0000ff;">int</span><span style="color: #000000;"> i, nrcpus;
+    cpu_set_t mask;
+    unsigned </span><span style="color: #0000ff;">long</span> bitmask = <span style="color: #800080;">0</span><span style="color: #000000;">;
+    
+    CPU_ZERO(</span>&amp;<span style="color: #000000;">mask);
+    CPU_SET(</span><span style="color: #800080;">0</span>, &amp;mask); <span style="color: #008000;">/*</span><span style="color: #008000;"> add CPU0 to cpu set </span><span style="color: #008000;">*/</span><span style="color: #000000;">
+    CPU_SET(</span><span style="color: #800080;">2</span>, &amp;mask); <span style="color: #008000;">/*</span><span style="color: #008000;"> add CPU2 to cpu set </span><span style="color: #008000;">*/</span>
+
+    <span style="color: #008000;">//</span><span style="color: #008000;"> get tid(线程的PID，线程是轻量级进程，所以其本质是一个进程)</span>
+    <span style="background-color: #ffff99;">tid = syscall(__NR_gettid)</span>; <span style="color: #008000;">//</span><span style="color: #008000;"> or syscall(SYS_gettid);</span>
+
+      <span style="color: #008000;">/*</span><span style="color: #008000;"> Set the CPU affinity for a pid </span><span style="color: #008000;">*/</span>
+    <span style="color: #0000ff;">if</span> (sched_setaffinity(<span style="background-color: #ffff99;">tid</span>, <span style="color: #0000ff;">sizeof</span>(cpu_set_t), &amp;mask) == -<span style="color: #800080;">1</span><span style="color: #000000;">) 
+    {
+        perror(</span><span style="color: #800000;">"</span><span style="color: #800000;">sched_setaffinity</span><span style="color: #800000;">"</span><span style="color: #000000;">);
+        exit(EXIT_FAILURE);
+    }
+    
+    exit(EXIT_SUCCESS);
+}</span></pre>
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="./Linux中CPU亲和性(affinity) - LubinLew - 博客园_files/copycode.gif" alt="复制代码"></a></span></div></div>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>---------------------------------------------------------------------------------------------------------------------</p>
+<p>参考文献:</p>
+<p>http://www.yboren.com/posts/44412.html?utm_source=tuicool</p>
+<p>http://www.ibm.com/developerworks/cn/linux/l-affinity.html</p>
+<p>http://saplingidea.iteye.com/blog/633616</p>
+<p>http://blog.csdn.net/ttyttytty12/article/details/11726569</p>
+<p>&nbsp;https://en.wikipedia.org/wiki/Processor_affinity</p>
+<p>http://blog.chinaunix.net/uid-23622436-id-3311579.html</p>
+<p>http://www.cnblogs.com/emanlee/p/3587571.html</p>
+<p>http://blog.chinaunix.net/uid-26651253-id-3342161.html</p>
+<p>http://blog.csdn.net/delphiwcdj/article/details/8476547</p>
+<p>http://www.man7.org/linux/man-pages/man3/pthread_setaffinity_np.3.html</p>
+<p>http://www.man7.org/linux/man-pages/man3/pthread_attr_setaffinity_np.3.html</p>
+<p>man CPU_SET taskset</p>
+<p>&nbsp;</p></div><div id="MySignature"></div>
+<div class="clear"></div>
+<div id="blog_post_info_block">
+<div id="BlogPostCategory">分类: <a href="http://www.cnblogs.com/LubinLew/category/532658.html" target="_blank">Linux</a></div>
+<div id="EntryTag">标签: <a href="http://www.cnblogs.com/LubinLew/tag/cpu_affinity/">cpu_affinity</a>, <a href="http://www.cnblogs.com/LubinLew/tag/affinity/">affinity</a>, <a href="http://www.cnblogs.com/LubinLew/tag/CPU%E4%BA%B2%E5%92%8C%E6%80%A7/">CPU亲和性</a>, <a href="http://www.cnblogs.com/LubinLew/tag/CPU%E4%BA%B2%E5%92%8C%E5%8A%9B/">CPU亲和力</a></div>
+<div id="blog_post_info"><div id="green_channel">
+        <a href="javascript:void(0);" id="green_channel_digg" onclick="DiggIt(4612358,cb_blogId,1);green_channel_success(this,&#39;谢谢推荐！&#39;);">好文要顶</a>
+            <a id="green_channel_follow" onclick="follow(&#39;7f95d7a5-9a4b-e311-8d02-90b11c0b17d6&#39;);" href="javascript:void(0);">关注我</a>
+    <a id="green_channel_favorite" onclick="AddToWz(cb_entryId);return false;" href="javascript:void(0);">收藏该文</a>
+    <a id="green_channel_weibo" href="javascript:void(0);" title="分享至新浪微博" onclick="ShareToTsina()"><img src="./Linux中CPU亲和性(affinity) - LubinLew - 博客园_files/icon_weibo_24.png" alt=""></a>
+    <a id="green_channel_wechat" href="javascript:void(0);" title="分享至微信" onclick="shareOnWechat()"><img src="./Linux中CPU亲和性(affinity) - LubinLew - 博客园_files/wechat.png" alt=""></a>
+</div>
+<div id="author_profile">
+    <div id="author_profile_info" class="author_profile_info">
+            <a href="http://home.cnblogs.com/u/LubinLew/" target="_blank"><img src="./Linux中CPU亲和性(affinity) - LubinLew - 博客园_files/20161020112217.png" class="author_avatar" alt=""></a>
+        <div id="author_profile_detail" class="author_profile_info">
+            <a href="http://home.cnblogs.com/u/LubinLew/">LubinLew</a><br>
+            <a href="http://home.cnblogs.com/u/LubinLew/followees">关注 - 0</a><br>
+            <a href="http://home.cnblogs.com/u/LubinLew/followers">粉丝 - 12</a>
+        </div>
+    </div>
+    <div class="clear"></div>
+    <div id="author_profile_honor"></div>
+    <div id="author_profile_follow">
+                <a href="javascript:void(0);" onclick="follow(&#39;7f95d7a5-9a4b-e311-8d02-90b11c0b17d6&#39;);return false;">+加关注</a>
+    </div>
+</div>
+<div id="div_digg">
+    <div class="diggit" onclick="votePost(4612358,&#39;Digg&#39;)">
+        <span class="diggnum" id="digg_count">0</span>
+    </div>
+    <div class="buryit" onclick="votePost(4612358,&#39;Bury&#39;)">
+        <span class="burynum" id="bury_count">0</span>
+    </div>
+    <div class="clear"></div>
+    <div class="diggword" id="digg_tips">
+    </div>
+</div>
+</div>
+<div class="clear"></div>
+<div id="post_next_prev"><a href="http://www.cnblogs.com/LubinLew/p/ByteOrder.html" class="p_n_p_prefix">« </a> 上一篇：<a href="http://www.cnblogs.com/LubinLew/p/ByteOrder.html" title="发布于2015-06-30 15:24">字节序</a><br><a href="http://www.cnblogs.com/LubinLew/p/GCC-__builtin_expect.html" class="p_n_p_prefix">» </a> 下一篇：<a href="http://www.cnblogs.com/LubinLew/p/GCC-__builtin_expect.html" title="发布于2015-07-07 15:41">__builtin_expect — 分支预测优化</a><br></div>
+</div>
+
+
+		</div>
+		<div class="postDesc">posted @ <span id="post-date">2015-07-02 11:18</span> <a href="http://www.cnblogs.com/LubinLew/">LubinLew</a> 阅读(<span id="post_view_count">6586</span>) 评论(<span id="post_comment_count">0</span>)  <a href="https://i.cnblogs.com/EditPosts.aspx?postid=4612358" rel="nofollow">编辑</a> <a href="http://www.cnblogs.com/LubinLew/p/cpu_affinity.html#" onclick="AddToWz(4612358);return false;">收藏</a></div>
+	</div>
+	<script type="text/javascript">var allowComments=true,cb_blogId=168566,cb_entryId=4612358,cb_blogApp=currentBlogApp,cb_blogUserGuid='7f95d7a5-9a4b-e311-8d02-90b11c0b17d6',cb_entryCreatedDate='2015/7/2 11:18:00';loadViewCount(cb_entryId);</script>
+	
+</div><!--end: topics 文章、评论容器-->
+</div><a name="!comments"></a><div id="blog-comments-placeholder"></div><script type="text/javascript">var commentManager = new blogCommentManager();commentManager.renderComments(0);</script>
+<div id="comment_form" class="commentform">
+<a name="commentform"></a>
+<div id="divCommentShow"></div>
+<div id="comment_nav"><span id="span_refresh_tips"></span><a href="javascript:void(0);" onclick="return RefreshCommentList();" id="lnk_RefreshComments" runat="server" clientidmode="Static">刷新评论</a><a href="http://www.cnblogs.com/LubinLew/p/cpu_affinity.html#" onclick="return RefreshPage();">刷新页面</a><a href="http://www.cnblogs.com/LubinLew/p/cpu_affinity.html#top">返回顶部</a></div>
+<div id="comment_form_container"><div class="login_tips">注册用户登录后才能发表评论，请 <a rel="nofollow" href="javascript:void(0);" class="underline" onclick="return login(&#39;commentform&#39;);">登录</a> 或 <a rel="nofollow" href="javascript:void(0);" class="underline" onclick="return register();">注册</a>，<a href="http://www.cnblogs.com/">访问</a>网站首页。</div></div>
+<div class="ad_text_commentbox" id="ad_text_under_commentbox"></div>
+<div id="ad_t2"><a href="http://www.ucancode.com/index.htm" target="_blank">【推荐】50万行VC++源码: 大型组态工控、电力仿真CAD与GIS源码库</a><br><a href="https://cloud.tencent.com/developer/labs?fromSource=gwzcw.436876.436876.436876" target="_blank">【推荐】腾讯云上实验室 1小时搭建人工智能应用</a><br><a href="http://www.gcpowertools.com.cn/products/spreadjs/?utm_source=cnblogs&amp;utm_medium=blogpage&amp;utm_term=bottom&amp;utm_content=SpreadJS&amp;utm_campaign=community" target="_blank">【推荐】可嵌入您系统的“在线Excel”！SpreadJS 纯前端表格控件</a><br><a href="http://click.aliyun.com/m/18488/" target="_blank">【推荐】阿里云“全民云计算”优惠升级</a><br></div>
+<div id="opt_under_post"></div>
+<div id="cnblogs_c1" class="c_ad_block"><a href="https://www.mtyun.com/promote/ab6dceaa-8a4f-45b4-9946-e2fe5564266a/" target="_blank"><img width="300" height="250" src="./Linux中CPU亲和性(affinity) - LubinLew - 博客园_files/24442-20170906183359226-1435856414.jpg" alt="美团云0907"></a></div>
+<div id="under_post_news"><div class="itnews c_ad_block"><b>最新IT新闻</b>:<br> ·  <a href="http://news.cnblogs.com/n/578371/" target="_blank">谷歌无人驾驶汽车投资数据曝光 剥离Waymo前花了11亿美元</a><br> ·  <a href="http://news.cnblogs.com/n/578370/" target="_blank">《神秘的程序员们》漫画：我男朋友是个程序员# 2 之《噩梦》</a><br> ·  <a href="http://news.cnblogs.com/n/578369/" target="_blank">李笑来，那个一顿饭点8条鲈鱼的人</a><br> ·  <a href="http://news.cnblogs.com/n/578368/" target="_blank">周鸿祎：我做天使投资时如何选择创业者</a><br> ·  <a href="http://news.cnblogs.com/n/578367/" target="_blank">《我的世界》手游iOS首发，树立标杆开启国内沙盒游戏元年</a><br>» <a href="http://news.cnblogs.com/" title="IT新闻" target="_blank">更多新闻...</a></div></div>
+<div id="cnblogs_c2" class="c_ad_block"><a href="https://www.jiguang.cn/devservice?source=bky&amp;hmsr=%E5%8D%9A%E5%AE%A2%E5%9B%AD&amp;hmpl=&amp;hmcu=&amp;hmkw=&amp;hmci=" target="_blank"><img width="468" height="60" src="./Linux中CPU亲和性(affinity) - LubinLew - 博客园_files/24442-20170908132742304-1045119416.gif" alt="极光0908"></a></div>
+<div id="under_post_kb"><div class="itnews c_ad_block" id="kb_block"><b>最新知识库文章</b>:<br><div id="kb_recent"> ·  <a href="http://kb.cnblogs.com/page/578103/" target="_blank">Google 及其云智慧</a><br> ·  <a href="http://kb.cnblogs.com/page/575829/" target="_blank">做到这一点，你也可以成为优秀的程序员</a><br> ·  <a href="http://kb.cnblogs.com/page/566880/" target="_blank">写给立志做码农的大学生</a><br> ·  <a href="http://kb.cnblogs.com/page/569057/" target="_blank">架构腐化之谜</a><br> ·  <a href="http://kb.cnblogs.com/page/572854/" target="_blank">学会思考，而不只是编程</a><br></div>» <a href="http://kb.cnblogs.com/" target="_blank">更多知识库文章...</a></div></div>
+<div id="HistoryToday" class="c_ad_block"></div>
+<script type="text/javascript">
+    fixPostBody();
+    setTimeout(function () { incrementViewCount(cb_entryId); }, 50);
+    deliverAdT2();
+    deliverAdC1();
+    deliverAdC2();    
+    loadNewsAndKb();
+    loadBlogSignature();
+    LoadPostInfoBlock(cb_blogId, cb_entryId, cb_blogApp, cb_blogUserGuid);
+    GetPrevNextPost(cb_entryId, cb_blogId, cb_entryCreatedDate);
+    loadOptUnderPost();
+    GetHistoryToday(cb_blogId, cb_blogApp, cb_entryCreatedDate);   
+</script>
+</div>
+
+
+	</div><!--end: forFlow -->
+	</div><!--end: mainContent 主体内容容器-->
+
+	<div id="sideBar">
+		<div id="sideBarMain">
+			
+<!--done-->
+<div class="newsItem">
+<h3 class="catListTitle">公告</h3>
+	<div id="blog-news"><div id="profile_block">昵称：<a href="http://home.cnblogs.com/u/LubinLew/">LubinLew</a><br>园龄：<a href="http://home.cnblogs.com/u/LubinLew/" title="入园时间：2013-11-12">3年10个月</a><br>粉丝：<a href="http://home.cnblogs.com/u/LubinLew/followers/">12</a><br>关注：<a href="http://home.cnblogs.com/u/LubinLew/followees/">0</a><div id="p_b_follow"><a href="javascript:void(0);" onclick="follow(&#39;7f95d7a5-9a4b-e311-8d02-90b11c0b17d6&#39;)">+加关注</a></div></div></div><script type="text/javascript">loadBlogNews();</script>
+</div>
+
+			<div id="blog-calendar" style=""><table id="blogCalendar" class="Cal" cellspacing="0" cellpadding="0" title="Calendar">
+	<tbody><tr><td colspan="7"><table class="CalTitle" cellspacing="0">
+		<tbody><tr><td class="CalNextPrev"><a href="javascript:void(0);" onclick="loadBlogCalendar(&#39;2017/08/01&#39;);return false;">&lt;</a></td><td align="center">2017年9月</td><td class="CalNextPrev" align="right"><a href="javascript:void(0);" onclick="loadBlogCalendar(&#39;2017/10/01&#39;);return false;">&gt;</a></td></tr>
+	</tbody></table></td></tr><tr><th class="CalDayHeader" align="center" abbr="日" scope="col">日</th><th class="CalDayHeader" align="center" abbr="一" scope="col">一</th><th class="CalDayHeader" align="center" abbr="二" scope="col">二</th><th class="CalDayHeader" align="center" abbr="三" scope="col">三</th><th class="CalDayHeader" align="center" abbr="四" scope="col">四</th><th class="CalDayHeader" align="center" abbr="五" scope="col">五</th><th class="CalDayHeader" align="center" abbr="六" scope="col">六</th></tr><tr><td class="CalOtherMonthDay" align="center">27</td><td class="CalOtherMonthDay" align="center">28</td><td class="CalOtherMonthDay" align="center">29</td><td class="CalOtherMonthDay" align="center">30</td><td class="CalOtherMonthDay" align="center">31</td><td align="center">1</td><td class="CalWeekendDay" align="center">2</td></tr><tr><td class="CalWeekendDay" align="center">3</td><td align="center">4</td><td align="center">5</td><td align="center">6</td><td align="center">7</td><td align="center">8</td><td class="CalWeekendDay" align="center">9</td></tr><tr><td class="CalWeekendDay" align="center">10</td><td align="center">11</td><td align="center">12</td><td align="center">13</td><td align="center">14</td><td align="center">15</td><td class="CalTodayDay" align="center">16</td></tr><tr><td class="CalWeekendDay" align="center">17</td><td align="center">18</td><td align="center">19</td><td align="center">20</td><td align="center">21</td><td align="center">22</td><td class="CalWeekendDay" align="center">23</td></tr><tr><td class="CalWeekendDay" align="center">24</td><td align="center">25</td><td align="center">26</td><td align="center">27</td><td align="center">28</td><td align="center">29</td><td class="CalWeekendDay" align="center">30</td></tr><tr><td class="CalOtherMonthDay" align="center">1</td><td class="CalOtherMonthDay" align="center">2</td><td class="CalOtherMonthDay" align="center">3</td><td class="CalOtherMonthDay" align="center">4</td><td class="CalOtherMonthDay" align="center">5</td><td class="CalOtherMonthDay" align="center">6</td><td class="CalOtherMonthDay" align="center">7</td></tr>
+</tbody></table></div><script type="text/javascript">loadBlogDefaultCalendar();</script>
+			
+			<div id="leftcontentcontainer">
+				<div id="blog-sidecolumn"><div id="sidebar_search" class="sidebar-block">
+<div id="sidebar_search" class="mySearch">
+<h3 class="catListTitle">搜索</h3>
+<div id="sidebar_search_box">
+<div id="widget_my_zzk" class="div_my_zzk"><input type="text" id="q" onkeydown="return zzk_go_enter(event);" class="input_my_zzk">&nbsp;<input onclick="zzk_go()" type="button" value="找找看" id="btnZzk" class="btn_my_zzk"></div>
+<div id="widget_my_google" class="div_my_zzk"><input type="text" name="google_q" id="google_q" onkeydown="return google_go_enter(event)" class="input_my_zzk">&nbsp;<input onclick="google_go()" type="button" value="谷歌搜索" class="btn_my_zzk"></div>
+</div>
+</div>
+
+</div><div id="sidebar_shortcut" class="sidebar-block">
+<div class="catListLink">
+<h3 class="catListTitle">常用链接</h3>
+<ul>
+<li><a href="http://www.cnblogs.com/LubinLew/p/" title="我的博客的随笔列表">我的随笔</a></li><li><a href="http://www.cnblogs.com/LubinLew/MyComments.html" title="我发表过的评论列表">我的评论</a></li><li><a href="http://www.cnblogs.com/LubinLew/OtherPosts.html" title="我评论过的随笔列表">我的参与</a></li><li><a href="http://www.cnblogs.com/LubinLew/RecentComments.html" title="我的博客的评论列表">最新评论</a></li><li><a href="http://www.cnblogs.com/LubinLew/tag/" title="我的博客的标签列表">我的标签</a></li>
+</ul>
+<div id="itemListLin_con" style="display:none;">
+<ul>
+
+</ul>
+</div>
+</div></div><div id="sidebar_recentposts" class="sidebar-block">
+<div class="catListEssay">
+<h3 class="catListTitle">最新随笔</h3>
+<ul>
+<li><a href="http://www.cnblogs.com/LubinLew/p/Guaji.html">1. VS挂机移动鼠标代码</a></li><li><a href="http://www.cnblogs.com/LubinLew/p/MFC-HotKey.html">2. MFC-注册热键</a></li><li><a href="http://www.cnblogs.com/LubinLew/p/Windows-Hook-Keyboard.html">3. Windows键盘钩子</a></li><li><a href="http://www.cnblogs.com/LubinLew/p/POSIX-getaddrinfo.html">4. getaddrinfo</a></li><li><a href="http://www.cnblogs.com/LubinLew/p/Ubuntu-FixProblems.html">5. Ubuntu系统常见问题</a></li><li><a href="http://www.cnblogs.com/LubinLew/p/SoureInsight-CustomCommand.html">6. SourceInSight自定义命令说明与应用</a></li><li><a href="http://www.cnblogs.com/LubinLew/p/Hodgepodge.html">7. 杂记</a></li><li><a href="http://www.cnblogs.com/LubinLew/p/CentOS-InstallKDE.html">8. CentOS安装KDE</a></li><li><a href="http://www.cnblogs.com/LubinLew/p/GCC-__builtin_expect.html">9. __builtin_expect — 分支预测优化</a></li><li><a href="http://www.cnblogs.com/LubinLew/p/cpu_affinity.html">10. Linux中CPU亲和性(affinity)</a></li>
+</ul>
+</div>
+</div><div id="sidebar_toptags" class="sidebar-block">
+<div class="catListTag">
+<h3 class="catListTitle">我的标签</h3>
+<ul>
+<li><a href="http://www.cnblogs.com/LubinLew/tag/OperatorOverload/">OperatorOverload</a>(6)</li><li><a href="http://www.cnblogs.com/LubinLew/tag/%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F/">正则表达式</a>(2)</li><li><a href="http://www.cnblogs.com/LubinLew/tag/%E8%A7%A3%E5%8E%8B/">解压</a>(2)</li><li><a href="http://www.cnblogs.com/LubinLew/tag/%E6%89%B9%E5%A4%84%E7%90%86/">批处理</a>(2)</li><li><a href="http://www.cnblogs.com/LubinLew/tag/Batch/">Batch</a>(2)</li><li><a href="http://www.cnblogs.com/LubinLew/tag/BRE/">BRE</a>(2)</li><li><a href="http://www.cnblogs.com/LubinLew/tag/ERE/">ERE</a>(2)</li><li><a href="http://www.cnblogs.com/LubinLew/tag/Linux/">Linux</a>(2)</li><li><a href="http://www.cnblogs.com/LubinLew/tag/C%2B%2B/">C++</a>(2)</li><li><a href="http://www.cnblogs.com/LubinLew/tag/for/">for</a>(2)</li><li><a href="http://www.cnblogs.com/LubinLew/tag/">更多</a></li>
+</ul>
+</div></div><div id="sidebar_categories">
+<div id="sidebar_postcategory" class="catListPostCategory sidebar-block">
+<h3 class="catListTitle">随笔分类<span style="font-size:11px;font-weight:normal">(71)</span></h3>
+
+<ul>
+
+<li><a id="CatList_LinkList_0_Link_0" href="http://www.cnblogs.com/LubinLew/category/532662.html">Algorithm(1)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_1" href="http://www.cnblogs.com/LubinLew/category/532902.html">APUE</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_2" href="http://www.cnblogs.com/LubinLew/category/579681.html">BlueTooth(1)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_3" href="http://www.cnblogs.com/LubinLew/category/532659.html">C/C++(28)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_4" href="http://www.cnblogs.com/LubinLew/category/574926.html">CentOS(2)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_5" href="http://www.cnblogs.com/LubinLew/category/561215.html">CommonSense(4)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_6" href="http://www.cnblogs.com/LubinLew/category/532664.html">DesignPattern</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_7" href="http://www.cnblogs.com/LubinLew/category/708793.html">GCC(1)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_8" href="http://www.cnblogs.com/LubinLew/category/585938.html">GLIB(2)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_9" href="http://www.cnblogs.com/LubinLew/category/572810.html">ITRON</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_10" href="http://www.cnblogs.com/LubinLew/category/576012.html">Link(1)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_11" href="http://www.cnblogs.com/LubinLew/category/532658.html">Linux(12)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_12" href="http://www.cnblogs.com/LubinLew/category/560693.html">MCU(2)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_13" href="http://www.cnblogs.com/LubinLew/category/831151.html">MFC(1)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_14" href="http://www.cnblogs.com/LubinLew/category/532661.html">OS</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_15" href="http://www.cnblogs.com/LubinLew/category/565968.html">POSIX(10)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_16" href="http://www.cnblogs.com/LubinLew/category/837846.html">Python</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_17" href="http://www.cnblogs.com/LubinLew/category/637154.html">QT</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_18" href="http://www.cnblogs.com/LubinLew/category/718771.html">Sports</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_19" href="http://www.cnblogs.com/LubinLew/category/533763.html">TOOLS(3)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_20" href="http://www.cnblogs.com/LubinLew/category/532665.html">uC/OS II</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_21" href="http://www.cnblogs.com/LubinLew/category/532660.html">VBA</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_22" href="http://www.cnblogs.com/LubinLew/category/532663.html">Windows(1)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_23" href="http://www.cnblogs.com/LubinLew/category/535555.html">Windows批处理(2)</a> </li>
+
+</ul>
+
+</div>
+
+<div id="sidebar_postarchive" class="catListPostArchive sidebar-block">
+<h3 class="catListTitle">随笔档案<span style="font-size:11px;font-weight:normal">(76)</span></h3>
+
+<ul>
+
+<li><a id="CatList_LinkList_1_Link_0" href="http://www.cnblogs.com/LubinLew/archive/2016/05.html">2016年5月 (2)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_1" href="http://www.cnblogs.com/LubinLew/archive/2016/04.html">2016年4月 (1)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_2" href="http://www.cnblogs.com/LubinLew/archive/2016/01.html">2016年1月 (1)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_3" href="http://www.cnblogs.com/LubinLew/archive/2015/11.html">2015年11月 (2)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_4" href="http://www.cnblogs.com/LubinLew/archive/2015/07.html">2015年7月 (4)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_5" href="http://www.cnblogs.com/LubinLew/archive/2015/06.html">2015年6月 (2)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_6" href="http://www.cnblogs.com/LubinLew/archive/2015/05.html">2015年5月 (1)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_7" href="http://www.cnblogs.com/LubinLew/archive/2015/04.html">2015年4月 (2)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_8" href="http://www.cnblogs.com/LubinLew/archive/2014/10.html">2014年10月 (2)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_9" href="http://www.cnblogs.com/LubinLew/archive/2014/08.html">2014年8月 (2)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_10" href="http://www.cnblogs.com/LubinLew/archive/2014/07.html">2014年7月 (1)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_11" href="http://www.cnblogs.com/LubinLew/archive/2014/06.html">2014年6月 (5)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_12" href="http://www.cnblogs.com/LubinLew/archive/2014/05.html">2014年5月 (20)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_13" href="http://www.cnblogs.com/LubinLew/archive/2014/04.html">2014年4月 (12)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_14" href="http://www.cnblogs.com/LubinLew/archive/2014/03.html">2014年3月 (17)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_15" href="http://www.cnblogs.com/LubinLew/archive/2013/11.html">2013年11月 (2)</a> </li>
+
+</ul>
+
+</div>
+
+</div><div id="sidebar_scorerank" class="sidebar-block">
+<div class="catListBlogRank">
+<h3 class="catListTitle">积分与排名</h3>
+<ul>
+	<li class="liScore">
+		积分 -	56324
+	</li>
+	<li class="liRank">
+		排名 -	5537
+	</li>
+</ul>
+</div>
+
+
+</div><div id="sidebar_recentcomments" class="sidebar-block"><div id="recent_comments_wrap">
+<div class="catListComment">
+<h3 class="catListTitle">最新评论</h3>
+
+	<div id="RecentCommentsBlock"><ul>
+        <li class="recent_comment_title"><a href="http://www.cnblogs.com/LubinLew/p/Cpp-CallOrderOfConstructorAndDeconstructor.html#3596154">1. Re:C++构造函数和析构函数的调用顺序</a></li>
+        <li class="recent_comment_body">good</li>
+        <li class="recent_comment_author">--BlueSky~</li>
+        <li class="recent_comment_title"><a href="http://www.cnblogs.com/LubinLew/p/CentOS_InstallChrome.html#3586453">2. Re:CentOS安装Chrome</a></li>
+        <li class="recent_comment_body">Loaded plugins: fastestmirror, refresh-packagekit, securityLoading mirror speeds from cached hostfil......</li>
+        <li class="recent_comment_author">--FancDevin</li>
+        <li class="recent_comment_title"><a href="http://www.cnblogs.com/LubinLew/p/CentOS_RepairMBR.html#2953149">3. Re:双系统恢复CentOS的MBR</a></li>
+        <li class="recent_comment_body">感谢分享</li>
+        <li class="recent_comment_author">--john23.net</li>
+        <li class="recent_comment_title"><a href="http://www.cnblogs.com/LubinLew/p/CentOS_RepairMBR.html#2947436">4. Re:双系统恢复CentOS的MBR</a></li>
+        <li class="recent_comment_body">多谢分享！！</li>
+        <li class="recent_comment_author">--美洲象</li>
+        <li class="recent_comment_title"><a href="http://www.cnblogs.com/LubinLew/p/default_in_switch.html#2936313">5. Re:switch中的default的位置</a></li>
+        <li class="recent_comment_body">这个还真没去考虑过</li>
+        <li class="recent_comment_author">--codingwu</li>
+</ul>
+</div>
+</div>
+</div></div><div id="sidebar_topviewedposts" class="sidebar-block"><div id="topview_posts_wrap">
+<div class="catListView">
+<h3 class="catListTitle">阅读排行榜</h3>
+	<div id="TopViewPostsBlock"><ul><li><a href="http://www.cnblogs.com/LubinLew/p/cpu_affinity.html">1. Linux中CPU亲和性(affinity)(6586)</a></li><li><a href="http://www.cnblogs.com/LubinLew/p/Linux_JSON-C_Install.html">2. Linux安装JSON-C(4811)</a></li><li><a href="http://www.cnblogs.com/LubinLew/p/dbus-glib_and_GDBus.html">3. dbus-glib 和 GDBus 的区别(4368)</a></li><li><a href="http://www.cnblogs.com/LubinLew/p/struct_enum_union_in_cpp.html">4. C和C++中结构体(struct)、联合体(union)、枚举(enum)的区别(2989)</a></li><li><a href="http://www.cnblogs.com/LubinLew/p/CppOperatorOverload-SpecialOperator.html">5. C++运算符重载——重载特殊运算符(2919)</a></li><li><a href="http://www.cnblogs.com/LubinLew/p/Knownledge_Time.html">6. 一些时间的概念与区分(UTC、GMT、LT、TAI等)(2210)</a></li><li><a href="http://www.cnblogs.com/LubinLew/p/Cpp-CallOrderOfConstructorAndDeconstructor.html">7. C++构造函数和析构函数的调用顺序(2189)</a></li><li><a href="http://www.cnblogs.com/LubinLew/p/Linux-Http-DownLoad.html">8. Linux下使用http协议下载文件(2161)</a></li><li><a href="http://www.cnblogs.com/LubinLew/p/CppNamespace.html">9. C++名字空间/C++命名空间(2062)</a></li><li><a href="http://www.cnblogs.com/LubinLew/p/LVDS_and_CVBS.html">10. LVDS、CVBS(1791)</a></li><li><a href="http://www.cnblogs.com/LubinLew/p/CppOperatorOverload-BinaryOperator.html">11. C++运算符重载——重载二元运算符(1715)</a></li><li><a href="http://www.cnblogs.com/LubinLew/p/cpp-iostream-and-iostream_h.html">12. &lt;iostream&gt; 和 &lt;iostream.h&gt;的区别 及 Linux下编译iostream.h的方法(1712)</a></li><li><a href="http://www.cnblogs.com/LubinLew/p/POSIX-DataStructure.html">13. POSIX-Data Structure(1529)</a></li><li><a href="http://www.cnblogs.com/LubinLew/p/CppOperatorOverload-IOOperator.html">14. C++运算符重载——输入/输出运算符(1467)</a></li><li><a href="http://www.cnblogs.com/LubinLew/p/POSIX-Timer.html">15. POSIX Timer(1415)</a></li><li><a href="http://www.cnblogs.com/LubinLew/p/GCC-__builtin_expect.html">16. __builtin_expect — 分支预测优化(1379)</a></li><li><a href="http://www.cnblogs.com/LubinLew/p/POSIX-mq_open.html">17. mq_open(1281)</a></li><li><a href="http://www.cnblogs.com/LubinLew/p/POSIX-getaddrinfo.html">18. getaddrinfo(1199)</a></li><li><a href="http://www.cnblogs.com/LubinLew/p/CentOS_InstallChrome.html">19. CentOS安装Chrome(1093)</a></li><li><a href="http://www.cnblogs.com/LubinLew/p/CentOS_RepairMBR.html">20. 双系统恢复CentOS的MBR(1044)</a></li><li><a href="http://www.cnblogs.com/LubinLew/p/CppOperatorOverload-UnaryOperator.html">21. C++运算符重载——重载一元运算符(1008)</a></li><li><a href="http://www.cnblogs.com/LubinLew/p/GLIB-g_thread_init.html">22. g_thread_init(977)</a></li><li><a href="http://www.cnblogs.com/LubinLew/p/dbus_launch.html">23. dbus-launch(824)</a></li><li><a href="http://www.cnblogs.com/LubinLew/p/Tail-chaining.html">24. Tail-chaining(末尾连锁)中断说明(773)</a></li><li><a href="http://www.cnblogs.com/LubinLew/p/Linux-gethostbyname.html">25. gethostbyname(722)</a></li><li><a href="http://www.cnblogs.com/LubinLew/p/CppOperatorOverload-TypeCast.html">26. C++运算符重载——类型转换(696)</a></li><li><a href="http://www.cnblogs.com/LubinLew/p/POSIX-MessageQueue.html">27. POSIX消息队列(673)</a></li><li><a href="http://www.cnblogs.com/LubinLew/p/SoureInsight-CustomCommand.html">28. SourceInSight自定义命令说明与应用(641)</a></li><li><a href="http://www.cnblogs.com/LubinLew/p/define_variable_in_for.html">29. for语句中声明变量(536)</a></li><li><a href="http://www.cnblogs.com/LubinLew/p/Cpp-DeconstructorFunction.html">30. C++析构函数(514)</a></li><li><a href="http://www.cnblogs.com/LubinLew/p/POSIX-shared_memory.html">31. POSIX共享内存(487)</a></li><li><a href="http://www.cnblogs.com/LubinLew/p/CppLanguageStandard.html">32. C++标准文档下载(472)</a></li><li><a href="http://www.cnblogs.com/LubinLew/p/BluetoothProtocolStack.html">33. 蓝牙协议栈(469)</a></li><li><a href="http://www.cnblogs.com/LubinLew/p/Cpp-ClassMember.html">34. C++类的成员(437)</a></li><li><a href="http://www.cnblogs.com/LubinLew/p/MFC-HotKey.html">35. MFC-注册热键(363)</a></li><li><a href="http://www.cnblogs.com/LubinLew/p/POSIX-semaphores.html">36. POSIX信号量(342)</a></li><li><a href="http://www.cnblogs.com/LubinLew/p/default_in_switch.html">37. switch中的default的位置(337)</a></li><li><a href="http://www.cnblogs.com/LubinLew/p/POSIX-mq_notify.html">38. mq_notify(336)</a></li><li><a href="http://www.cnblogs.com/LubinLew/p/gcc_process.html">39. gcc编译过程(317)</a></li><li><a href="http://www.cnblogs.com/LubinLew/p/Linux_SwapSpace.html">40. swap分区(302)</a></li></ul></div>
+</div>
+</div></div><div id="sidebar_topcommentedposts" class="sidebar-block"><div id="topfeedback_posts_wrap">
+<div class="catListFeedback">
+<h3 class="catListTitle">评论排行榜</h3>
+	<div id="TopFeedbackPostsBlock"><ul><li><a href="http://www.cnblogs.com/LubinLew/p/CentOS_RepairMBR.html">1. 双系统恢复CentOS的MBR(2)</a></li><li><a href="http://www.cnblogs.com/LubinLew/p/Cpp-CallOrderOfConstructorAndDeconstructor.html">2. C++构造函数和析构函数的调用顺序(1)</a></li><li><a href="http://www.cnblogs.com/LubinLew/p/CentOS_InstallChrome.html">3. CentOS安装Chrome(1)</a></li><li><a href="http://www.cnblogs.com/LubinLew/p/default_in_switch.html">4. switch中的default的位置(1)</a></li></ul></div>
+</div>
+</div></div><div id="sidebar_topdiggedposts" class="sidebar-block"><div id="topdigg_posts_wrap">
+<div class="catListView">
+<h3 class="catListTitle">推荐排行榜</h3>
+<div id="TopDiggPostsBlock"><ul><li><a href="http://www.cnblogs.com/LubinLew/p/cpp-iostream-and-iostream_h.html">1. &lt;iostream&gt; 和 &lt;iostream.h&gt;的区别 及 Linux下编译iostream.h的方法(3)</a></li><li><a href="http://www.cnblogs.com/LubinLew/p/Windows-Hook-Keyboard.html">2. Windows键盘钩子(1)</a></li><li><a href="http://www.cnblogs.com/LubinLew/p/GCC-__builtin_expect.html">3. __builtin_expect — 分支预测优化(1)</a></li><li><a href="http://www.cnblogs.com/LubinLew/p/POSIX-DataStructure.html">4. POSIX-Data Structure(1)</a></li><li><a href="http://www.cnblogs.com/LubinLew/p/CentOS_RepairMBR.html">5. 双系统恢复CentOS的MBR(1)</a></li></ul></div>
+</div></div></div></div><script type="text/javascript">loadBlogSideColumn();</script>
+			</div>
+			
+		</div><!--end: sideBarMain -->
+	</div><!--end: sideBar 侧边栏容器 -->
+	<div class="clear"></div>
+	</div><!--end: main -->
+	<div class="clear"></div>
+	<div id="footer">
+		
+<!--done-->
+Copyright ©2017 LubinLew
+	</div><!--end: footer -->
+</div><!--end: home 自定义的最大容器 -->
+
+
+<div style="position: static; width: 0px; height: 0px; border: none; padding: 0px; margin: 0px;"><div id="trans-tooltip"><div id="tip-left-top" style="background: url(&quot;chrome-extension://ikkepelhgbcgmhhmcmpfkjmchccjblkd/imgs/map/tip-left-top.png&quot;);"></div><div id="tip-top" style="background: url(&quot;chrome-extension://ikkepelhgbcgmhhmcmpfkjmchccjblkd/imgs/map/tip-top.png&quot;) repeat-x;"></div><div id="tip-right-top" style="background: url(&quot;chrome-extension://ikkepelhgbcgmhhmcmpfkjmchccjblkd/imgs/map/tip-right-top.png&quot;);"></div><div id="tip-right" style="background: url(&quot;chrome-extension://ikkepelhgbcgmhhmcmpfkjmchccjblkd/imgs/map/tip-right.png&quot;) repeat-y;"></div><div id="tip-right-bottom" style="background: url(&quot;chrome-extension://ikkepelhgbcgmhhmcmpfkjmchccjblkd/imgs/map/tip-right-bottom.png&quot;);"></div><div id="tip-bottom" style="background: url(&quot;chrome-extension://ikkepelhgbcgmhhmcmpfkjmchccjblkd/imgs/map/tip-bottom.png&quot;) repeat-x;"></div><div id="tip-left-bottom" style="background: url(&quot;chrome-extension://ikkepelhgbcgmhhmcmpfkjmchccjblkd/imgs/map/tip-left-bottom.png&quot;);"></div><div id="tip-left" style="background: url(&quot;chrome-extension://ikkepelhgbcgmhhmcmpfkjmchccjblkd/imgs/map/tip-left.png&quot;);"></div><div id="trans-content"></div></div><div id="tip-arrow-bottom" style="background: url(&quot;chrome-extension://ikkepelhgbcgmhhmcmpfkjmchccjblkd/imgs/map/tip-arrow-bottom.png&quot;);"></div><div id="tip-arrow-top" style="background: url(&quot;chrome-extension://ikkepelhgbcgmhhmcmpfkjmchccjblkd/imgs/map/tip-arrow-top.png&quot;);"></div></div></body></html>
