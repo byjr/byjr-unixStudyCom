@@ -3,7 +3,7 @@
 OBJECTS 	:=$(EXE_TARGET:=.o)
 CC			:=gcc
 CFLAGS		:=-Werror -g -I. 
-LDFLAGS		:=-llzl -lrt -lpthread
+LDFLAGS		:=-L /lib64 -lpthread -llzl -lrt
 
 all:$(EXE_TARGET)
 	

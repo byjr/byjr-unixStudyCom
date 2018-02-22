@@ -12,7 +12,7 @@ int un_fifo_init(char *mode){
 			return -1;		
 		}		
 	}
-	inf("fifo is OK !");
+	inf("fifo:"FIFO_PATH" is OK !");
 	int style=mode[0]=='r'?O_RDONLY:mode[0]=='w'?O_WRONLY:O_RDWR;
 	fifo_fd=open(FIFO_PATH,style|O_EXCL);
 	if(fifo_fd<0) return -1;
