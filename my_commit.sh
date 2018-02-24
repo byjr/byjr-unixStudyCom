@@ -10,8 +10,7 @@ else
 	commitM=$2
 fi
 git add -A .
-echo \"$commitM\"
-git commit -m "add px_mutex"
+git commit -m "$commitM"
 
 if [ x$is_wait = "x" ]; then
 	echo -n "\033[33;1mAre you want to push :\033[0m"
