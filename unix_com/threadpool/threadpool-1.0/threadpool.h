@@ -1,17 +1,18 @@
 #ifndef _THREADPOOL_H
 #define _THREADPOOL_H 1
-#include <lzl/px_cond.h>
-#include <lzl/px_mutex.h>
-#include <lzl/ring_buf.h>
+#include "lzl/px_thread.h"
+#include "lzl/px_cond.h"
+#include "lzl/px_mutex.h"
+#include "lzl/ring_buf.h"
 typedef void *(*tp_task_func_t)(void *args);
 
 typedef struct threadpool_t{
 	ring_buf_t *task_rb;//任务循环buf
 	pthread_t *trd_tbl;	//线程表
 	char destory_flag;
-	pthread_mutex_t	tp_mtx;
+	pthread_mutex_t	mtx;
 	int max_trd_count;
-	pthread_cond_t tp_cond;
+	pthread_cond_t cond;
 	pthread_attr_t thread_attr;
 }threadpool_t;
 
