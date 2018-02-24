@@ -6,14 +6,6 @@
 #include <lzl/misc.h>
 #include <lzl/slog.h>
 
-int px_mutexattr_set(pthread_mutexattr_t *p_attr){
-	px_thread_mutexattr_setprioceiling(p_attr,2);
-	px_thread_mutexattr_setprotocol(p_attr,PTHREAD_PRIO_INHERIT);
-	px_thread_mutexattr_setpshared(p_attr,PTHREAD_PROCESS_SHARED);
-	px_thread_mutexattr_setrobust(p_attr,1);
-	px_thread_mutexattr_settype(p_attr,PTHREAD_MUTEX_RECURSIVE);
-	return 0;
-}
 int px_mutexattr_show(pthread_mutexattr_t *p_attr){
 	int prioceiling=0;
 	px_thread_mutexattr_getprioceiling(p_attr,&prioceiling);
@@ -41,5 +33,14 @@ int px_mutexattr_show(pthread_mutexattr_t *p_attr){
 															"???");
 	return 0;
 }
-
+int px_mutexattr_set(pthread_mutexattr_t *p_attr){
+	px_mutexattr_show(p_attr);
+	// px_thread_mutexattr_setprioceiling(p_attr,2);
+	// px_thread_mutexattr_setprotocol(p_attr,PTHREAD_PRIO_INHERIT);
+	px_thread_mutexattr_setpshared(p_attr,PTHREAD_PROCESS_SHARED);
+	// px_thread_mutexattr_setrobust(p_attr,1);
+	// px_thread_mutexattr_settype(p_attr,PTHREAD_MUTEX_RECURSIVE);
+	px_mutexattr_show(p_attr);
+	return 0;
+}
 

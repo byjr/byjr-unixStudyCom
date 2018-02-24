@@ -1,15 +1,5 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <errno.h>
-#include <string.h>
-#include <unistd.h>
-#include <sys/mman.h>
-#include <sys/stat.h>        /* For mode constants */
-#include <fcntl.h>           /* For O_* constants */
-#include <time.h>
-#include "slog.h"
-#include "misc.h"
 #include "px_shm.h"
+	
 int px_shm_get(usr_shm_t **p_ptr,const char *name)
 {
 	int ret=0,fd=0,fail=1;	
