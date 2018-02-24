@@ -13,7 +13,7 @@ static void *tp_star_routine(void *args){
 		ret=rb_read(&task,p_tp->task_rb);
 		do{
 			if(!ret || p_tp->destory_flag)break;
-			px_thread_cond_wait(&(p_tp->tp_cond),&(p_tp->tp_mtx));
+			px_cond_wait(&(p_tp->tp_cond),&(p_tp->tp_mtx));
 			task.flag=2;
 			task.tid=pthread_self();
 			ret=rb_read(&task,p_tp->task_rb);
@@ -37,7 +37,7 @@ int threadpool_task_add(threadpool_t *p_tp,tp_task_func_t func,void *args){
 	px_mutex_lock(&(p_tp->tp_mtx));
 	rb_write(p_tp->task_rb,&tp_task);
 	// rb_flag_query(p_tp->task_rb);	
-	px_thread_cond_signal(&(p_tp->tp_cond));
+	px_cond_signal(&(p_tp->tp_cond));
 	px_mutex_unlock(&(p_tp->tp_mtx));
 	return 0;
 }
@@ -100,7 +100,7 @@ threadpool_t *threadpool_create(int max_trd,int max_task){
 	p_tp=(threadpool_t *)calloc(1,sizeof(threadpool_t));
 	if(!p_tp) exit(-1);
 	px_mutex_init(&(p_tp->tp_mtx),NULL);
-	px_thread_cond_init(&(p_tp->tp_cond),NULL);
+	px_cond_init(&(p_tp->tp_cond),NULL);
 	p_tp->task_rb=(ring_buf_t *)calloc(1,sizeof(ring_buf_t));
 	if(!p_tp->task_rb) exit(-1);
 	p_tp->task_rb->tbl=(rb_unit_t*)calloc(max_task,sizeof(rb_unit_t));
@@ -121,7 +121,7 @@ int threadpool_destory(threadpool_t *p_tp){
 	int i=0;
 	px_mutex_lock(&(p_tp->tp_mtx));	
 	p_tp->destory_flag=1;
-	px_thread_cond_broadcast(&(p_tp->tp_cond));
+	px_cond_broadcast(&(p_tp->tp_cond));
 	px_mutex_unlock(&(p_tp->tp_mtx));
 	for(i=0;i<p_tp->max_trd_count;i++){
 		px_thread_join(p_tp->trd_tbl[i],NULL);
@@ -131,7 +131,7 @@ int threadpool_destory(threadpool_t *p_tp){
 	free(p_tp->task_rb->tbl);
 	free(p_tp->task_rb);	
 	px_thread_attr_destroy(&(p_tp->thread_attr));
-	px_thread_cond_destroy(&(p_tp->tp_cond));
+	px_cond_destroy(&(p_tp->tp_cond));
 	px_mutex_destroy(&(p_tp->tp_mtx));
 	FREE(p_tp);
 	return 0;

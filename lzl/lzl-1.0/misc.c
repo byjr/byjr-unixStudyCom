@@ -13,8 +13,7 @@
 #include "slog.h"
 
 static  pthread_mutex_t popen_mtx = PTHREAD_MUTEX_INITIALIZER;
-int exec_cmd(const char *cmd)
-{
+int exec_cmd(const char *cmd){
 	char buf[MAX_COMMAND_LEN];
 	FILE *pfile;
 	int status = -2;

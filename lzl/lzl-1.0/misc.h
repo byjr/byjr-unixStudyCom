@@ -43,7 +43,7 @@ typedef struct misc_cmd_t{
 	int (*handle)(void *);
 }misc_cmd_t;
 
-extern int exe_cmd(const char *fmt,...);
+extern int exec_cmd(const char *cmd);
 extern int exec_cmd2(const char *cmd, ...);
 extern int exec_cmd3(char *rbuf, int rbuflen, const char *cmd, ...);
 extern pid_t get_pid_by_name(char *pidName);

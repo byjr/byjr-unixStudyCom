@@ -25,6 +25,7 @@ typedef struct usr_shm_t{
 	int sv[2];
 	pthread_mutex_t mtx;
 	pthread_spinlock_t spLock;
+	pthread_cond_t cond;
 	char cmd_buf[64];
 	char dat_buf[1024];
 }usr_shm_t;
