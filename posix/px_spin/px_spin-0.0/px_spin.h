@@ -1,11 +1,16 @@
 #ifndef _PX_SPIN_LOCK_H
 #define _PX_SPIN_LOCK_H 1
 //  ____________________________________________________________________________
+#if 0
 extern int pthread_spin_destroy(pthread_spinlock_t *__lock);
 extern int pthread_spin_init(pthread_spinlock_t *__lock,int __pshared);
+__pshared:
+	PTHREAD_PROCESS_SHARED:
+	PTHREAD_PROCESS_PRIVATE:
 extern int pthread_spin_lock(pthread_spinlock_t *__lock);
 extern int pthread_spinlock_trylock(pthread_spinlock_t *__lock);
 extern int pthread_spin_unlock(pthread_spinlock_t *__lock);
+#endif
 // ____________________________________________________________________________ */
 #define SIG_CS_CMD SIGRTMIN
 #define px_spin_destroy(p_lock) ({\
