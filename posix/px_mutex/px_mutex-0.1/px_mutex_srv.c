@@ -7,9 +7,9 @@ size_t loop_count=0;
 int start_handle(void *args){
 	char ** argv=(char **)args;
 	IS_ARG_COUNT_LESS_THAN(1);
-	// px_thread_mutex_lock(&(px_shm->mtx));
+	// px_mutex_lock(&(px_shm->mtx));
 	loop_count=argv[1][0]-'0';
-	px_thread_mutex_unlock(&(px_shm->mtx));	
+	px_mutex_unlock(&(px_shm->mtx));	
 	return 0;
 }
 
@@ -21,15 +21,15 @@ int tools_init(void *args){
 	int ret=px_shm_get(&px_shm,"/shm1x");
 	if(ret<0) return -1;
 	pthread_mutexattr_t attr;
-	px_thread_mutexattr_init(&attr);
+	px_mutexattr_init(&attr);
 	 ret=px_mutexattr_set(&attr);
 	if(ret<0)return -1;
-	ret=px_thread_mutex_init(&(px_shm->mtx),&attr);
+	ret=px_mutex_init(&(px_shm->mtx),&attr);
 	if(ret<0)return -1;
 	return 0;
 }
 int main(int argc,char *argv[]){
-	log_init("l=11111");
+	log_init("l=11111");	
 	int ret=tools_init(NULL);
 	if(ret<0) return -1;	
 	pid_t pid=fork();
@@ -52,8 +52,8 @@ int main(int argc,char *argv[]){
 	}
 	inf("my_pid is:%d",getpid());
 	do{
-		px_thread_mutex_lock(&(px_shm->mtx));
+		px_mutex_lock(&(px_shm->mtx));
 		war("loop_count=%u",++loop_count);
-		// px_thread_mutex_unlock(&(px_shm->mtx));		
+		// px_mutex_unlock(&(px_shm->mtx));		
 	}while(1);
 }

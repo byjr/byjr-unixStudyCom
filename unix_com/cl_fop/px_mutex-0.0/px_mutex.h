@@ -108,14 +108,14 @@ extern int px_mutexattr_show(pthread_mutexattr_t *p_attr);
 })
 
 
-#define px_thread_mutex_init(p_mutex,p_mutexattr) ({\
+#define px_mutex_init(p_mutex,p_mutexattr) ({\
 	int ret=0;\
 	ret=pthread_mutex_init(p_mutex,p_mutexattr);\
 	if(ret)show_errno(ret,"pthread_mutex_init");\
 	ret?-1:0;\
 })
 
-#define px_thread_mutex_destroy(p_mutex) ({\
+#define px_mutex_destroy(p_mutex) ({\
 	int ret=0;\
 	ret=pthread_mutex_destroy(p_mutex);\
 	if(ret){\
@@ -127,21 +127,21 @@ extern int px_mutexattr_show(pthread_mutexattr_t *p_attr);
 
 
 
-#define px_thread_mutex_getprioceiling(p_mutex,p_prioceiling) ({\
+#define px_mutex_getprioceiling(p_mutex,p_prioceiling) ({\
 	int ret=0;\
 	ret=pthread_mutex_getprioceiling(p_mutex,p_prioceiling);\
 	if(ret)show_errno(ret,"pthread_mutex_getprioceiling");\
 	ret?-1:0;\
 })
 
-#define px_thread_mutex_setprioceiling(p_mutex,prioceiling,p_old_ceiling) ({\
+#define px_mutex_setprioceiling(p_mutex,prioceiling,p_old_ceiling) ({\
 	int ret=0;\
 	ret=pthread_mutex_setprioceiling(p_mutex,prioceiling,p_old_ceiling);\
 	if(ret)show_errno(ret,"pthread_mutex_setprioceiling");\
 	ret?-1:0;\
 })
 
-#define px_thread_mutex_consistent(p_mutex) ({\
+#define px_mutex_consistent(p_mutex) ({\
 	int ret=0;\
 	ret=pthread_mutex_consistent(p_mutex);\
 	if(ret)show_errno(ret,"pthread_mutex_consistent");\
@@ -149,26 +149,26 @@ extern int px_mutexattr_show(pthread_mutexattr_t *p_attr);
 })
 
 
-#define px_thread_mutex_lock(p_mutex) ({\
+#define px_mutex_lock(p_mutex) ({\
 	int ret=0;\
 	ret=pthread_mutex_lock(p_mutex);\
 	if(ret)show_errno(ret,"pthread_mutex_lock");\
 	ret?-1:0;\
 })
 
-#define px_thread_mutex_trylock(p_mutex) ({\
+#define px_mutex_trylock(p_mutex) ({\
 	int ret=0;\
 	ret=pthread_mutex_trylock(p_mutex);\
 	ret=ret?-1:0;\
 })
 
-#define px_thread_mutex_timedlock(p_abstime) ({\
+#define px_mutex_timedlock(p_abstime) ({\
 	int ret=0;\
 	ret=pthread_mutex_timedlock(p_abstime);\
 	ret=ret?-1:0;\
 })
 
-#define px_thread_mutex_unlock(p_mutex) ({\
+#define px_mutex_unlock(p_mutex) ({\
 	int ret=0;\
 	ret=pthread_mutex_unlock(p_mutex);\
 	if(ret)show_errno(ret,"pthread_mutex_unlock");\

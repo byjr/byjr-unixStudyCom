@@ -65,7 +65,7 @@ int main(int argc,char **argv){
 	log_init(NULL);
 // tools_init_code begin:
 	px_thread_mutexattr_init(&mutexattr);
-	px_thread_mutex_init(&mutex,&mutexattr);
+	px_mutex_init(&mutex,&mutexattr);
 	for(i=0;i<get_ar_count(tida);i++){
 		px_thread_create(&tida[i],NULL,p_routine_array[i],NULL);
 		// px_seminit(&sema[i],0,0);
@@ -84,7 +84,7 @@ int main(int argc,char **argv){
 		// px_semdestroy(&sema[i]);		
 		px_thread_join(tida[i],NULL);
 	}
-	px_thread_mutex_destroy(&mutex);
+	px_mutex_destroy(&mutex);
 	px_thread_mutexattr_destroy(&mutexattr);
 	return 0;
 }

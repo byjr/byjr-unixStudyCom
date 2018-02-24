@@ -51,6 +51,6 @@ int main(int argc,char *argv[]){
 		int ret=px_spin_trylock(&(px_shm->spLock));		
 		if(ret<0) continue;
 		war("loop_count=%u",++loop_count);
-		// px_thread_mutex_unlock(&(px_shm->mtx));		
+		// px_mutex_unlock(&(px_shm->mtx));		
 	}while(1);
 }
