@@ -1,19 +1,5 @@
-#include <signal.h>
-#include <stdio.h>
-#include <errno.h>
-#include <pthread.h>
 #include "px_cond.h"
-#include <lzl/misc.h>
-#include <lzl/slog.h>
-#include <lzl/px_timer.h>
-int px_condattr_set(pthread_condattr_t *p_attr)
-{
-	px_condattr_setpshared(p_attr,PTHREAD_PROCESS_SHARED);
-	__clockid_t cid=CLOCK_MONOTONIC;//条件变量现在只支持：墙上时钟和单调时钟
-	px_condattr_setclock(p_attr,cid);
-}
-int px_condattr_show(pthread_condattr_t *p_attr)
-{
+int px_condattr_show(pthread_condattr_t *p_attr){
 	int shared=0;
 	px_condattr_getpshared(p_attr,&shared);
 	inf("条件作用域为:%s",	shared==PTHREAD_PROCESS_SHARED	?"系统范围":\
@@ -30,5 +16,10 @@ int px_condattr_show(pthread_condattr_t *p_attr)
 														
 	return 0;
 }
-
-
+int px_condattr_set(pthread_condattr_t *p_attr){
+	px_condattr_show(p_attr);
+	px_condattr_setpshared(p_attr,PTHREAD_PROCESS_SHARED);
+	__clockid_t cid=CLOCK_MONOTONIC;//条件变量现在只支持：墙上时钟和单调时钟
+	px_condattr_setclock(p_attr,cid);
+	px_condattr_show(p_attr);
+}

@@ -1,5 +1,12 @@
 #ifndef _PX_COND_H
 #define _PX_COND_H 1
+#include <signal.h>
+#include <stdio.h>
+#include <errno.h>
+#include <pthread.h>
+#include <lzl/misc.h>
+#include <lzl/slog.h>
+#include <lzl/px_timer.h>
 //  ____________________________________________________________________________
 extern int pthread_condattr_init(pthread_condattr_t *__attr);
 extern int pthread_condattr_destroy(pthread_condattr_t *__attr);
@@ -12,7 +19,7 @@ extern int pthread_cond_init(pthread_cond_t *__cond,const pthread_condattr_t *__
 extern int pthread_cond_signal(pthread_cond_t *__cond);
 extern int pthread_cond_broadcast(pthread_cond_t *__cond);
 extern int pthread_cond_timedwait(pthread_cond_t *__cond,pthread_mutex_t *__mutex,const struct timespec *__abstime);
-extern int pthread_cond_wait(pthread_cond_t *__cond,pthread_mutex_t *__mutex);//等待条件并解锁
+extern int pthread_cond_wait(pthread_cond_t *__cond,pthread_mutex_t *__mutex);//等待条件并重新上锁
 // ____________________________________________________________________________ 
 extern int px_condattr_set(pthread_condattr_t *p_attr);
 extern int px_condattr_show(pthread_condattr_t *p_attr);
