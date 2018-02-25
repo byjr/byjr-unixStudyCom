@@ -34,7 +34,7 @@ extern int timer_create(clockid_t __clock_id,struct sigevent * __evp,timer_t * _
 extern int timer_delete(timer_t __timerid);
 extern int timer_settime(timer_t __timerid,int __flags,const struct itimerspec * __value,struct itimerspec *__ovalue);
 extern int timer_gettime(timer_t __timerid,struct itimerspec *__value);//获取剩余时间（减计数器）
-extern int timer_getoverrun(timer_t __timerid);
+extern int timer_getoverrun(timer_t __timerid); //取得一个定时器的超限运行次数(信号丢失次数)
 extern int timespec_get(struct timespec *__ts,int __base);
 extern struct tm *getdate(const char *__string);
 extern int getdate_r(const char * __string,struct tm * __resbufp);
@@ -51,6 +51,22 @@ extern int utimes(const char *__file, const struct timeval __tvp[2]);
 extern int lutimes(const char *__file, const struc t timeval __tvp[2]);
 extern int futimes(int __fd, const struct timeval __tvp[2]);
 extern int futimesat(int __fd, const char *__file,const struct timeval __tvp[2]);
+
+1.tmID 不能在进程间共享（即使tmID 定义在 共享内存区也不行）
+2.it_interval：倒计时周期；it_value：倒计时起点
+3.如何获取 单调时间、原始单调时间等：clock_gettime，使用下面的clockid:
+	CLOCK_REALTIME,
+	CLOCK_MONOTONIC,
+	CLOCK_PROCESS_CPUTIME_ID,
+	CLOCK_THREAD_CPUTIME_ID,
+	CLOCK_MONOTONIC_RAW,
+	CLOCK_REALTIME_COARSE,
+	CLOCK_MONOTONIC_COARSE,
+	CLOCK_BOOTTIME,
+	CLOCK_REALTIME_ALARM,
+	CLOCK_BOOTTIME_ALARM,
+	// CLOCK_SGI_CYCLE,
+	CLOCK_TAI,	
 #endif
 
 long get_tsd(struct timespec *pt1,struct timespec *pt2,char lev);
@@ -94,6 +110,6 @@ long get_tsd(struct timespec *pt1,struct timespec *pt2,char lev);
 	int ret=0;\
 	ret=timer_getoverrun(id);\
 	if(-1==ret)	show_errno(0,"px_timer_getoverrun");\
-	ret?-1:0;\
+	ret;\
 })
 #endif
