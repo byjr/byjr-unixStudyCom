@@ -24,9 +24,9 @@ typedef void *(*p_start_routine_t)(void *);
 void *star_routine(void *args){
 	struct timespec ts = {1,0};	
 	do{
-		px_thread_rwlock_wrlock(&rwlock);
+		px_rwlock_wrlock(&rwlock);
 		nanosleep(&ts, NULL);
-		px_thread_rwlock_unlock(&rwlock);		
+		px_rwlock_unlock(&rwlock);		
 		war("%s:%d/%ld is done",__func__,getpid(),pthread_self());		
 	}while(0);
 }
@@ -34,9 +34,9 @@ void *read_routine(void *args){
 	struct timespec ts = {1,0};	
 	do{
 		// px_semwait(&sema[IDX_READ]);
-		px_thread_rwlock_rdlock(&rwlock);
+		px_rwlock_rdlock(&rwlock);
 		nanosleep(&ts, NULL);
-		px_thread_rwlock_unlock(&rwlock);		
+		px_rwlock_unlock(&rwlock);		
 		war("%s:%d/%ld is done",__func__,getpid(),pthread_self());		
 	}while(0);	
 }
@@ -44,9 +44,9 @@ void *write_routine(void *args){
 	struct timespec ts = {5,0};	
 	do{
 		// px_semwait(&sema[IDX_WRITE]);
-		px_thread_rwlock_wrlock(&rwlock);
+		px_rwlock_wrlock(&rwlock);
 		nanosleep(&ts, NULL);
-		px_thread_rwlock_unlock(&rwlock);		
+		px_rwlock_unlock(&rwlock);		
 		inf("%s:%d/%ld is done",__func__,getpid(),pthread_self());		
 	}while(0);	
 }
@@ -97,8 +97,8 @@ int main(int argc,char **argv){
 	int ret=0,i=0;
 	log_init(NULL);
 // tools_init_code begin:
-	px_thread_rwlockattr_init(&rwlockattr);
-	px_thread_rwlock_init(&rwlock,&rwlockattr);
+	px_rwlockattr_init(&rwlockattr);
+	px_rwlock_init(&rwlock,&rwlockattr);
 	for(i=0;i<get_ar_count(tida);i++){
 		// px_thread_create(&tida[i],NULL,p_routine_array[i],NULL);
 		// px_seminit(&sema[i],0,0);
@@ -116,7 +116,7 @@ int main(int argc,char **argv){
 		// px_semdestroy(&sema[i]);		
 		// px_thread_join(tida[i],NULL);
 	}
-	px_thread_rwlock_destroy(&rwlock);
-	px_thread_rwlockattr_destroy(&rwlockattr);
+	px_rwlock_destroy(&rwlock);
+	px_rwlockattr_destroy(&rwlockattr);
 	return 0;
 }

@@ -24,7 +24,7 @@ int main(int argc,char **argv){
 	int ret=0;
 	log_init(NULL);
 // tools_init_code:
-	px_thread_rwlockattr_init(&rwlockattr);
+	px_rwlockattr_init(&rwlockattr);
 	cs_cmd_init(SIGRTMIN);
 	int count=sizeof(cs_cmd_tbl)/sizeof(cs_cmd_tbl[0]);
 	do{

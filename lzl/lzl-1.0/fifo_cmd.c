@@ -1,7 +1,7 @@
 #include "fifo_cmd.h"
 char fifo_cmd_buf[FIFO_BUF_SIZE]="";
-int fifo_cmd_init(void){
-	int ret=un_fifo_init("+");
+int fifo_cmd_init(char *path){
+	int ret=un_fifo_init(path,"+");
 	if(ret<0)return -1;
 	return 0;
 }

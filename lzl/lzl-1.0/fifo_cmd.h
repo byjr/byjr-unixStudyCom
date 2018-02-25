@@ -7,7 +7,7 @@
 
 #define ADD_CMD_ITEM(x) {#x,x##_handle},
 
-#define FIFO_CMD_SEPARATOR ","
+#define FIFO_CMD_SEPARATOR " "
 
 typedef struct arg_ct_t{
 	char *arg;
@@ -19,7 +19,7 @@ typedef struct fifo_cmd_t{
 	int (*handle)(void *);
 }fifo_cmd_t;
 
-extern int fifo_cmd_init();
+extern int fifo_cmd_init(char *);
 int fifo_cmd_wait(void);
 extern int fifo_cmd_proc(void *table,int num);
 #endif

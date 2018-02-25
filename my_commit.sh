@@ -5,7 +5,7 @@ commitM=""
 git status
 
 if [ x$is_wait = "x" ]; then
-	echo -n "\033[33;1mAre you want to commit :\033[0m"
+	echo -n "\033[33;1mPlease input commit masseg :\033[0m"
 	read commitM
 else
 	commitM=$2
