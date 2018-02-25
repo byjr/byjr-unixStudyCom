@@ -13,6 +13,7 @@ static void *tp_star_routine(void *args){
 		do{
 			if(!ret || pTP->destory_flag)break;
 			px_cond_wait(&(pTP->cond),&(pTP->mtx));
+			// rb_flag_query(pTP->task_rb);
 			task.flag=2;
 			task.tid=pthread_self();
 			ret=rb_read(&task,pTP->task_rb);
@@ -29,7 +30,7 @@ static void *tp_star_routine(void *args){
 	}while(1);
 }
 int threadpool_task_add(threadpool_t *pTP,tp_task_func_t func,void *args){
-	if(!pTP) return  -1;
+	if(!pTP) return  -1; 
 	if(pTP->destory_flag) return  -1;
 	int ret=0;
 	rb_unit_t tp_task={1};
@@ -37,8 +38,10 @@ int threadpool_task_add(threadpool_t *pTP,tp_task_func_t func,void *args){
 	tp_task.args=args;
 	px_mutex_lock(&(pTP->mtx));
 	rb_write(pTP->task_rb,&tp_task);
-	// rb_flag_query(pTP->task_rb);	
 	px_cond_signal(&(pTP->cond));
+	// war("------------>>");
+	// rb_flag_query(pTP->task_rb);
+	// war("------------<<");
 	px_mutex_unlock(&(pTP->mtx));
 	return 0;
 }
@@ -119,11 +122,11 @@ threadpool_t *threadpool_create(int max_trd,int max_task){
 	return pTP;
 }
 int threadpool_destory(threadpool_t *pTP){
-	int i=0;
 	px_mutex_lock(&(pTP->mtx));	
 	pTP->destory_flag=1;
 	px_cond_broadcast(&(pTP->cond));
 	px_mutex_unlock(&(pTP->mtx));
+	int i=0;
 	for(i=0;i<pTP->max_trd_count;i++){
 		px_thread_join(pTP->trd_tbl[i],NULL);
 		inf("thread %ld succeed exit!",pTP->trd_tbl[i]);
