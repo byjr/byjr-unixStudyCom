@@ -7,7 +7,7 @@
 
 #define ADD_CMD_ITEM(x) {#x,x##_handle},
 
-#define FIFO_CMD_SEPARATOR " "
+#define FIFO_CMD_SEPARATOR "/"
 
 typedef struct arg_ct_t{
 	char *arg;

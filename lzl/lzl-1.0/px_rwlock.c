@@ -1,5 +1,4 @@
 #include "px_rwlock.h"
-
 int px_rwlockattr_set(pthread_rwlockattr_t *p_attr)
 {
 	int ret=0;
