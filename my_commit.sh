@@ -1,4 +1,5 @@
 #!/bin/sh
+cd /home/lz/work/w-rt-study/byjr-unixStudyCom/
 is_wait=$1
 commitM=""
 git status
@@ -17,3 +18,4 @@ if [ x$is_wait = "x" ]; then
 	read yn_store
 fi
 git push origin master
+cd -
