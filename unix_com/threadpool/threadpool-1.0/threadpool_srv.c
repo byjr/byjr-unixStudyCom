@@ -72,7 +72,7 @@ int addt_handle(void *args){
 	if(ret<0)return -1;
 	return 0;
 }
-char add_ctrl_flag=1;
+char add_ctrl_flag=0;
 int addc_handle(void *args){
 	char ** argv=(char **)args;
 	if(argv[1][0]=='0'){
