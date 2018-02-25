@@ -18,7 +18,7 @@
 	ret?-1:0;\
 })
 
-extern int un_fifo_init(char *);
+extern int un_fifo_init(char *path,char *mode);
 extern int un_fifo_read(char *buf,size_t size);
 extern int un_fifo_write_str(char *ptr);
 extern int un_fifo_write(char *buf,size_t size);

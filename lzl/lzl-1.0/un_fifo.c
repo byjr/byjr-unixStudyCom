@@ -3,18 +3,18 @@ static int fifo_fd=0;
 
 // 1.若以只读或者只写方式打开fifo 会卡在open位置
 
-int un_fifo_init(char *mode){
-	int ret=access(FIFO_PATH, F_OK);
+int un_fifo_init(char *path,char *mode){
+	int ret=access(path, F_OK);
 	if(ret<0){
-		ret=mkfifo(FIFO_PATH,0777);
+		ret=mkfifo(path,0777);
 		if(-1==ret){
 			show_errno(0,"mkfifo");
 			return -1;		
 		}		
 	}
-	inf("fifo:"FIFO_PATH" is OK !");
+	inf("fifo:%s is OK !",path);
 	int style=mode[0]=='r'?O_RDONLY:mode[0]=='w'?O_WRONLY:O_RDWR;
-	fifo_fd=open(FIFO_PATH,style|O_EXCL);
+	fifo_fd=open(path,style|O_EXCL);
 	if(fifo_fd<0) return -1;
 	inf("open fifo succeed!");
 	return 0;

@@ -4,8 +4,8 @@
 #include <stdio.h>
 #include <errno.h>
 #include <pthread.h>
-#include "misc.h"
-#include "slog.h"
+#include <lzl/misc.h>
+#include <lzl/slog.h>
 /*//  ____________________________________________________________________________
 extern int pthread_rwlockattr_init(pthread_rwlockattr_t *__attr);
 extern int pthread_rwlockattr_destroy(pthread_rwlockattr_t *__attr);
@@ -32,82 +32,68 @@ extern int px_rwlockattr_set(pthread_rwlockattr_t *p_attr);
 extern int px_rwlockattr_show(pthread_rwlockattr_t *p_attr);
 #define SIG_CS_CMD SIGRTMIN
 
-#define px_thread_rwlockattr_init(p_rwlockattr) ({\
+#define px_rwlockattr_init(p_rwlockattr) ({\
 	int ret=0;\
 	ret=pthread_rwlockattr_init(p_rwlockattr);\
-	if(ret){\
-		show_errno(ret,"px_thread_rwlockattr_init");\
-		exit(-1);\
-	}\
+	if(ret)show_errno(ret,"px_rwlockattr_init");\
+	ret?-1:0;\
 })
-#define px_thread_rwlockattr_destroy(p_rwlockattr) ({\
+#define px_rwlockattr_destroy(p_rwlockattr) ({\
 	int ret=0;\
 	ret=pthread_rwlockattr_destroy(p_rwlockattr);\
-	if(ret){\
-		show_errno(ret,"px_thread_rwlockattr_destroy");\
-		exit(-1);\
-	}\
+	if(ret)show_errno(ret,"px_rwlockattr_destroy");\
+	ret?-1:0;\
 })
-#define px_thread_rwlock_init(p_rwlock,p_rwlockattr) ({\
+#define px_rwlock_init(p_rwlock,p_rwlockattr) ({\
 	int ret=0;\
 	ret=pthread_rwlock_init(p_rwlock,p_rwlockattr);\
-	if(ret){\
-		show_errno(ret,"pthread_rwlock_init");\
-		exit(-1);\
-	}\
+	if(ret)show_errno(ret,"pthread_rwlock_init");\
+	ret?-1:0;\
 })
-#define px_thread_rwlock_destroy(p_rwlock) ({\
+#define px_rwlock_destroy(p_rwlock) ({\
 	int ret=0;\
 	ret=pthread_rwlock_destroy(p_rwlock);\
-	if(ret){\
-		show_errno(ret,"pthread_rwlock_init");\
-		exit(-1);\
-	}\
+	if(ret)show_errno(ret,"pthread_rwlock_init");\
+	ret?-1:0;\
 })
 
-#define px_thread_rwlock_rdlock(p_rwlock) ({\
+#define px_rwlock_rdlock(p_rwlock) ({\
 	int ret=0;\
 	ret=pthread_rwlock_rdlock(p_rwlock);\
-	if(ret){\
-		show_errno(ret,"pthread_rwlock_rdlock");\
-		exit(-1);\
-	}\
+	if(ret)show_errno(ret,"pthread_rwlock_rdlock");\
+	ret?-1:0;\
 })
-#define px_thread_rwlock_tryrdlock(p_rwlock) ({\
+#define px_rwlock_tryrdlock(p_rwlock) ({\
 	int ret=0;\
 	ret=pthread_rwlock_tryrdlock(p_rwlock);\
 	ret=ret?-1:0;\
 })
-#define px_thread_rwlock_timedrdlock(p_rwlock,p_abstime) ({\
+#define px_rwlock_timedrdlock(p_rwlock,p_abstime) ({\
 	int ret=0;\
 	ret=pthread_rwlock_timedrdlock(p_rwlock,p_abstime);\
 	ret=ret?-1:0;\
 })
 
-#define px_thread_rwlock_wrlock(p_rwlock) ({\
+#define px_rwlock_wrlock(p_rwlock) ({\
 	int ret=0;\
 	ret=pthread_rwlock_wrlock(p_rwlock);\
-	if(ret){\
-		show_errno(ret,"pthread_rwlock_wrlock");\
-		exit(-1);\
-	}\
+	if(ret)show_errno(ret,"pthread_rwlock_wrlock");\
+	ret?-1:0;\
 })
-#define px_thread_rwlock_trywrlock(p_rwlock) ({\
+#define px_rwlock_trywrlock(p_rwlock) ({\
 	int ret=0;\
 	ret=pthread_rwlock_trywrlock(p_rwlock);\
 	ret=ret?-1:0;\
 })
-#define px_thread_rwlock_timedwrlock(p_rwlock,p_abstime) ({\
+#define px_rwlock_timedwrlock(p_rwlock,p_abstime) ({\
 	int ret=0;\
 	ret=pthread_rwlock_timedwrlock(p_rwlock,p_abstime);\
 	ret=ret?-1:0;\
 })
-#define px_thread_rwlock_unlock(p_rwlock) ({\
+#define px_rwlock_unlock(p_rwlock) ({\
 	int ret=0;\
 	ret=pthread_rwlock_unlock(p_rwlock);\
-	if(ret){\
-		show_errno(ret,"pthread_rwlock_unlock");\
-		exit(-1);\
-	}\
+	if(ret)show_errno(ret,"pthread_rwlock_unlock");\
+	ret?-1:0;\
 })
 #endif

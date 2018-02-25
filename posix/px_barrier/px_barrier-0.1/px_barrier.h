@@ -4,8 +4,8 @@
 #include <stdio.h>
 #include <errno.h>
 #include <pthread.h>
-#include "misc.h"
-#include "slog.h"
+#include "lzl/misc.h"
+#include "lzl/slog.h"
 //  ____________________________________________________________________________
 extern int pthread_barrierattr_init(pthread_barrierattr_t *__attr);
 extern int pthread_barrierattr_destroy(pthread_barrierattr_t *__attr);
