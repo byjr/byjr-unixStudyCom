@@ -11,7 +11,7 @@ $(EXE_TARGET):$(OBJECTS)
 	$(CC)  -o $@ $^ $(LDFLAGS)
 	
 %.o:%.c
-#	$(CC) $(CFLAGS) -E -o $@.c $< 
+	$(CC) $(CFLAGS) -E -o $@.c $< 
 	$(CC) $(CFLAGS) -o $@ -c $< 
 
 clean:

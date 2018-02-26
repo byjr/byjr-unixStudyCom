@@ -68,17 +68,29 @@ extern int futimesat(int __fd, const char *__file,const struct timeval __tvp[2])
 	// CLOCK_SGI_CYCLE,
 	CLOCK_TAI,	
 #endif
+int mt_start(clockid_t cid);
+long long mt_get(clockid_t cid);
 
+#define px_gettime(cid,pts) ({\
+	int ret=clock_gettime(cid,pts);\
+	if(ret<0)show_errno(0,"px_gettime");\
+	ret?-1:0;\
+})
+#define px_settime(cid,pts) ({\
+	int ret=clock_settime(cid,pts);\
+	if(ret<0)show_errno(0,"px_gettime");\
+	ret?-1:0;\
+})
 long get_tsd(struct timespec *pt1,struct timespec *pt2,char lev);
-
-#define get_tsv(ptv,pt2,pt1) ({\
-	ptv->tv_nsec=pt2->tv_nsec-pt1->tv_nsec;\
-	if(ptv->tv_nsec<0){\
-		pt2->tv_sec--;\
-		ptv->tv_nsec=1000000000-pt1->tv_nsec+pt2->tv_nsec;\
+#define get_tsv(tv,t2,t1) ({\
+	int ret=-1;\
+	(tv).tv_sec=(t2).tv_sec-(t1).tv_sec;\
+	(tv).tv_nsec=(t2).tv_nsec-(t1).tv_nsec;\
+	if((tv).tv_nsec<0){\
+		(tv).tv_sec--;\
+		(tv).tv_nsec=1000000000-(t1).tv_nsec+(t2).tv_nsec;\
 	}\
-	ptv->tv_sec=pt2->tv_sec-pt1->tv_sec;\
-	ptv;\
+	(tv).tv_nsec<0?-1:0;\
 })
 
 #define px_timer_create(cid,p_evp,p_id)({\

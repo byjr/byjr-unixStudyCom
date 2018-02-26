@@ -118,8 +118,8 @@ int main(int argc,char *argv[]){
 			// return -1;
 		// }		
 		do{
-			pause();
-			// get_timer(NULL);
+			// pause();
+			get_timer(NULL);
 		}while(1);
 	}
 	ret=fifo_cmd_init("/tmp/cmd.fifo");
