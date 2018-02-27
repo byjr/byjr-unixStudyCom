@@ -8,12 +8,6 @@
 #define CID CLOCK_MONOTONIC
 int main(int argc,char *argv[]){
 	log_init("l=11111");
-	int cid=0;
-	int ret=clock_getcpuclockid(getpid(), &cid);
-	if(ret<0){
-		err("");
-		return -1;
-	}	
 	struct timespec ts1={0};
 	struct timespec ts2={0};
 	do{
