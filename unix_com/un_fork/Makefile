@@ -5,15 +5,15 @@ TARGET		:=$(notdir $(shell pwd))
 VERSION		:=0.0
 SRC_DIR		:=$(TARGET)-$(VERSION)
 Q			:=@			
-EXE_TARGET	:=$(TARGET)
+EXE_TARGET	:=$(TARGET)_$(p0)
 
 export INSTALL_DIR Q EXE_TARGET
 
-all:compile exe
+all:compile excute
 
 prepare:
-	mkdir -p $(COMPILE_DIR)
-	cp -af $(SRC_DIR) $(COMPILE_DIR)
+	rm -rf $(COMPILE_DIR)/$(SRC_DIR)
+	mkdir -p $(COMPILE_DIR) && cp -af $(SRC_DIR) $(COMPILE_DIR)	
 
 compile:prepare
 	make -C $(COMPILE_DIR)/$(SRC_DIR)
@@ -25,7 +25,7 @@ install:
 	make -C $(COMPILE_DIR)/$(SRC_DIR) install
 	
 uninstall:
-	make -C $(COMPILE_DIR)/$(SRC_DIR) uninstall
+	make -C $(COMPILE_DIR)/$(SRC_DIR) uninstall	
 	
-exe:
-	$(COMPILE_DIR)/$(SRC_DIR)/$(EXE_TARGET)&
+excute:
+	$(COMPILE_DIR)/$(SRC_DIR)/$(EXE_TARGET) $(p1) $(p2) $(p3)

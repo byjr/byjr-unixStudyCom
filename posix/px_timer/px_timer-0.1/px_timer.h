@@ -1,8 +1,14 @@
 #ifndef _UN_RWLOCK_H
 #define _UN_RWLOCK_H 1
+#include <signal.h>
+#include <stdio.h>
+#include <errno.h>
+#include <pthread.h>
+#include <time.h>
+#include <lzl/misc.h>
+#include <lzl/slog.h>
 #define __USE_GNU 1
 #if 0
-
 extern clock_t clock(void);//进程启动到当前调用处的节拍数 failure return -1;
 extern time_t time(time_t *__timer);//unix纪元当前调用处的时间(秒) failure return -1;
 extern double difftime(time_t __time1,time_t __time0);间隔
@@ -67,6 +73,7 @@ extern int futimesat(int __fd, const char *__file,const struct timeval __tvp[2])
 	CLOCK_BOOTTIME_ALARM,
 	// CLOCK_SGI_CYCLE,
 	CLOCK_TAI,	
+	
 #endif
 int mt_start(clockid_t cid);
 long long mt_get(clockid_t cid);

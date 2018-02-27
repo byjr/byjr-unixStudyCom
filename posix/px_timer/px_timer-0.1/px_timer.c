@@ -1,10 +1,3 @@
-#include <signal.h>
-#include <stdio.h>
-#include <errno.h>
-#include <pthread.h>
-#include <time.h>
-#include <lzl/misc.h>
-#include <lzl/slog.h>
 #include "px_timer.h"
 
 long get_tsd(struct timespec *pt2,struct timespec *pt1,char lev){	
