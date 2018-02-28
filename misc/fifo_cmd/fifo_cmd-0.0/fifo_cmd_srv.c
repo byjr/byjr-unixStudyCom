@@ -1,7 +1,11 @@
 #include "fifo_cmd.c"
 
 int start_handle(void *args){
-	inf(__func__);
+	char ** argv=(char **)args;
+	int i=0;
+	while(argv[i++]){
+		inf("[%d]:%s",i-1,argv[i-1]);
+	}
 	return 0;
 }
 int aget_handle(void *args){
@@ -9,7 +13,7 @@ int aget_handle(void *args){
 	return 0;
 }
 int aset_handle(void *args){
-	inf(__func__);
+	inf(__func__);	
 	return 0;
 }
 fifo_cmd_t fifo_cmd_tbl[]={
@@ -21,7 +25,7 @@ fifo_cmd_t fifo_cmd_tbl[]={
 int main(int argc,char *argv[]){
 	log_init("l=11111");
 	
-	int ret=fifo_cmd_init();
+	int ret=fifo_cmd_init("/tmp/cmd.fifo");
 	if(ret<0)return -1;
 	
 	do{

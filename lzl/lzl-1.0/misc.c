@@ -170,8 +170,7 @@ Err0:
 	return 0;
 }
 
-int copy_file(char* dst_path,char *src_path)
-{
+int copy_file(char* dst_path,char *src_path){
 	char *str=NULL;
 	int fail=1;
 	if(read_str_from_file(&str,src_path,"r")<0){		
@@ -187,8 +186,7 @@ exit0:
 	if(fail)return -1;
 	return 0;
 }
-int read_str_from_file(char **p_str,char *path,char *mode)
-{
+int read_str_from_file(char **p_str,char *path,char *mode){
 	FILE *fd=NULL;
 	int ret=0,fail=1;
 	char *str=NULL;
@@ -222,4 +220,43 @@ Err1:
 Err0:
 	if(fail)return -1;
 	return 0;
+}
+char *argv_to_argl(char *argv[],char delim){
+	int i=0,rt_len=0,rt_idx=0;
+	char *argl=NULL;
+	if(!(argv && argv[0]))return NULL;
+	for(i=0;;i++){
+		if(!argv[i])break;
+		rt_len=strlen(argv[i]);
+		rt_idx+=rt_len;				
+		argl=(char*)realloc(argl,rt_idx+2);
+		if(!argl)return NULL;
+		strcat(argl,argv[i]);
+		argl[rt_idx++]=delim;
+	}
+	argl[rt_idx-1]='\0';
+	return argl;
+}
+
+char** argl_to_argv(char argl[],char delim){
+	int i=0,count=0;
+	if(!(argl && argl[0]))return NULL;
+	char **argv=(char**)calloc(1,sizeof(char*));
+	if(!argv)return NULL;
+	argv[0]=argl;
+	for(i=0;;i++){
+		if(argl[i]==delim||argl[i]=='\0'||argl[i]=='\n'){
+			count++;
+			argv=(char**)realloc(argv,(count+1)*sizeof(char *));
+			if(!argv)return NULL;
+			argv[count]=argl+i+1;
+			char *arg=calloc(1,argv[count]-argv[count-1]);
+			if(!arg)return NULL;
+			strncpy(arg,argv[count-1],argv[count]-argv[count-1]-1);
+			argv[count-1]=arg;
+		}
+		if(argl[i]=='\0'||argl[i]=='\n')break;
+	}
+	argv[count]=NULL;
+	return argv;
 }
