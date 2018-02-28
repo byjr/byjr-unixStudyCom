@@ -12,6 +12,7 @@ static int childFunc(void *arg){
 
 int main(int argc, char *argv[]){
 	log_init("l=11111");
+	err("");
 	pid_t pid=my_clone(childFunc,NULL,CLONE_THREAD|CLONE_SIGHAND|CLONE_VM,2*M_BYTE);
 	if(pid<0) return -1;
 	dbg("sub process:%d",pid);

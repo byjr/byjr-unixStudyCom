@@ -51,6 +51,7 @@ extern pid_t get_srv_pid(char *name_cli);
 extern int write_str_to_file(char *path,char *str,char *mode);
 extern int copy_file(char* dst_path,char *src_path);
 extern int read_str_from_file(char **p_str,char *path,char *mode);
-
+char** argl_to_argv(char argl[],char delim);
+char *argv_to_argl(char *argv[],char delim);
 
 #endif
