@@ -21,43 +21,49 @@ int vfexec_nowait(char *argl){
 		// "tree",
 		// NULL,
 	// };
-	// char *env[]={
-		// "/bin:/usr/bin",
-	// };
+	char *env[]={
+		"/bin:/usr/bin",
+	};
 	if(!(argv && argv[0]))return -1;
+	inf(__func__);
 	pid_t pid=vfork();
 	if(pid<0)return -1;
 	if(pid==0){
+		dbg("");
+		err("---------------"__TIME__"---------");
 		// int ret=execv(argv[0],argv);
-		// if(ret<0)show_errno(0,"execv"),exit(-1);	//须带路径
+		// if(ret<0)show_errno(0,"execv"),exit(-1);//带路径可以
 		
 		int ret=execvp(argv[0],argv);
-		if(ret<0)show_errno(0,"execv"),exit(-1);	
+		if(ret<0)show_errno(0,"execv"),exit(-1);//都可以	
 		
 		// int ret=execvpe(argv[0],argv,env);
-		// if(ret<0)show_errno(0,"execv"),exit(-1);	
+		// if(ret<0)show_errno(0,"execv"),exit(-1);//都可以	
 		
 		// int ret=execve(argv[0],argv,env);
-		// if(ret<0)show_errno(0,"execv"),exit(-1);	//须带路径		
+		// if(ret<0)show_errno(0,"execv"),exit(-1);//带路径可以		
 		
 		// int ret=execvpe(argv[0],argv,env);
-		// if(ret<0)show_errno(0,"execv"),exit(-1);	
+		// if(ret<0)show_errno(0,"execv"),exit(-1);//都可以	
 		
 		// int ret=execl("/bin/ls","ls",NULL);
-		// if(ret<0)show_errno(0,"execv"),exit(-1);	//须带路径
+		// if(ret<0)show_errno(0,"execv"),exit(-1);//带路径可以
 		
 		// int ret=execlp("tree","tree",NULL);
-		// if(ret<0)show_errno(0,"execv"),exit(-1);	
+		// if(ret<0)show_errno(0,"execv"),exit(-1);//都可以	
 		
 		// int ret=execle("tree","tree",NULL,env);
-		// if(ret<0)show_errno(0,"execv"),exit(-1);	//须带路径			
+		// if(ret<0)show_errno(0,"execv"),exit(-1);	//带路径可以	
+		
 	}
 	return 0;
 }
 
 int vfexec(char *argl){
+	inf(__func__);
 	int ret=vfexec_nowait(argl);
-	if(ret<0)return -1;	
+	if(ret<0)return -1;
+	
 	int ws=0;
 	pid_t pid=waitpid(-1,&ws,WUNTRACED);	
 	inf("%d exited!",pid);	
