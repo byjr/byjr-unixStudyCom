@@ -77,7 +77,7 @@ extern int futimesat(int __fd, const char *__file,const struct timeval __tvp[2])
 #endif
 int mt_start(clockid_t cid);
 long long mt_get(clockid_t cid);
-
+char *get_fmt_time(char *tm_str,size_t size,char *fmt);
 #define px_gettime(cid,pts) ({\
 	int ret=clock_gettime(cid,pts);\
 	if(ret<0)show_errno(0,"px_gettime");\
@@ -130,5 +130,13 @@ long get_tsd(struct timespec *pt1,struct timespec *pt2,char lev);
 	ret=timer_getoverrun(id);\
 	if(-1==ret)	show_errno(0,"px_timer_getoverrun");\
 	ret;\
+})
+#define TIME_LAY "2018-12-30 23:59:59"
+#define TIME_FMT "%Y-%m-%d %I:%M:%S"
+
+#define show_rt_tmie ({\
+	char buf[]=TIME_LAY;\
+	char *time_str=get_fmt_time(buf,sizeof(buf),TIME_FMT);\
+	inf("time_str:%s",time_str);\
 })
 #endif

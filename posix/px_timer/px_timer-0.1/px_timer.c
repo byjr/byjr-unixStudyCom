@@ -39,3 +39,12 @@ long long mt_get(clockid_t cid){
 	if(ret<0)return -1;	
 	return tv.tv_sec*1000000000+tv.tv_nsec;
 }
+
+char *get_fmt_time(char *tm_str,size_t size,char *fmt){
+	time_t rawtime;
+	struct tm* timeinfo;
+	time(&rawtime);
+	timeinfo=localtime(&rawtime);
+	strftime(tm_str,size,fmt,timeinfo);
+	return tm_str;
+}

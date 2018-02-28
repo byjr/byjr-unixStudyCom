@@ -10,6 +10,7 @@ int main(int argc,char *argv[]){
 	log_init("l=11111");
 	struct timespec ts1={0};
 	struct timespec ts2={0};
+	show_rt_tmie;
 	do{
 		px_gettime(CID,&ts1);
 		usleep(500000);

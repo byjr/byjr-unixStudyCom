@@ -15,9 +15,10 @@ int var=111;
 int main(int argc, char *argv[]){
 	log_init("l=11111");
 	signal(SIGCHLD,child_handle);
-	inf(argv[1]);
-	// int ret=vfexec("tree");
-	int ret=vfexec_nowait(argv[1]);
+	char *argl=argv_to_argl(argv,' ');
+	if(!argv)return -1;
+	int ret=vfexec(argl);
+	// int ret=vfexec_nowait(argv[1]);
 	if(ret<0)show_errno(0,"vfexec");
 	war("child have return!")
 	do{
