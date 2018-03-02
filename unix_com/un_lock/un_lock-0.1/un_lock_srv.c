@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <sys/file.h>
 #include <unistd.h>
-#include "un_fcntl.h"
+#include "un_lock.h"
 #include <time.h>
 #include <lzl/px_sem.h>
 #include <lzl/px_thread.h>
@@ -195,7 +195,7 @@ int usr1_handle(void *args){
 	fd=fd_ar[0];
 	return 0;	
 }
-cs_cmd_t cs_cmd_tbl[]={
+fifo_cmd_t fifo_cmd_tbl[]={
 	ADD_CMD_ITEM(open)
 	ADD_CMD_ITEM(close)
 	ADD_CMD_ITEM(read)
@@ -207,7 +207,6 @@ cs_cmd_t cs_cmd_tbl[]={
 	ADD_CMD_ITEM(usr0)
 	ADD_CMD_ITEM(usr1)
 };
-typedef void *(*p_start_routine_t)(void *);
 void *star_routine(void *args){
 	struct timespec ts = {1,0};	
 	fd_ar[1]=un_open(TEST_FILE_PATH,O_RDWR|O_CREAT|O_APPEND,0666);
@@ -219,31 +218,31 @@ void *star_routine(void *args){
 p_start_routine_t p_routine_array[]={
 	&star_routine,
 };
-#define HEAD_SYRTING "head:"
+
 int main(int argc,char **argv){
 	int ret=0,i=0;
 	log_init(NULL);
-// tools_init_code begin: 
-	fd_ar[0]=un_open(TEST_FILE_PATH,O_RDWR|O_CREAT|O_APPEND,0666);
-	// char *f_content=NULL;
-	// un_unlink(TEST_FILE_PATH);
-	// ret=write_fstring(TEST_FILE_PATH,HEAD_SYRTING,sizeof(HEAD_SYRTING),"w");
-	// if(ret<0)return -1;
-	// ret=read_fstring(&f_content,TEST_FILE_PATH);  
-	// inf(f_content);
-	// FREE(f_content);
-	for(i=0;i<getArrayCount(tid);i++){
-		px_thread_create(&tid[i],NULL,p_routine_array[i],NULL);
-	}	
-// tools_init_code end//
-	cs_cmd_init(SIGRTMIN);
-	int count=getArrayCount(cs_cmd_tbl);
+	fd_ar[0]=un_open(TEST_FILE_PATH,O_RDWR|O_CREAT|O_APPEND,0666);	
+	pid_t pid=fork();
+	if(pid<0)return -1;	
+	if(pid>0){
+		int i=0;
+		for(i=0;i<getArrayCount(tid);i++){
+			px_thread_create(&tid[i],NULL,p_routine_array[i],NULL);
+		}	
+		int ret=fifo_cmd_init("/tmp/fcmd.fifo");
+		if(ret<0)return -1;	
+		do{
+			fifo_cmd_wait();
+			fifo_cmd_proc(fifo_cmd_tbl,getArrayCount(fifo_cmd_tbl));				
+		}while(1);		
+		return 0;
+	}
+	int ret=fifo_cmd_init("/tmp/scmd.fifo");
+	if(ret<0)return -1;	
 	do{
-		cs_cmd_wait();
-		cs_cmd_proc(cs_cmd_tbl,count,px_shm->cmd_buf);
-		// inf(px_shm->cmd_buf);
+		fifo_cmd_wait();
+		fifo_cmd_proc(fifo_cmd_tbl,getArrayCount(fifo_cmd_tbl));				
 	}while(1);
-// tools_deinit_code:
-
 	return 0;
 }

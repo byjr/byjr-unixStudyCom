@@ -185,4 +185,14 @@ int px_thread_set_attr(pthread_attr_t *p_attr);
 	ret?-1:0;\
 })
 #define px_thread_attr_init(p_attr) pthread_attr_init(p_attr)
+
+typedef void *(pxFunc_t) (void *);
+
+typedef struct pxThread_t{
+	pxFunc_t* pFunc;
+	void *args;
+	pthread_attr_t attr;
+	pthread_t id;
+}pxThread_t;
+int px_thread_array_create(pxThread_t array[],size_t count);
 #endif

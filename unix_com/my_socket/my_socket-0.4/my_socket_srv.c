@@ -13,7 +13,7 @@ void signal_handle(int signo){
 	switch(signo){	
 	case 34:{
 		int i=0;
-		for(i=0;i<get_ar_count(conn_a);i++)raw("%d",conn_a[i]);
+		for(i=0;i<getArrayCount(conn_a);i++)raw("%d",conn_a[i]);
 		break;
 	}	
 	default:
@@ -33,7 +33,7 @@ int main (int argc, char *argv[])
 	log_init(NULL);
 	ret=px_shm_get(&shm,SHM_NAME);	
 	if(ret<0)exit(-1);
-	for(i=0;i<get_ar_count(conn_a);i++)conn_a[i]=-1;
+	for(i=0;i<getArrayCount(conn_a);i++)conn_a[i]=-1;
 	sfd=my_socket(AF_UNIX,SOCK_STREAM|SOCK_CLOEXEC,0);
 	if(-1==sfd)exit(-1);
 	unlink(UN_SOCK_PATH);
@@ -63,7 +63,7 @@ int main (int argc, char *argv[])
 			inf(peeraddr.sun_path);
 			FD_SET(conn,&allset);
 			if(conn>maxfd)maxfd=conn;
-			for(i=0;i<get_ar_count(conn_a);i++){
+			for(i=0;i<getArrayCount(conn_a);i++){
 				if(-1==conn_a[i])conn_a[i]=conn;
 			}			
 			break;

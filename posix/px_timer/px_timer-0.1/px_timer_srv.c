@@ -77,7 +77,7 @@ int get_timer(void *args){
 	struct timespec ts={0,1000000000*0.2};
 	char ** argv=(char **)args;
 	int i=0;
-	for(i=0;i<get_ar_count(tid_array);i++){		
+	for(i=0;i<getArrayCount(tid_array);i++){		
 		inf("%24s:%2u",tid_tbl[i],tid_array[i]);
 		memset(&tst,0,sizeof(tst));
 		int ret=clock_gettime(tid_array[i],&tst);
@@ -127,6 +127,6 @@ int main(int argc,char *argv[]){
 	war("%s:%d is succeed!",__func__,getpid());
 	do{
 		fifo_cmd_wait();
-		fifo_cmd_proc(fifo_cmd_tbl,get_ar_count(fifo_cmd_tbl));
+		fifo_cmd_proc(fifo_cmd_tbl,getArrayCount(fifo_cmd_tbl));
 	}while(1);
 }

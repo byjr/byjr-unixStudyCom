@@ -74,7 +74,7 @@ void *monitor_routine(void *args){
 	struct timespec ts = {1,0};
 	do{
 		int i=0,ret=0;
-		for(i=0;i<get_ar_count(sema);i++){
+		for(i=0;i<getArrayCount(sema);i++){
 			int semv=0;
 			ret=px_semgetvalue(&semv,&sema[i]);
 			if(!ret)printf("sema[%d]=%d\n",i,semv);			
@@ -89,7 +89,7 @@ p_routine_t p_routine_array[]={
 	&broadcast_routine,
 	// &monitor_routine,
 };
-pthread_t tida[get_ar_count(p_routine_array)]={0};
+pthread_t tida[getArrayCount(p_routine_array)]={0};
 int aget_handle(void *args){
 	int ret=0;
 	ret=px_mtxcondattr_show(&mtxcondattr);
@@ -125,7 +125,7 @@ int main(int argc,char **argv){
 	log_init(NULL);
 // tools_init_code begin:
 	px_mtxcond_init(&mtxcond,NULL);
-	for(i=0;i<get_ar_count(tida);i++){
+	for(i=0;i<getArrayCount(tida);i++){
 		px_thread_create(&tida[i],NULL,p_routine_array[i],NULL);
 		px_seminit(&sema[i],0,0);
 	}
@@ -137,7 +137,7 @@ int main(int argc,char **argv){
 		cs_cmd_proc(cs_cmd_tbl,count,px_shm->cmd_buf);
 	}while(1);
 // tools_deinit_code:
-	for(i=0;i<get_ar_count(tida);i++){
+	for(i=0;i<getArrayCount(tida);i++){
 		px_semdestroy(&sema[i]);
 		px_thread_join(tida[i],NULL);
 	}

@@ -1,16 +1,4 @@
-#define _GNU_SOURCE     /* To get pthread_getattr_np() declaration */
-#include <pthread.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-#include <errno.h>
-#include <limits.h>
-#include <sched.h>
-#include <lzl/misc.h>
-#include <lzl/slog.h>
 #include "px_thread.h"
-
 static void get_isset_bit(cpu_set_t cpuset){
 	int i=0;
 	inf("cpuset:");
@@ -150,8 +138,7 @@ int px_thread_set_attr(pthread_attr_t *p_attr)
 	px_thread_show_attr(p_attr);
 	return 0;
 }
-int px_thread_get_rtaddr(pthread_t tid)
-{
+int px_thread_get_rtaddr(pthread_t tid){
 	int ret=0;
 	pthread_attr_t attr={0};
 	ret=pthread_getattr_np(tid,&attr);
@@ -165,6 +152,11 @@ int px_thread_get_rtaddr(pthread_t tid)
 	}
 	return 0;
 }
-
-
-
+int px_thread_array_create(pxThread_t array[],size_t count){
+	size_t i=0;
+	for(i=0;i<count;i++){
+		int ret=px_thread_create(&array[i].id,&array[i].attr,array[i].pFunc,array[i].args);
+		if(ret<0)return -1;		
+	}
+	return 0;
+}

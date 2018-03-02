@@ -30,6 +30,6 @@ int main(int argc,char *argv[]){
 	
 	do{
 		fifo_cmd_wait();
-		fifo_cmd_proc(fifo_cmd_tbl,get_ar_count(fifo_cmd_tbl));
+		fifo_cmd_proc(fifo_cmd_tbl,getArrayCount(fifo_cmd_tbl));
 	}while(1);
 }

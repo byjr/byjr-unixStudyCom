@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <sys/file.h>
 #include <unistd.h>
-#include "p_rec_lock.h"
+#include "un_lock.h"
 #include <time.h>
 #include <lzl/px_sem.h>
 #include <lzl/px_thread.h>
@@ -232,12 +232,12 @@ int main(int argc,char **argv){
 	// ret=read_fstring(&f_content,TEST_FILE_PATH);  
 	// inf(f_content);
 	// FREE(f_content);
-	for(i=0;i<get_ar_count(tid);i++){
+	for(i=0;i<getArrayCount(tid);i++){
 		px_thread_create(&tid[i],NULL,p_routine_array[i],NULL);
 	}	
 // tools_init_code end//
 	cs_cmd_init(SIGRTMIN);
-	int count=get_ar_count(cs_cmd_tbl);
+	int count=getArrayCount(cs_cmd_tbl);
 	do{
 		cs_cmd_wait();
 		cs_cmd_proc(cs_cmd_tbl,count,px_shm->cmd_buf);

@@ -3,7 +3,7 @@
 #include <unistd.h>
 #include <lzl/misc.h>
 #include <lzl/slog.h>
-#include "p_rec_lock.h"
+#include "un_lock.h"
 void show_lock_info(struct flock *p_lock){
 	switch(p_lock->l_type){
 	case F_RDLCK:
@@ -37,8 +37,7 @@ void show_lock_info(struct flock *p_lock){
 	inf("l_len:%d",p_lock->l_len);
 	inf("l_pid:%d",p_lock->l_pid);	
 }
-int p_rec_lock_get(short type,off_t start,off_t len)
-{
+int un_lock_get(short type,off_t start,off_t len){
 	int ret=0;
 	ret=fcntl(fd,F_GETLK,&lock);
 	if(-1==ret){
@@ -46,10 +45,7 @@ int p_rec_lock_get(short type,off_t start,off_t len)
 	}
 	return 0;
 }
-int p_rec_lock_set()
-{
-int p_rec_lock_get()
-{
+int un_lock_set(){
 	int ret=0;
 	ret=fcntl(fd,F_GETLK,&lock);
 	if(-1==ret){
@@ -57,9 +53,7 @@ int p_rec_lock_get()
 	}
 	return 0;
 }
-}
-int p_rec_lock_un()
-{
+int un_lock_un(){
 	
 	retrn 0;
 }

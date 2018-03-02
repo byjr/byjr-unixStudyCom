@@ -97,8 +97,8 @@ int main(int argc,char **argv){
 	inf("PTHREAD_BARRIER_SERIAL_THREAD=%d",PTHREAD_BARRIER_SERIAL_THREAD);
 	struct timespec ts = {2,0};	
 	px_barrierattr_init(&barrierattr);
-	px_barrier_init(&barrier,&barrierattr,get_ar_count(tida));
-	for(i=0;i<get_ar_count(tida);i++){		
+	px_barrier_init(&barrier,&barrierattr,getArrayCount(tida));
+	for(i=0;i<getArrayCount(tida);i++){		
 		px_thread_create(&tida[i],NULL,p_routine_array[i],NULL);
 		inf("create px_thread %d",i);
 		nanosleep(&ts, NULL);
@@ -113,7 +113,7 @@ int main(int argc,char **argv){
 	}while(1);
 // tools_deinit_code:
 
-	for(i=0;i<get_ar_count(tida);i++){
+	for(i=0;i<getArrayCount(tida);i++){
 		// px_semdestroy(&sema[i]);	
 		px_thread_join(tida[i],NULL);
 	}
