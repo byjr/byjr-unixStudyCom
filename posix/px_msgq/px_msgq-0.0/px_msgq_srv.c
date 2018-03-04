@@ -117,6 +117,6 @@ int main(int argc,char *argv[]){
 	inf("my_pid is:%d",getpid());
 	do{
 		fifo_cmd_wait();
-		fifo_cmd_proc(fifo_cmd_tbl,getArrayCount(fifo_cmd_tbl));
+		fifo_cmd_proc(fifo_cmd_tbl,getCount(fifo_cmd_tbl));
 	}while(1);
 }

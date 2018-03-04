@@ -1,4 +1,3 @@
-#include "my_socket.h"
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
@@ -8,49 +7,24 @@
 #include <lzl/misc.h>
 #include <lzl/slog.h>
 #include <lzl/un_fop.h>
-int sock_fd=0;
-int conn_fd=0;
-int count=0;
-int len=0;
+#include "my_socket.c"
+#define BUF_LENTH MSG_BUF_BYTE
 char buf[BUF_LENTH]="";
-void signal_handle(int signo){
-	int ret=0;
-	switch(signo){	
-	case 34:{
-		memset(buf,0,sizeof(buf));
-		len=sprintf(buf,"send:%d",count++);
-		un_write(sock_fd,buf,MIN(BUF_LENTH,len,size_t));	
-		memset(buf,0,BUF_LENTH);
-		un_read(sock_fd,buf,BUF_LENTH);
-		raw("%s\n",buf);		
-		break;
-	}	
-	default:
-		inf("recive signal:%d!",signo);
-		break;
-	}
-}
-int main (int argc, char *argv[])
-{
-	int ret=0,i=0;
-	log_init(NULL);
-	for(i=SIGRTMIN;i<=SIGRTMAX;i++){
-		signal(i,signal_handle);		
-	}		
-	sock_fd=my_socket(AF_UNIX,SOCK_STREAM|SOCK_CLOEXEC,0);
-	if(-1==sock_fd)exit(-1);
-	struct sockaddr_un sock_addr={AF_UNIX,UN_SOCK_PATH};	
-	ret=my_connect(sock_fd,(struct sockaddr *)&sock_addr,sizeof(sock_addr));
-	if(-1==ret)exit(-1);
+int main (int argc, char *argv[]){
+	log_init("l=11111");
+	// int sfd=un_tcp_cli_create(UN_SOCK_PATH);
+	int sfd=in_tcp_cli_create(SERVER_IP,PORT_NUM);
+	if(sfd<0)return -1;
 	do{
-		memset(buf,0,BUF_LENTH);
+		bzero(buf,sizeof(buf));
 		raw("plaese input some info:\n")
 		scanf("%1024s",buf);
-		len=strlen(buf);
-		un_write(sock_fd,buf,MIN(BUF_LENTH,len,size_t));
-		memset(buf,0,BUF_LENTH);
-		un_read(sock_fd,buf,BUF_LENTH);
+		size_t len=strlen(buf);
+		inf(buf);
+		un_write(sfd,buf,MIN(BUF_LENTH,len,size_t));
+		inf(buf);
+		bzero(buf,BUF_LENTH);
+		un_read(sfd,buf,BUF_LENTH);
 		raw("%s\n",buf);
 	}while(1);
-	return 0;
 }

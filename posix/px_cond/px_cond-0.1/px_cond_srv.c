@@ -48,7 +48,7 @@ int main(int argc,char *argv[]){
 			if(ret<0)return -1;
 			do{
 				fifo_cmd_wait();
-				fifo_cmd_proc(fifo_cmd_tbl,getArrayCount(fifo_cmd_tbl));				
+				fifo_cmd_proc(fifo_cmd_tbl,getCount(fifo_cmd_tbl));				
 			}while(1);
 		}
 		break;

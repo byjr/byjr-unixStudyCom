@@ -17,7 +17,7 @@ int main(int argc,char **argv){
 	log_init(NULL);
 	struct timespec t2={0},t1={0},tv={0};
 	do{
-		for(i=0;i<getArrayCount(cid_a);i++){
+		for(i=0;i<getCount(cid_a);i++){
 			
 		}
 		ret=clock_getres(CLOCK_REALTIME,&t1);

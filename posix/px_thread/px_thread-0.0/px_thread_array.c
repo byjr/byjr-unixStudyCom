@@ -13,7 +13,7 @@ pxThread_t trd_array[]={
 };
 int main(int argc,char *argv[]){
 	log_init("l=11111");
-	int ret=px_thread_array_create(trd_array,getArrayCount(trd_array));
+	int ret=px_thread_array_create(trd_array,getCount(trd_array));
 	if(ret<0)return -1;
 	do{
 		pause();

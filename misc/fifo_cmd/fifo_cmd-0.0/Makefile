@@ -2,7 +2,7 @@
 #OBJECTS 	:=$(patsubst %.c,%.o,$(wildcard *.c))
 OBJECTS 	:=$(EXE_TARGET:=.o)
 CC			:=gcc
-CFLAGS		:=-Werror -g -I. 
+CFLAGS		:=-Werror -g -I.
 LDFLAGS		:=-L /lib64 -lpthread -llzl -lrt
 
 all:$(EXE_TARGET)

@@ -232,12 +232,12 @@ int main(int argc,char **argv){
 	// ret=read_fstring(&f_content,TEST_FILE_PATH);  
 	// inf(f_content);
 	// FREE(f_content);
-	for(i=0;i<getArrayCount(tid);i++){
+	for(i=0;i<getCount(tid);i++){
 		px_thread_create(&tid[i],NULL,p_routine_array[i],NULL);
 	}	
 // tools_init_code end//
 	cs_cmd_init(SIGRTMIN);
-	int count=getArrayCount(cs_cmd_tbl);
+	int count=getCount(cs_cmd_tbl);
 	do{
 		cs_cmd_wait();
 		cs_cmd_proc(cs_cmd_tbl,count,px_shm->cmd_buf);

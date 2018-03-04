@@ -3,6 +3,14 @@
 #define __USE_GNU 1
 #include <sys/types.h>/* See NOTES */
 #include <sys/socket.h>
+#include <stdio.h>
+#include <sys/un.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <lzl/slog.h>
+
 #if 0 //接口概述
 // __domain：AF_UNIX AF_INET 
 // __type：SOCK_STREAM  SOCK_DGRAM SOCK_RAW | SOCK_NONBLOCK SOCK_CLOEXEC
@@ -58,13 +66,13 @@ void FD_ZERO(fd_set *set);
 int select( int nfds, fd_set *readfds, fd_set *writefds,fd_set *exceptfds,\
 				struct timeval *timeout);
 int pselect(int nfds, fd_set *readfds, fd_set *writefds,fd_set *exceptfds,\
-				const struct timespec *timeout,const sigset_t *sigmask);
-				
+				const struct timespec *timeout,const sigset_t *sigmask);			
 #endif
-int un_bind(int sfd,char *path);
-int in_bind(int sfd,short port,char *ip);
-int un_connect(int sfd,char *path);
-int in_connect(int sfd,short port,char *ip);
+#define my_select(nFds,rSet,wSet,exSet,pTv,pSmsk) ({\
+	int ret=pselect(nFds,rSet,wSet,exSet,pTv,pSmsk);\
+	if(ret<0)show_errno(0,"my_select");\
+	ret;\
+})
 #define my_socket(domain, type, protocol) ({\
 	int ret=socket(domain, type, protocol);\
 	if(-1==ret)show_errno(0,"socket");\
@@ -175,8 +183,20 @@ int in_connect(int sfd,short port,char *ip);
 	if(-1==ret)show_errno(0,"isfdtype");\
 	ret;\
 })
-#define SOCKET_ADDR "/tmp/socket_path.txt"
-#define SHM_NAME "/my_socket_t1"
-#define BUF_LENTH 1024
-#define UN_SOCK_PATH "/tmp/my_socket_t8"
+#define MSG_BUF_BYTE 1024
+int un_bind(int sfd,char *path);
+int in_bind(int sfd,char *ip,in_port_t port);
+int un_connect(int sfd,char *path);
+int in_connect(int sfd,char *ip,in_port_t port);
+
+typedef int proc_t(int conn,char *msg,size_t size);
+void un_select_tcp_server(char *path,proc_t proc);
+void in_select_tcp_server(char *ip,in_port_t port,proc_t proc);
+int un_tcp_cli_create(char *path);
+int in_tcp_cli_create(char *ip,in_port_t port);
+#define UN_SOCK_PATH "/tmp/msg.sock"
+#define SERVER_IP 	"127.0.0.1"
+// #define SERVER_IP 	"192.168.1.6"
+#define LISTEN_IP	htonl(INADDR_ANY)
+#define PORT_NUM	0x8060
 #endif

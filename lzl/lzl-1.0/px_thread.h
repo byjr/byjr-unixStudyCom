@@ -9,8 +9,10 @@
 #include <errno.h>
 #include <limits.h>
 #include <sched.h>
-#include "lzl/misc.h"
-#include "lzl/slog.h"
+#include "slog.h"
+#include "misc.h"
+
+#if 0
 //_______________________________________________________________________________________________________________
 extern int pthread_attr_init(pthread_attr_t *__attr);
 extern int pthread_attr_destroy(pthread_attr_t *__attr);
@@ -66,9 +68,16 @@ extern int pthread_key_delete(pthread_key_t __key);
 extern void *pthread_getspecific(pthread_key_t __key);
 extern int pthread_setspecific(pthread_key_t __key,const void *__pointer);
 //_______________________________________________________________________________________________________________ */
+#endif
 int px_thread_get_rtaddr(pthread_t tid);
 int px_thread_set_attr(pthread_attr_t *p_attr);
-int px_thread_set_attr(pthread_attr_t *p_attr);
+int px_thread_show_attr(pthread_attr_t *p_attr);
+#define px_thread_attr_init(p_attr) ({\
+	int ret=0;\
+	ret=pthread_attr_init(p_attr);\
+	if(ret)show_errno(ret,"pthread_attr_init");\
+	ret=ret?-1:0;\
+})
 #define px_thread_exit(p_ret)  pthread_exit(p_ret)
 #define px_thread_create(px_tid,p_attr,p_start_routine,args) ({\
 	int ret=0;\
@@ -195,8 +204,12 @@ int px_thread_set_attr(pthread_attr_t *p_attr);
 	if(ret)show_errno(ret,"pthread_setspecific");\
 	ret?-1:0;\
 })
-#define px_thread_attr_init(p_attr) pthread_attr_init(p_attr)
-
+#define px_thread_attr_destroy(p_attr) ({\
+	int ret=0;\
+	ret=pthread_attr_destroy(p_attr);\
+	if(ret)show_errno(ret,"pthread_attr_destroy");\
+	ret=ret?-1:0;\
+})
 typedef void *(pxFunc_t) (void *);
 
 typedef struct pxThread_t{

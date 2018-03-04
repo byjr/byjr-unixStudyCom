@@ -39,7 +39,7 @@
 		return -1;\
 	}
 	
-#define getArrayCount(array) (sizeof(array)/sizeof(array[0]))
+#define getCount(array) (sizeof(array)/sizeof(array[0]))
 #define MIN(x,y,type) ({\
 	type _x=x,_y=y;\
 	_x<_y?_x:_y;\

@@ -71,7 +71,7 @@ int main(int argc,char **argv){
 	px_timer_set(tm_id,0,&it,0);
 // tools_init_code end//
 	cs_cmd_init(SIGRTMIN);
-	int count=getArrayCount(cs_cmd_tbl);
+	int count=getCount(cs_cmd_tbl);
 	do{
 		cs_cmd_wait();
 		cs_cmd_proc(cs_cmd_tbl,count,px_shm->cmd_buf);

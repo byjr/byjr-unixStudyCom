@@ -88,7 +88,7 @@ int main(int argc,char **argv){
 	log_init(NULL);
 // tools_init_code begin:
 	px_spin_init(&spin,PTHREAD_PROCESS_SHARED);
-	for(i=0;i<getArrayCount(tida);i++){
+	for(i=0;i<getCount(tida);i++){
 		px_thread_create(&tida[i],NULL,p_routine_array[i],NULL);
 		// px_seminit(&sema[i],0,0);
 	}
@@ -101,7 +101,7 @@ int main(int argc,char **argv){
 	}while(1);
 // tools_deinit_code:
 
-	for(i=0;i<getArrayCount(tida);i++){
+	for(i=0;i<getCount(tida);i++){
 		// px_semdestroy(&sema[i]);		
 		px_thread_join(tida[i],NULL);
 	}
