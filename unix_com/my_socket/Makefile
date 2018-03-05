@@ -12,7 +12,7 @@ export INSTALL_DIR Q EXE_TARGET
 all:compile excute
 
 prepare:
-	rm -rf $(COMPILE_DIR)/$(SRC_DIR)
+	# rm -rf $(COMPILE_DIR)/$(SRC_DIR)
 	mkdir -p $(COMPILE_DIR) && cp -af $(SRC_DIR) $(COMPILE_DIR)	
 
 compile:prepare

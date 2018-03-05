@@ -184,20 +184,20 @@ int pselect(int nfds, fd_set *readfds, fd_set *writefds,fd_set *exceptfds,\
 	ret;\
 })
 #define MSG_BUF_BYTE 1024
-typedef int proc_t(int conn,char *msg,size_t size);
-typedef struct in_serv_t{
+typedef int proc_t(int conn);
+typedef struct net_serv_t{
 	proc_t *pProc;		
-	char *ip;
+	char *addr;
 	in_port_t port;
 	int fd;
-}in_serv_t;
+}net_serv_t;
 int un_bind(int sfd,char *path);
 int in_bind(int sfd,char *ip,in_port_t port);
 int un_connect(int sfd,char *path);
 int in_connect(int sfd,char *ip,in_port_t port);
 void un_select_tcp_server(char *path,proc_t proc);
 void in_select_tcp_server(char *ip,in_port_t port,proc_t proc);
-void in_select_udp_server(in_serv_t tbl[],size_t count);
+void in_select_udp_server(net_serv_t tbl[],size_t count);
 int un_tcp_cli_create(char *path);
 int in_tcp_cli_create(char *ip,in_port_t port);
 #define UN_SOCK_PATH "/tmp/msg.sock"
