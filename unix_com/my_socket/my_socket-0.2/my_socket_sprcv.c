@@ -25,7 +25,7 @@ int main (int argc, char *argv[])
 	for(i=SIGRTMIN;i<=SIGRTMAX;i++){
 		signal(i,signal_handle);
 	}		
-	log_init(NULL);
+	log_init("l=11111");
 	ret=px_shm_get(&shm,SHM_NAME);
 	
 	if(ret<0)exit(-1);

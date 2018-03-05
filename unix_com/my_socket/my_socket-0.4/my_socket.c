@@ -49,7 +49,14 @@ int in_tcp_cli_create(char *ip,in_port_t port){
 	if(-1==ret)return -2;
 	return sfd;
 }
-void un_my_select_tcp_server(char *path,proc_t proc){
+int in_udp_cli_create(char *ip,in_port_t port){
+	int sfd=my_socket(AF_INET,SOCK_DGRAM,0);
+	if(-1==sfd)return -1;
+	int ret=in_connect(sfd,ip,port);
+	if(-1==ret)return -2;
+	return sfd;
+}
+void un_select_tcp_server(char *path,proc_t proc){
 	size_t i=0;
 	#define BUF_SIZE MSG_BUF_BYTE
 	char buf[BUF_SIZE]="";
@@ -114,7 +121,7 @@ void un_my_select_tcp_server(char *path,proc_t proc){
 		}
 	}while(1);
 }
-void in_my_select_tcp_server(char *ip,in_port_t port,proc_t proc){
+void in_select_tcp_server(char *ip,in_port_t port,proc_t proc){
 	size_t i=0;
 	#define BUF_SIZE MSG_BUF_BYTE
 	char buf[BUF_SIZE]="";
@@ -184,20 +191,13 @@ void in_my_select_tcp_server(char *ip,in_port_t port,proc_t proc){
 		}
 	}while(1);
 }
-#if 1
-typedef struct in_serv_t{
-	proc_t *pProc;		
-	char *ip;
-	in_port_t port;
-	int fd;
-}sock_serv_t;
-void in_my_select_udp_server(in_serv_t tbl[],size_t count){
-	size_t i=0;
+void in_select_udp_server(in_serv_t tbl[],size_t count){
+	size_t i=0,ret=0;
 	#define BUF_SIZE MSG_BUF_BYTE
 	char buf[BUF_SIZE]="";
 	fd_set rset={0},allset={0};
 	for(i=0;i<count;i++){
-		tbl[i].fd=my_socket(AF_INET,SOCK_DGRAM|SOCK_CLOEXEC,0);
+		tbl[i].fd=my_socket(AF_INET,SOCK_DGRAM,0);
 		if(-1==tbl[i].fd)exit(-1);
 		int ret=1;
 		ret=setsockopt(tbl[i].fd,SOL_SOCKET,SO_REUSEADDR,
@@ -207,35 +207,33 @@ void in_my_select_udp_server(in_serv_t tbl[],size_t count){
 		if(-1==ret)exit(-1);
 		FD_SET(tbl[i].fd,&allset);
 	}
-	int maxfd=tbl[i-1].fd;
+	int maxfd=tbl[count-1].fd;
 	FD_SET(maxfd,&allset);
 	do{
-		rset=allset;
-		int nready=my_select(maxfd+1,&rset,NULL,NULL,NULL,NULL);
+		memcpy(&rset,&allset,sizeof(rset));
+		int nready=20;
+		nready=my_select(maxfd+1,&rset,NULL,NULL,NULL,NULL);
 		if(nready<0){
 			if(EINTR==errno)continue;//防止收到信号时退出
 			exit(-1);
 		}
-		if(!nready)continue;	
+		if(!nready)continue;
 		for(i=0;i<count;i++){
 			if(-1==tbl[i].fd)continue;
-			while(FD_ISSET(tbl[i].fd,&rset)){
+			while(FD_ISSET(tbl[i].fd,&rset))
+			{
 				nready--;
 				bzero(buf,sizeof(buf));
-				ret=un_read(tbl[i].fd,buf,sizeof(buf));
-				if(ret<0)break;
-				if(0==ret){
+				int ret=tbl[i].pProc(tbl[i].fd,buf,sizeof(buf));				
+				if(1==ret){
 					war("client close:%d",tbl[i].fd);
-					FD_CLR(conn,&allset);
-					tbl[i].fd=-1;
+					// FD_CLR(tbl[i].fd,&allset);
+					// tbl[i].fd=-1;
 					break;
-				}
-				inf("c:%d->s:%s",conn,buf);
-				proc(conn,buf,sizeof(buf));
+				}		
 				break;
 			}
 			if(!nready)break;
 		}
 	}while(1);
 }
-#endif

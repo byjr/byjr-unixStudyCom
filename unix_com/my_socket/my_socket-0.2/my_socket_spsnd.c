@@ -23,13 +23,13 @@ int main (int argc, char *argv[])
 {
 	int ret=0,i=0;
 	for(i=SIGRTMIN;i<=SIGRTMAX;i++){
-		signal(i,signal_handle);		
+		signal(i,signal_handle);
 	}		
-	log_init(NULL);
+	log_init("l=11111");
 	ret=px_shm_get(&shm,SHM_NAME);
 	if(ret<0)exit(-1);
 	// sfd=my_socket(AF_UNIX,SOCK_DGRAM,0);
-	sfd=my_socket(AF_INET,SOCK_DGRAM,0);	
+	sfd=my_socket(AF_INET,SOCK_DGRAM,0);
 	if(-1==sfd)exit(-1);
 	// ret=un_bind(sfd,SOCKET_ADDR);
 	// ret=un_connect(sfd,SOCKET_ADDR);

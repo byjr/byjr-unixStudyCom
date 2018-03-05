@@ -109,11 +109,11 @@ int px_thread_set_attr(pthread_attr_t *p_attr)
 		// show_errno(s, "pthread_attr_setscope");
 		// return -1;
 	// }
-	// s = pthread_attr_setinheritsched(p_attr, PTHREAD_EXPLICIT_SCHED);
-	// if (s != 0){		
-		// show_errno(s, "pthread_attr_setinheritsched");
-		// return -1;
-	// }
+	s = pthread_attr_setinheritsched(p_attr, PTHREAD_EXPLICIT_SCHED);
+	if (s != 0){		
+		show_errno(s, "pthread_attr_setinheritsched");
+		return -1;
+	}
 	s = pthread_attr_setschedpolicy(p_attr,SCHED_RR);
 	if (s != 0){
 		show_errno(s, "pthread_attr_setschedpolicy");
@@ -139,7 +139,8 @@ int px_thread_set_attr(pthread_attr_t *p_attr)
 	px_thread_show_attr(p_attr);
 	return 0;
 }
-int px_thread_get_rtaddr(pthread_t tid){
+int px_thread_get_rtaddr(pthread_t tid)
+{
 	int ret=0;
 	pthread_attr_t attr={0};
 	ret=pthread_getattr_np(tid,&attr);
@@ -153,11 +154,6 @@ int px_thread_get_rtaddr(pthread_t tid){
 	}
 	return 0;
 }
-int px_thread_array_create(pxThread_t array[],size_t count){
-	size_t i=0;
-	for(i=0;i<count;i++){
-		int ret=px_thread_create(&array[i].id,&array[i].attr,array[i].pFunc,array[i].args);
-		if(ret<0)return -1;		
-	}
-	return 0;
-}
+
+
+
