@@ -40,18 +40,18 @@ static int un_serv_proc(int conn){
 	if(-1==ret)exit(-1);
 	return 0;
 }
-static net_serv_t in_tbl[]={
-	{&in_serv_proc,"127.0.0.1",5188,0},
-	{&in_serv_proc,"127.0.0.1",5189,0},
-	{&in_serv_proc,"127.0.0.1",5190,0},
-	// {&un_serv_proc,"/tmp/cmd1.sock",0,0},
-	// {&un_serv_proc,"/tmp/cmd2.sock",0,0},
-	// {&un_serv_proc,"/tmp/cmd2.sock",0,0},
+static net_serv_t net_tbl[]={
+	// {&in_serv_proc,"127.0.0.1",5188,0},
+	// {&in_serv_proc,"127.0.0.1",5189,0},
+	// {&in_serv_proc,"127.0.0.1",5190,0},
+	{&un_serv_proc,"/tmp/cmd1.sock",0,0},
+	{&un_serv_proc,"/tmp/cmd2.sock",0,0},
+	{&un_serv_proc,"/tmp/cmd2.sock",0,0},
 };
 int main(int argc, char *argv[]){
 	log_init("l=11111");
-	un_select_tcp_server(UN_SOCK_PATH,un_serv_proc);
+	// un_select_tcp_server(UN_SOCK_PATH,un_serv_proc);
 	// in_select_tcp_server(SERVER_IP,PORT_NUM,in_serv_proc);
-	// in_select_udp_server(in_tbl,getCount(in_tbl));
-	// un_select_udp_server(in_tbl,getCount(in_tbl));
+	// in_select_udp_server(net_tbl,getCount(net_tbl));
+	un_select_udp_server(net_tbl,getCount(net_tbl));
 }

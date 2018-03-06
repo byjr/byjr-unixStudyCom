@@ -55,9 +55,10 @@ int in_udp_cli_create(char *ip,in_port_t port){
 int un_udp_cli_create(char *addr){
 	int sfd=my_socket(AF_UNIX,SOCK_DGRAM,0);
 	if(-1==sfd)return -1;
+	if(NULL==addr) return sfd;
 	int ret=un_connect(sfd,addr);
 	if(-1==ret)return -2;
-	return sfd;
+	return ret;
 }
 void un_select_tcp_server(char *path,proc_t proc){
 	size_t i=0;
