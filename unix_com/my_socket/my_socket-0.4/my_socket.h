@@ -10,7 +10,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <lzl/slog.h>
-
+#include <lzl/misc.h>
 #if 0 //接口概述
 // __domain：AF_UNIX AF_INET 
 // __type：SOCK_STREAM  SOCK_DGRAM SOCK_RAW | SOCK_NONBLOCK SOCK_CLOEXEC

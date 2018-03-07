@@ -1,62 +1,59 @@
-/************CLIENT*************/  
-#include <winsock2.h>  
-#include <stdio.h>  
-#include <stdlib.h>  
-#define SERVER_PORT_A 11111     // 服务器端口A  
-#define SERVER_PORT_B 22222     // 服务器端口B  
-typedef struct tagSERVER    // 服务器  
-{  
-    char* ip;   // ip地址  
-    int nPort;  // 端口号  
-} SERVER, *PSERVER;   
-int SendData(SOCKET s, char *ip, int nPort, char *pData); // 发送数据到IP:nPort  
-int main(int argc, char **argv)  
-{  
-    int i;  
-    WSADATA wsaData;        // socket数据  
-    SOCKET sClient;         // 客户端套接口  
-    char send_buf[] = "hello! I am LiangFei whoes SNO=06060734";    // 发送的数据内容  
-    int nSend; // 发送数据后的返回值  
-    // 服务器  
-    SERVER sers[] = {   {"127.0.0.1", SERVER_PORT_A},   
-                        {"127.0.0.1", SERVER_PORT_B} };  
-    int nSerCount = sizeof(sers) / sizeof(sers[0]); // 服务器个数  
-    if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0)  // 启动socket  
-    {  
-        printf("failed to start up socket!/n");  
-        return 0;  
+#include <stdio.h>      
+#include <sys/un.h>      
+#include <sys/socket.h>      
+#include <string.h>  
+#include <unistd.h>  
+      
+int main(void)    
+{      
+    int i_fd = 0;      
+    struct sockaddr_un addr;      
+    char psz_clientpath[32] = "/tmp/client_unixsocket_file";      
+    char psz_serverpath[32] = "/tmp/server_unixsocket_file";      
+    int i_addr_len = 0;     
+    char psz_wbuf[32] = "i am client.";  
+    char psz_rbuf[32] = {0};   
+    int i_readlen = 0;  
+    
+    if ( ( i_fd = socket( AF_UNIX, SOCK_DGRAM, 0 ) ) < 0 )    
+    {      
+        perror("socket");  
+        return -1;  
     }  
       
-    // 建立客户端数据包套接口  
-    sClient = socket(AF_INET, SOCK_DGRAM, 0);  
-    if (sClient == INVALID_SOCKET)  
-    {  
-        printf("socket()/n");  
-        return 0;  
+    memset( &addr, 0, sizeof( addr ) );      
+    addr.sun_family = AF_UNIX;  
+    strncpy( addr.sun_path, psz_clientpath, sizeof( addr.sun_path ) - 1 );      
+    unlink( psz_clientpath );  
+    i_addr_len = strlen( addr.sun_path ) + sizeof( addr.sun_family );  
+    if ( bind( i_fd, ( struct sockaddr * )&addr, i_addr_len ) < 0 )    
+    {      
+        perror("bind");  
+        return -1;  
     }  
-    for (i = 0; i < nSerCount; i++)  
-    {  
-        nSend = SendData(sClient, sers[i].ip, sers[i].nPort, send_buf); // 发送数据  
-        if (nSend == 0) // 发送失败  
-        {  
-            return 0;  
-        }  
-        else if (nSend == SOCKET_ERROR) // 套接口出错  
-        {  
-            printf("sendto()/n");  
-            return 0;  
-        }  
-    }  
-    closesocket(sClient);   // 关闭套接口  
-    WSACleanup(); // 卸载winsock  
-    return 0;  
-}  
-int SendData(SOCKET s, char *ip, int nPort, char *pData)  
-{  
-    sockaddr_in ser;    // 服务器端地址     
-    ser.sin_family = AF_INET;   // IP协议  
-    ser.sin_port = htons(nPort);    // 端口号  
-    ser.sin_addr.s_addr = inet_addr(ip);    // IP地址  
-    int nLen = sizeof(ser); // 服务器地址长度  
       
-    return sendto(s, pData, strlen(pData) + 1, 0, (sockaddr*)&ser, nLen);   // 向服务器发送数据  
+    
+    //fill socket adress structure with server's address      
+    memset( &addr, 0, sizeof( addr ) );      
+    addr.sun_family = AF_UNIX;  
+    strncpy( addr.sun_path, psz_serverpath, sizeof( addr.sun_path ) - 1 );      
+  
+    i_addr_len = strlen( addr.sun_path ) + sizeof( addr.sun_family );   
+    if ( sendto( i_fd, psz_wbuf, strlen( psz_wbuf ) + 1, 0,  
+        ( struct sockaddr * )&addr, i_addr_len ) < 0 )    
+    {  
+        perror( "write" );      
+        return -1;  
+    }      
+    
+    if ( ( i_readlen = recvfrom( i_fd, psz_rbuf, sizeof( psz_rbuf ) - 1, 0,  
+        ( struct sockaddr * )&addr, ( socklen_t * )&i_addr_len ) ) < 0 )    
+    {  
+        perror("write");      
+        return -1;      
+    }  
+    psz_rbuf[i_readlen] = '\0';  
+    printf( "receive msg:%s\n", psz_rbuf );      
+    unlink( psz_clientpath );  
+    return -1;  
+}    

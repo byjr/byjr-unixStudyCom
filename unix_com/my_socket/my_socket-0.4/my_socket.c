@@ -226,8 +226,7 @@ void un_select_udp_server(net_serv_t tbl[],size_t count){
 	for(i=0;i<count;i++){
 		tbl[i].fd=my_socket(AF_UNIX,SOCK_DGRAM,0);
 		if(-1==tbl[i].fd)exit(-1);
-		int ret=setsockopt(tbl[i].fd,SOL_SOCKET,SO_REUSEADDR,
-			&ret,sizeof(ret));
+		unlink(tbl[i].addr);
 		if(ret<0)exit(-1);
 		ret=un_bind(tbl[i].fd,tbl[i].addr);
 		if(-1==ret)exit(-1);
