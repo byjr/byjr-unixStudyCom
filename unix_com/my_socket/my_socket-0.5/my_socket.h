@@ -185,8 +185,10 @@ int pselect(int nfds, fd_set *readfds, fd_set *writefds,fd_set *exceptfds,\
 })
 #define MSG_BUF_BYTE 1024
 typedef int proc_t(int conn);
-typedef struct net_serv_t{
-	proc_t *pProc;		
+typedef struct net_
+serv_t{
+	proc_t *pRcb;
+	proc_t *wRcb;
 	char *addr;
 	in_port_t port;
 	int fd;
@@ -200,8 +202,7 @@ void in_select_tcp_server(char *ip,in_port_t port,proc_t proc);
 void in_select_udp_server(net_serv_t tbl[],size_t count);
 int un_tcp_cli_create(char *path);
 int in_tcp_cli_create(char *ip,in_port_t port);
-#define CLI_ADDR "/tmp/cmd.sock4"
-#define SRV_ADDR "/tmp/cmd.sock1"
+#define UN_SOCK_PATH "/tmp/msg.sock"
 #define SERVER_IP 	"127.0.0.1"
 // #define SERVER_IP 	"192.168.1.6"
 #define LISTEN_IP	htonl(INADDR_ANY)

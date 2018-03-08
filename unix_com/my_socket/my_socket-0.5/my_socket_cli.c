@@ -9,7 +9,8 @@
 #include <lzl/un_fop.h>
 #include "my_socket.c"
 #define BUF_LENTH MSG_BUF_BYTE
-
+#define CLI_ADDR "/tmp/cmd.sock1"
+#define SRV_ADDR "/tmp/cmd.sock2"
 
 char buf[BUF_LENTH]="";
 int main (int argc, char *argv[]){
@@ -27,12 +28,12 @@ int main (int argc, char *argv[]){
 		bzero(buf,sizeof(buf));
 		raw("plaese input some info:\n")
 		scanf("%1024s",buf);
-		size_t len=strlen(buf);
+		// size_t len=strlen(buf);
 		my_sendto(sfd,buf,strlen(buf),0,&addr,addr_len);
 		// un_write(sfd,buf,MIN(BUF_LENTH,len,size_t));
-		bzero(buf,BUF_LENTH);
+		bzero(buf,BUF_LENTH);		
 		my_recvfrom(sfd,buf,sizeof(buf),0,&addr,&addr_len);
-		// un_read(sfd,buf,BUF_LENTH);
+		// un_read 	(sfd,buf,BUF_LENTH);
 		raw("%s\n",buf);
 	}while(1);
 }

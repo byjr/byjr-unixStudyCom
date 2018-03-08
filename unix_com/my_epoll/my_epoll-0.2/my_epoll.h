@@ -5,7 +5,7 @@
 // size:Since Linux 2.6.8, the size argument is ignored, but must be greater than zero;
 int epoll_create(int size);
 /* flags: 0：the same of epoll_create
-		 EPOLL_CLOEXEC:当进程被替换时关闭 */
+EPOLL_CLOEXEC:当进程被替换时关闭 */
 int epoll_create1(int flags);
 typedef union epoll_data {
     void        *ptr;

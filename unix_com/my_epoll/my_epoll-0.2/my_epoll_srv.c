@@ -13,7 +13,7 @@ socklen_t peerlen=sizeof(peeraddr);
 char buf[BUF_SIZE]="";
 struct epoll_event events[EVENTS_SIZE];
 int main(int argc,char *argv[]){
-	int ret=0,n_ready=0,i=0;
+	int ret=0,nReady=0,i=0;
 	log_init(NULL);
 	ls_fd=my_socket(AF_UNIX,SOCK_STREAM,0);
 	if(-1==ls_fd)return -1;
@@ -26,37 +26,34 @@ int main(int argc,char *argv[]){
 	add_ep_evt(epfd,ls_fd,EPOLLIN);	
 	add_ep_evt(epfd,0,EPOLLIN);
 	do{
-		n_ready=my_epoll_wait(epfd,events,EVENTS_SIZE,-1,NULL);
-		if(-1==n_ready){
+		nReady=my_epoll_wait(epfd,events,EVENTS_SIZE,-1,NULL);
+		if(-1==nReady){
 			if(4==errno)continue;
 			return -1;
 		}
-		for(i=0;i<n_ready;i++){
+		if(0==nReady)continue;
+		for(i=0;i<nReady;i++){
 			int fd=events[i].data.fd;
 			if(fd==ls_fd){
-				if(n_ready+1<=EVENTS_SIZE){
+				if(nReady+1<=EVENTS_SIZE){
 					int conn=my_accept(ls_fd,&peeraddr,&peerlen);
-					if(conn){
-						add_ep_evt(epfd,conn,EPOLLIN);				
-					}				
+					if(0==conn)continue;
+					add_ep_evt(epfd,conn,EPOLLIN);				
 				}				
 			}else if(EPOLLIN==events[i].events){
 				memset(buf,0,sizeof(buf));
 				size_t n=un_read(fd,buf,sizeof(buf));
-				if(0==n){
-					inf("peer close fd:%d",fd);
-					del_ep_evt(epfd,fd,events[i].events);		
-				}
 				if(n>0){
 					inf("s<-c:%s",buf);
 					mod_ep_evt(epfd,fd,EPOLLOUT);
-				}
+				}else if(0==n){
+					inf("peer close fd:%d",fd);
+					del_ep_evt(epfd,fd,events[i].events);		
+				}				
 			}else if(EPOLLOUT==events[i].events){
 				strncat(buf,":s->c",sizeof(buf)-strlen(buf)-1);
 				size_t n=un_write(fd,buf,strlen(buf));
-				if(n>0){
-					mod_ep_evt(epfd,fd,EPOLLIN);
-				}			
+				if(n>0)	mod_ep_evt(epfd,fd,EPOLLIN);		
 			}
 		}
 	}while(1);

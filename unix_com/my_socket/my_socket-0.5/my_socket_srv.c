@@ -44,9 +44,9 @@ static net_serv_t net_tbl[]={
 	// {&in_serv_proc,"127.0.0.1",5188,0},
 	// {&in_serv_proc,"127.0.0.1",5189,0},
 	// {&in_serv_proc,"127.0.0.1",5190,0},
-	{&un_serv_proc,"/tmp/cmd.sock1",0,0},
-	{&un_serv_proc,"/tmp/cmd.sock2",0,0},
-	{&un_serv_proc,"/tmp/cmd.sock3",0,0},
+	{&un_serv_proc,"/tmp/cmd1.sock",0,0},
+	{&un_serv_proc,"/tmp/cmd2.sock",0,0},
+	{&un_serv_proc,"/tmp/cmd2.sock",0,0},
 };
 int main(int argc, char *argv[]){
 	log_init("l=11111");

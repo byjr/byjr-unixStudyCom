@@ -56,9 +56,9 @@ int un_udp_cli_create(char *addr){
 	int sfd=my_socket(AF_UNIX,SOCK_DGRAM,0);
 	if(-1==sfd)return -1;
 	if(NULL==addr) return sfd;
-	int ret=un_bind(sfd,addr);
+	int ret=un_connect(sfd,addr);
 	if(-1==ret)return -2;
-	return sfd;
+	return ret;
 }
 void un_select_tcp_server(char *path,proc_t proc){
 	size_t i=0;
@@ -257,5 +257,47 @@ void un_select_udp_server(net_serv_t tbl[],size_t count){
 			}
 			if(!nready)break;
 		}
+	}while(1);
+}
+
+void un_epoll_tcp_server(char *path,proc_t proc){
+	int sfd=my_socket(AF_UNIX,SOCK_STREAM|SOCK_CLOEXEC,0);
+	if(-1==sfd)exit(-1);
+	unlink(path);
+	int ret=un_bind(sfd,path);
+	if(-1==ret)exit(-1);
+	ret=my_listen(sfd,SOMAXCONN);
+	if(-1==ret)exit(-1);
+	int epfd=my_epoll_create(0);	
+	if(epfd<0)return -1;
+	add_ep_evt(epfd,ls_fd,EPOLLIN);	
+	add_ep_evt(epfd,0,EPOLLIN);	
+	do{
+		nReady=my_epoll_wait(epfd,events,EVENTS_SIZE,-1,NULL);
+		if(-1==nReady){
+			if(4==errno)continue;
+			return -1;
+		}
+		if(0==nReady)continue;
+		int i=0;
+		for(i=0;i<nReady;i++){
+			int fd=events[i].data.fd;
+			if(fd==ls_fd){
+				if(nReady+1<=EVENTS_SIZE){
+					int conn=my_accept(ls_fd,&peeraddr,&peerlen);
+					if(0==conn)continue;
+					add_ep_evt(epfd,conn,EPOLLIN);				
+				}				
+			}else if(EPOLLIN==events[i].events){
+				memset(buf,0,sizeof(buf));
+				size_t n=un_read(fd,buf,sizeof(buf));
+				if(n>0){
+					inf("s<-c:%s",buf);
+					mod_ep_evt(epfd,fd,EPOLLOUT);
+				}else if(0==n){
+					inf("peer close fd:%d",fd);
+					del_ep_evt(epfd,fd,events[i].events);		
+				}				
+			}		
 	}while(1);
 }
