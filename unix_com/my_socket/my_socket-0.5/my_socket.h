@@ -3,6 +3,7 @@
 #define __USE_GNU 1
 #include <sys/types.h>/* See NOTES */
 #include <sys/socket.h>
+#include <sys/epoll.h>
 #include <stdio.h>
 #include <sys/un.h>
 #include <netinet/in.h>
@@ -185,10 +186,9 @@ int pselect(int nfds, fd_set *readfds, fd_set *writefds,fd_set *exceptfds,\
 })
 #define MSG_BUF_BYTE 1024
 typedef int proc_t(int conn);
-typedef struct net_
-serv_t{
-	proc_t *pRcb;
-	proc_t *wRcb;
+typedef struct net_serv_t{
+	proc_t *pRcbk;
+	proc_t *pWcbk;
 	char *addr;
 	in_port_t port;
 	int fd;
@@ -202,9 +202,36 @@ void in_select_tcp_server(char *ip,in_port_t port,proc_t proc);
 void in_select_udp_server(net_serv_t tbl[],size_t count);
 int un_tcp_cli_create(char *path);
 int in_tcp_cli_create(char *ip,in_port_t port);
-#define UN_SOCK_PATH "/tmp/msg.sock"
-#define SERVER_IP 	"127.0.0.1"
+
+#define EVENTS_SIZE 10
+#define my_epoll_create(flag) ({\
+	int epfd=epoll_create1(flag);\
+	if(-1==epfd)show_errno(0,"epoll_create1");\
+	epfd;\
+})
+#define my_epoll_ctl(epfd,fd,op,ptr,flags) ({\
+    struct epoll_event ev;\
+    ev.events = flags;\
+    ev.data.ptr = ptr;\
+	int ret=epoll_ctl(epfd,op,fd,&ev);\
+	if(-1==ret)show_errno(0,"epoll_ctl");\
+	ret;\
+})
+#define add_ep_evt(epfd,fd,ptr,flags) my_epoll_ctl(epfd,fd,EPOLL_CTL_ADD,ptr,flags)
+#define del_ep_evt(epfd,fd,ptr,flags) my_epoll_ctl(epfd,fd,EPOLL_CTL_DEL,ptr,flags)
+#define mod_ep_evt(epfd,fd,ptr,flags) my_epoll_ctl(epfd,fd,EPOLL_CTL_MOD,ptr,flags)
+#define rvt_ep_evt(epfd,fd,ptr,flags) my_epoll_ctl(epfd,fd,EPOLL_CTL_MOD,ptr,flags==EPOLLIN?EPOLLOUT:EPOLLIN)
+
+#define my_epoll_wait(epfd,event_a,event_n,timeout,p_sigmask) ({\
+	int n_ready=epoll_pwait(epfd,event_a,event_n,timeout,p_sigmask);\
+	if(-1==n_ready)show_errno(0,"epoll_wait");\
+	n_ready;\
+})
+//------------------------------------------------------------------------
+#define SRV_ADDR 		"/tmp/cmd.sock1"
+#define CLI_ADDR 		"/tmp/cmd.sock4"
+#define SERVER_IP 		"127.0.0.1"
 // #define SERVER_IP 	"192.168.1.6"
-#define LISTEN_IP	htonl(INADDR_ANY)
+#define LISTEN_IP		"0.0.0.0"
 #define PORT_NUM	5188
 #endif

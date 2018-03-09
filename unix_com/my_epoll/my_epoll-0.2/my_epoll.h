@@ -51,7 +51,7 @@ int epoll_pwait(int epfd, struct epoll_event *events,int maxevents, int timeout,
 #define add_ep_evt(epfd,fd,flags) my_epoll_ctl(epfd,EPOLL_CTL_ADD,fd,flags)
 #define del_ep_evt(epfd,fd,flags) my_epoll_ctl(epfd,EPOLL_CTL_DEL,fd,flags)
 #define mod_ep_evt(epfd,fd,flags) my_epoll_ctl(epfd,EPOLL_CTL_MOD,fd,flags)
-#define rvt_ep_evt(epfd,fd,flags) my_epoll_ctl(epfd,EPOLL_CTL_MOD,fd,flags==EPOLLIN?EPOLLIN:EPOLLOUT)
+#define rvt_ep_evt(epfd,fd,flags) my_epoll_ctl(epfd,EPOLL_CTL_MOD,fd,flags==EPOLLIN?EPOLLOUT:EPOLLIN)
 
 #define my_epoll_wait(epfd,event_a,event_n,timeout,p_sigmask) ({\
 	int n_ready=epoll_pwait(epfd,event_a,event_n,timeout,p_sigmask);\

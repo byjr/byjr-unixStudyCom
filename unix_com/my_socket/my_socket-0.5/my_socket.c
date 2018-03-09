@@ -60,7 +60,8 @@ int un_udp_cli_create(char *addr){
 	if(-1==ret)return -2;
 	return ret;
 }
-void un_select_tcp_server(char *path,proc_t proc){
+#if 0
+void un_epoll_tcp_server(char *path,proc_t proc){
 	size_t i=0;
 	int conn_a[FD_SETSIZE]={0};	
 	for(i=0;i<getCount(conn_a);i++)conn_a[i]=-1;
@@ -117,7 +118,8 @@ void un_select_tcp_server(char *path,proc_t proc){
 		}
 	}while(1);
 }
-void in_select_tcp_server(char *ip,in_port_t port,proc_t proc){
+
+void in_epoll_tcp_server(char *ip,in_port_t port,proc_t proc){
 	size_t i=0;
 	int conn_a[FD_SETSIZE]={0};
 	for(i=0;i<getCount(conn_a);i++)conn_a[i]=-1;
@@ -180,7 +182,7 @@ void in_select_tcp_server(char *ip,in_port_t port,proc_t proc){
 		}
 	}while(1);
 }
-void in_select_udp_server(net_serv_t tbl[],size_t count){
+void in_epoll_udp_server(net_serv_t tbl[],size_t count){
 	size_t i=0,ret=0;
 	fd_set rset={0},allset={0};
 	for(i=0;i<count;i++){
@@ -220,9 +222,11 @@ void in_select_udp_server(net_serv_t tbl[],size_t count){
 		}
 	}while(1);
 }
-void un_select_udp_server(net_serv_t tbl[],size_t count){
+#endif
+void un_epoll_udp_server(net_serv_t tbl[],size_t count){
+	int epfd=my_epoll_create(0);	
+	if(epfd<0)exit(-1);	
 	size_t i=0,ret=0;
-	fd_set rset={0},allset={0};
 	for(i=0;i<count;i++){
 		tbl[i].fd=my_socket(AF_UNIX,SOCK_DGRAM,0);
 		if(-1==tbl[i].fd)exit(-1);
@@ -230,74 +234,91 @@ void un_select_udp_server(net_serv_t tbl[],size_t count){
 		if(ret<0)exit(-1);
 		ret=un_bind(tbl[i].fd,tbl[i].addr);
 		if(-1==ret)exit(-1);
-		FD_SET(tbl[i].fd,&allset);
+		add_ep_evt(epfd,tbl[i].fd,EPOLLIN);	
 	}
-	int maxfd=tbl[count-1].fd;
-	FD_SET(maxfd,&allset);
+	struct epoll_event events[EVENTS_SIZE]={0};
 	do{
-		memcpy(&rset,&allset,sizeof(rset));
-		int nready=20;
-		nready=my_select(maxfd+1,&rset,NULL,NULL,NULL,NULL);
-		if(nready<0){
-			if(EINTR==errno)continue;//防止收到信号时退出
+		int nReady=my_epoll_wait(epfd,events,EVENTS_SIZE,-1,NULL);
+		if(-1==nReady){
+			if(4==errno)continue;
 			exit(-1);
 		}
-		if(!nready)continue;
-		for(i=0;i<count;i++){
-			if(-1==tbl[i].fd)continue;
-			while(FD_ISSET(tbl[i].fd,&rset)){
-				nready--;
-				int ret=tbl[i].pProc(tbl[i].fd);				
-				if(1==ret){
-					war("client close:%d",tbl[i].fd);
-					FD_CLR(tbl[i].fd,&allset);
-					tbl[i].fd=-1;
-				}		
-				break;
+		if(0==nReady)continue;
+		struct sockaddr_un peerAddr={AF_UNIX};
+		socklen_t peerLen=sizeof(peerAddr);		
+		int i=0;		
+		for(i=0;i<nReady;i++){
+			int fd=events[i].data.fd;
+			if(EPOLLIN==events[i].events){
+				ret=Rcbk(fd);
+				if(0==ret){
+					mod_ep_evt(epfd,fd,EPOLLOUT);
+				}else if(1==ret){
+					del_ep_evt(epfd,fd,events[i].events);
+					inf("peer close fd:%d",fd);
+				}			
+			}else if(EPOLLOUT==events[i].events){
+				ret=Wcbk(fd);
+				if(0==ret){
+					mod_ep_evt(epfd,fd,EPOLLIN);
+				}else if(1==ret){
+					del_ep_evt(epfd,fd,events[i].events);
+					inf("peer close fd:%d",fd);
+				}				
 			}
-			if(!nready)break;
 		}
 	}while(1);
 }
 
-void un_epoll_tcp_server(char *path,proc_t proc){
+void un_epoll_tcp_server(net_serv_t *pServ){
 	int sfd=my_socket(AF_UNIX,SOCK_STREAM|SOCK_CLOEXEC,0);
 	if(-1==sfd)exit(-1);
-	unlink(path);
-	int ret=un_bind(sfd,path);
+	pServ->fd=sfd;
+	unlink(pServ->addr);
+	int ret=un_bind(sfd,pServ->addr);
 	if(-1==ret)exit(-1);
 	ret=my_listen(sfd,SOMAXCONN);
 	if(-1==ret)exit(-1);
 	int epfd=my_epoll_create(0);	
-	if(epfd<0)return -1;
-	add_ep_evt(epfd,ls_fd,EPOLLIN);	
-	add_ep_evt(epfd,0,EPOLLIN);	
+	if(epfd<0)exit(-1);
+	add_ep_evt(epfd,sfd,pServ,EPOLLIN);
+	struct epoll_event events[EVENTS_SIZE]={0};
 	do{
-		nReady=my_epoll_wait(epfd,events,EVENTS_SIZE,-1,NULL);
+		int nReady=my_epoll_wait(epfd,events,EVENTS_SIZE,-1,NULL);
 		if(-1==nReady){
 			if(4==errno)continue;
-			return -1;
+			exit(-1);
 		}
 		if(0==nReady)continue;
-		int i=0;
+		struct sockaddr_un peerAddr={AF_UNIX};
+		socklen_t peerLen=sizeof(peerAddr);		
+		int i=0;		
 		for(i=0;i<nReady;i++){
-			int fd=events[i].data.fd;
-			if(fd==ls_fd){
+			int fd=events[i].data.ptr->fd;
+			if(fd==sfd){
 				if(nReady+1<=EVENTS_SIZE){
-					int conn=my_accept(ls_fd,&peeraddr,&peerlen);
+					int conn=my_accept(sfd,&peerAddr,&peerLen);
 					if(0==conn)continue;
-					add_ep_evt(epfd,conn,EPOLLIN);				
+					add_ep_evt(epfd,conn,NULL,EPOLLIN);				
 				}				
 			}else if(EPOLLIN==events[i].events){
-				memset(buf,0,sizeof(buf));
-				size_t n=un_read(fd,buf,sizeof(buf));
-				if(n>0){
-					inf("s<-c:%s",buf);
-					mod_ep_evt(epfd,fd,EPOLLOUT);
-				}else if(0==n){
+				ret=Rcbk(fd);
+				if(0==ret){
+					mod_ep_evt(epfd,fd,pServ,EPOLLOUT);
+				}else if(1==ret){
+					del_ep_evt(epfd,fd,NULL,NULL,0);
 					inf("peer close fd:%d",fd);
-					del_ep_evt(epfd,fd,events[i].events);		
+				}		
+			}else if(EPOLLOUT==events[i].events){
+				ret=Wcbk(fd);
+				if(0==ret){
+					mod_ep_evt(epfd,fd,pServ,EPOLLIN);
+				}else if(1==ret){
+					// del_ep_evt(epfd,fd,NULL,events[i].events);
+					del_ep_evt(epfd,fd,NULL,NULL,0);
+					inf("peer close fd:%d",fd);
 				}				
-			}		
+			}
+		}
 	}while(1);
 }
