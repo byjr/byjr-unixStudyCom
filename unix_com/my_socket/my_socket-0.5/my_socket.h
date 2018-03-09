@@ -205,25 +205,28 @@ int in_tcp_cli_create(char *ip,in_port_t port);
 
 #define EVENTS_SIZE 10
 #define my_epoll_create(flag) ({\
-	int epfd=epoll_create1(flag);\
-	if(-1==epfd)show_errno(0,"epoll_create1");\
-	epfd;\
+	int epFd=epoll_create1(flag);\
+	if(-1==epFd)show_errno(0,"epoll_create1");\
+	epFd;\
 })
-#define my_epoll_ctl(epfd,fd,op,ptr,flags) ({\
+#define my_epoll_ctl(epFd,evFd,op,flags,pDat) ({\
     struct epoll_event ev;\
-    ev.events = flags;\
-    ev.data.ptr = ptr;\
-	int ret=epoll_ctl(epfd,op,fd,&ev);\
+    ev.events=flags;\
+	if(pDat){\
+		ev.data.ptr = pDat;\
+	}else{\
+		ev.data.fd = evFd;\
+	}\
+	int ret=epoll_ctl(epFd,op,evFd,&ev);\
 	if(-1==ret)show_errno(0,"epoll_ctl");\
 	ret;\
 })
-#define add_ep_evt(epfd,fd,ptr,flags) my_epoll_ctl(epfd,fd,EPOLL_CTL_ADD,ptr,flags)
-#define del_ep_evt(epfd,fd,ptr,flags) my_epoll_ctl(epfd,fd,EPOLL_CTL_DEL,ptr,flags)
-#define mod_ep_evt(epfd,fd,ptr,flags) my_epoll_ctl(epfd,fd,EPOLL_CTL_MOD,ptr,flags)
-#define rvt_ep_evt(epfd,fd,ptr,flags) my_epoll_ctl(epfd,fd,EPOLL_CTL_MOD,ptr,flags==EPOLLIN?EPOLLOUT:EPOLLIN)
+#define add_ep_evt(epFd,fd,flags,pDat) my_epoll_ctl(epFd,fd,EPOLL_CTL_ADD,flags,pDat)
+#define del_ep_evt(epFd,fd,flags,pDat) my_epoll_ctl(epFd,fd,EPOLL_CTL_DEL,flags,pDat)
+#define mod_ep_evt(epFd,fd,flags,pDat) my_epoll_ctl(epFd,fd,EPOLL_CTL_MOD,flags,pDat)
 
-#define my_epoll_wait(epfd,event_a,event_n,timeout,p_sigmask) ({\
-	int n_ready=epoll_pwait(epfd,event_a,event_n,timeout,p_sigmask);\
+#define my_epoll_wait(epFd,event_a,event_n,timeout,p_sigmask) ({\
+	int n_ready=epoll_pwait(epFd,event_a,event_n,timeout,p_sigmask);\
 	if(-1==n_ready)show_errno(0,"epoll_wait");\
 	n_ready;\
 })
@@ -233,5 +236,5 @@ int in_tcp_cli_create(char *ip,in_port_t port);
 #define SERVER_IP 		"127.0.0.1"
 // #define SERVER_IP 	"192.168.1.6"
 #define LISTEN_IP		"0.0.0.0"
-#define PORT_NUM	5188
+#define PORT_NUM		5188
 #endif

@@ -63,8 +63,8 @@ struct sockaddr_un unAddr={AF_UNIX};
 socklen_t unLen=sizeof(unAddr);
 static int unReadCallback(int conn){
 	bzero(buf,sizeof(buf));
-	// size_t ret=my_recvfrom(conn,buf,sizeof(buf),0,(struct sockaddr*)&unAddr,&unLen);
-	size_t ret=un_read(conn,buf,sizeof(buf));
+	size_t ret=my_recvfrom(conn,buf,sizeof(buf),0,(struct sockaddr*)&unAddr,&unLen);
+	// size_t ret=un_read(conn,buf,sizeof(buf));
 	if(ret<0)return -1;
 	if(0==ret)return 1;
 	// inf("addr:%s",unAddr.sun_path);
@@ -73,27 +73,27 @@ static int unReadCallback(int conn){
 }
 static int unWriteCallback(int conn){				
 	strncat(buf,PREFIX,sizeof(buf)-sizeof(PREFIX));
-	// size_t ret=my_sendto(conn,buf,sizeof(buf),0,(struct sockaddr*)&unAddr,unLen);
-	size_t ret=un_write(conn,buf,sizeof(buf));
+	size_t ret=my_sendto(conn,buf,sizeof(buf),0,(struct sockaddr*)&unAddr,unLen);
+	// size_t ret=un_write(conn,buf,sizeof(buf));
 	if(ret<0)return -1;
 	return 0;
 }
 static net_serv_t net_tbl[]={
-	// {&in_serv_proc,"127.0.0.1",5188,0},
-	// {&in_serv_proc,"127.0.0.1",5189,0},
-	// {&in_serv_proc,"127.0.0.1",5190,0},
-	{&unReadCallback,&unWriteCallback,"/tmp/cmd1.sock",0,0},
-	{&unReadCallback,&unWriteCallback,"/tmp/cmd2.sock",0,0},
-	{&unReadCallback,&unWriteCallback,"/tmp/cmd2.sock",0,0},
+	{&unReadCallback,&unWriteCallback,"127.0.0.1",5188,0},
+	{&unReadCallback,&unWriteCallback,"127.0.0.1",5189,0},
+	{&unReadCallback,&unWriteCallback,"127.0.0.1",5190,0},
+	// {&unReadCallback,&unWriteCallback,"/tmp/cmd.sock1",0,0},
+	// {&unReadCallback,&unWriteCallback,"/tmp/cmd.sock2",0,0},
+	// {&unReadCallback,&unWriteCallback,"/tmp/cmd.sock3",0,0},
 };
 int main(int argc, char *argv[]){
 	log_init("l=11111");
 	// un_select_tcp_server(UN_SOCK_PATH,un_serv_proc);
 	// in_select_tcp_server(SERVER_IP,PORT_NUM,in_serv_proc);
 	// in_select_udp_server(net_tbl,getCount(net_tbl));
-	// un_select_udp_server(net_tbl,getCount(net_tbl));
-	// un_epoll_tcp_server(SRV_ADDR,unReadCallback,unWriteCallback);
-	// un_epoll_tcp_server(SRV_ADDR,unReadCallback,unWriteCallback);
-	un_epoll_udp_server(net_tbl,getCount(net_tbl));
-	
+	// un_select_udp_server(net_tbl,getCount(net_tbl));	
+	// un_epoll_tcp_server(&net_tbl[0]);
+	// un_epoll_udp_server(net_tbl,getCount(net_tbl));
+	in_epoll_udp_server(net_tbl,getCount(net_tbl));
+	// in_epoll_tcp_server(&net_tbl[0]);
 }
