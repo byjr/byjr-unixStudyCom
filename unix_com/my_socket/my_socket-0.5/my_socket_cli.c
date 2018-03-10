@@ -16,7 +16,7 @@ int main (int argc, char *argv[]){
 	// int sfd=un_tcp_cli_create(SRV_ADDR);
 	// int sfd=in_tcp_cli_create(SERVER_IP,PORT_NUM);
 	int sfd=in_udp_cli_create(SERVER_IP,PORT_NUM);
-	// int sfd=un_udp_cli_create(CLI_ADDR);
+	// int sfd=un_udp_cli_create(CLI_ADDR,NULL);
 	if(sfd<0)return -1;
 	// struct sockaddr_un addr={AF_UNIX,SRV_ADDR};
 	struct sockaddr_in addr={AF_INET,0,PORT_NUM};

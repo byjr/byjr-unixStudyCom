@@ -444,8 +444,7 @@ void un_select_udp_server(net_serv_t tbl[],size_t count){
 	FD_SET(maxfd,&allset);
 	do{
 		memcpy(&rset,&allset,sizeof(rset));
-		int nready=20;
-		nready=my_select(maxfd+1,&rset,NULL,NULL,NULL,NULL);
+		int nready=my_select(maxfd+1,&rset,NULL,NULL,NULL,NULL);
 		if(nready<0){
 			if(EINTR==errno)continue;//防止收到信号时退出
 			exit(-1);
