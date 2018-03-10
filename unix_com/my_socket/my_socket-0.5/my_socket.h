@@ -184,6 +184,12 @@ int pselect(int nfds, fd_set *readfds, fd_set *writefds,fd_set *exceptfds,\
 	if(-1==ret)show_errno(0,"isfdtype");\
 	ret;\
 })
+
+int un_bind(int sfd,char* path);
+int in_bind(int sfd,char *ip,in_port_t port);
+int un_connect(int sfd,char* path);
+int in_connect(int sfd,char *ip,in_port_t port);
+
 #define MSG_BUF_BYTE 1024
 typedef int proc_t(int conn);
 typedef struct net_serv_t{
@@ -193,15 +199,15 @@ typedef struct net_serv_t{
 	in_port_t port;
 	int fd;
 }net_serv_t;
-int un_bind(int sfd,char *path);
-int in_bind(int sfd,char *ip,in_port_t port);
-int un_connect(int sfd,char *path);
-int in_connect(int sfd,char *ip,in_port_t port);
-void un_select_tcp_server(char *path,proc_t proc);
-void in_select_tcp_server(char *ip,in_port_t port,proc_t proc);
+
+void un_select_tcp_server(net_serv_t *pServ);
+void in_select_tcp_server(net_serv_t *pServ);
+void in_select_udp_server(net_serv_t tbl[],size_t count);
 void in_select_udp_server(net_serv_t tbl[],size_t count);
 int un_tcp_cli_create(char *path);
 int in_tcp_cli_create(char *ip,in_port_t port);
+int un_udp_cli_create(char *src,char *dst);
+int in_udp_cli_create(char *ip,in_port_t port);
 
 #define EVENTS_SIZE 10
 #define my_epoll_create(flag) ({\
@@ -221,6 +227,7 @@ int in_tcp_cli_create(char *ip,in_port_t port);
 	if(-1==ret)show_errno(0,"epoll_ctl");\
 	ret;\
 })
+
 #define add_ep_evt(epFd,fd,flags,pDat) my_epoll_ctl(epFd,fd,EPOLL_CTL_ADD,flags,pDat)
 #define del_ep_evt(epFd,fd,flags,pDat) my_epoll_ctl(epFd,fd,EPOLL_CTL_DEL,flags,pDat)
 #define mod_ep_evt(epFd,fd,flags,pDat) my_epoll_ctl(epFd,fd,EPOLL_CTL_MOD,flags,pDat)
@@ -230,6 +237,10 @@ int in_tcp_cli_create(char *ip,in_port_t port);
 	if(-1==n_ready)show_errno(0,"epoll_wait");\
 	n_ready;\
 })
+void un_epoll_tcp_server(net_serv_t *pServ);
+void un_epoll_udp_server(net_serv_t tbl[],size_t count);
+void in_epoll_udp_server(net_serv_t tbl[],size_t count);
+void in_epoll_tcp_server(net_serv_t *pServ);
 //------------------------------------------------------------------------
 #define SRV_ADDR 		"/tmp/cmd.sock1"
 #define CLI_ADDR 		"/tmp/cmd.sock4"
