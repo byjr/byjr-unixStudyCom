@@ -1,5 +1,5 @@
-#ifndef UN_SIGNAL_H_
-#define UN_SIGNAL_H_ 1
+#ifndef UN_FIFO_H_
+#define UN_FIFO_H_ 1
 #include <stdio.h>
 #include <sys/file.h>
 #include <unistd.h>
@@ -22,4 +22,5 @@ extern int un_fifo_init(char *path,char *mode);
 extern int un_fifo_read(char *buf,size_t size);
 extern int un_fifo_write_str(char *ptr);
 extern int un_fifo_write(char *buf,size_t size);
+int getFifoFd(void);
 #endif

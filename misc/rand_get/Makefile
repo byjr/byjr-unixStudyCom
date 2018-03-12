@@ -2,7 +2,7 @@ CURRENT_DIR	:=`pwd`
 COMPILE_DIR	:=/tmp
 INSTALL_DIR	:=/usr/local
 TARGET		:=$(notdir $(shell pwd))
-VERSION		:=0.1
+VERSION		:=0.0
 SRC_DIR		:=$(TARGET)-$(VERSION)
 Q			:=@			
 EXE_TARGET	:=$(TARGET)_$(p0)
@@ -28,4 +28,4 @@ uninstall:
 	make -C $(COMPILE_DIR)/$(SRC_DIR) uninstall	
 	
 excute:
-	$(COMPILE_DIR)/$(SRC_DIR)/$(EXE_TARGET) $(p1) $(p2) $(p3) $(p4) $(p5) $(p6)
+	$(COMPILE_DIR)/$(SRC_DIR)/$(EXE_TARGET) $(p1) $(p2) $(p3)

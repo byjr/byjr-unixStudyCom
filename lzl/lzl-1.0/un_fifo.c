@@ -35,4 +35,7 @@ int un_fifo_write_str(char *ptr){
 	size_t ret=un_write(fifo_fd,ptr,strlen(ptr));
 	if(ret<1) return -2;
 	return 0;
-}		
+}
+int getFifoFd(void){
+	return fifo_fd;
+}	
