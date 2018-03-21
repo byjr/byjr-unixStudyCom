@@ -1,7 +1,11 @@
 #include "rand_get.c"
+
 #include "lzl/misc.h"
+
 typedef unsigned int uint32_t;
+
 #define RED_WANT 	6
+
 #define BLUE_WANT 	1
 
 #define ALL_WANT 	RED_WANT+BLUE_WANT
@@ -22,8 +26,8 @@ void buble_sort(uint32_t a[],size_t size){
     } 	
 }
 int get_reds(uint32_t blue){
-		// srand(time(NULL));
-	uint32_t tbl[]={1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,0};	
+	// srand(time(NULL));
+	uint32_t tbl[]={1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,0};
 	uint32_t remain=RED_TOTAL;
 	uint32_t red_want=RED_WANT;
 	uint32_t ary[RED_WANT]={0};
